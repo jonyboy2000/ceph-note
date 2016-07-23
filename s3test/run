@@ -1,0 +1,2 @@
+S3TEST_CONF=test.conf ./virtualenv/bin/nosetests   -v >> record.txt  2>&1
+S3TEST_CONF=test.conf ./virtualenv/bin/nosetests   -v -a "!fails_on_rgw" >> record.txt  2>&1
