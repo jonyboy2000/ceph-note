@@ -10,7 +10,7 @@ from jinja2 import Template
 from string import ascii_lowercase
 import itertools
 template = Template(
-'---\ndisks_var: {{disks_var}}\ndevices_data_uuids_var: {{devices_data_uuids_var}}\ndevices_journal_uuids_var: {{devices_journal_uuids_var}}')
+'---\ndisks_var: "{{disks_var}}"\ndevices_data_uuids_var: "{{devices_data_uuids_var}}"\ndevices_journal_uuids_var: "{{devices_journal_uuids_var}}"')
 
 def iter_all_strings():
     size = 1
