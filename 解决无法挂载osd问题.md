@@ -1,5 +1,8 @@
 
 ```
+#check
+ansible -i nanji_slave_all_172.16.127  osds  -v -u root -a "ls -l  /etc/systemd/system/ceph-osd.target.wants/" -f 100
+#do link
 ansible-playbook activte-osd-link.yml -i nanji_slave_all_172.16.127 -v -u root -f 100
 ```
 
