@@ -4,6 +4,19 @@ yum install -y chrony
 systemctl start chronyd.service
 systemctl restart chronyd.service
 systemctl enable chronyd.service
+#当服务器的话
+allow 192.168/16
+
+#开启防火墙
+firewall-cmd --permanent --add-service=ntp
+firewall-cmd --reload
+
+#手动
+chronyd -q 'server pdc.adagene.cn iburst'
+chronyc sourcestats
+chronyc sources -v
+chronyc tracking
+
 ```
 ```
 chronyc sources -v
