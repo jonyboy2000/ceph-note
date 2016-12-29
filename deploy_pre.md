@@ -75,5 +75,6 @@ useradd -d /home/cephuser -m cephuser
 passwd cephuser
 echo "cephuser ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/cephuser
 chmod 0440 /etc/sudoers.d/cephuser
+sed -i 's/Defaults    requiretty/#Defaults    requiretty/g' /etc/sudoers
 ```
 
