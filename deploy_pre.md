@@ -12,7 +12,7 @@ firewall-cmd --permanent --add-service=ntp
 firewall-cmd --reload
 
 #手动
-chronyd -q 'server pdc.adagene.cn iburst'
+chronyd -q 'server 185.23.153.237 iburst'
 chronyc sourcestats
 chronyc sources -v
 chronyc tracking
