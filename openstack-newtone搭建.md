@@ -595,6 +595,16 @@ sdb
 
 [root@volume ~]# vgcreate cinder-volumes /dev/sdb
   Volume group "cinder-volumes" successfully created
+
+如果出现 pvcreate /dev/sdb Device /dev/sdb not found (or ignored by filtering).
+[onest@ceph04 yuliyang]$ sudo dd if=/dev/urandom of=/dev/sdb bs=512 count=64
+64+0 records in
+64+0 records out
+32768 bytes (33 kB) copied, 0.0034822 s, 9.4 MB/s
+[onest@ceph04 yuliyang]$ sudo pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created
+  
+  
   
 yum install openstack-cinder targetcli python-keystone -y
 
