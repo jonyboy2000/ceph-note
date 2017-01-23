@@ -505,6 +505,8 @@ openstack server create --flavor m1.nano --image cirros --nic net-id=3d536cb7-5a
 ssh cirros@192.168.150.208
 user:cirros
 password:cubswin:)
+
+openstack console url show public-instance 
 ```
 [controller]
 ```
