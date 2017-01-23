@@ -698,3 +698,34 @@ vda
 
 ```
 
+[volume]
+```
+systemctl enable openstack-cinder-backup.service
+systemctl start openstack-cinder-backup.service
+```
+
+[controller]
+```
+/etc/cinder/cinder.conf
+backup_swift_url = http://10.128.3.68/swift/v1
+openstack volume list
+openstack server remove volume public-instance volume1
+cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296
+[onest@ceph04 yuliyang]$ cinder backup-list
++--------------------------------------+--------------------------------------+----------+------+------+--------------+---------------+
+| ID                                   | Volume ID                            | Status   | Name | Size | Object Count | Container     |
++--------------------------------------+--------------------------------------+----------+------+------+--------------+---------------+
+| 461b51c1-7c9e-4c41-9f03-23cba4c0ef23 | ef3a93f7-c57b-4834-9f0e-6482fa9e1296 | creating | -    | 1    | 0            | volumebackups |
++--------------------------------------+--------------------------------------+----------+------+------+--------------+---------------+
+[onest@ceph04 yuliyang]$ cinder backup-delete 461b51c1-7c9e-4c41-9f03-23cba4c0ef23
+Delete for backup 461b51c1-7c9e-4c41-9f03-23cba4c0ef23 failed: Invalid backup: Backup status must be available or error (HTTP 400) (Request-ID: req-c56b117a-d5fb-444e-8c7e-80945ebd98ed)
+ERROR: Unable to delete any of the specified backups.
+[onest@ceph04 yuliyang]$ cinder backup-list
++--------------------------------------+--------------------------------------+-----------+------+------+--------------+---------------+
+| ID                                   | Volume ID                            | Status    | Name | Size | Object Count | Container     |
++--------------------------------------+--------------------------------------+-----------+------+------+--------------+---------------+
+| 461b51c1-7c9e-4c41-9f03-23cba4c0ef23 | ef3a93f7-c57b-4834-9f0e-6482fa9e1296 | available | -    | 1    | 22           | volumebackups |
++--------------------------------------+--------------------------------------+-----------+------+------+--------------+---------------+
+
+```
+
