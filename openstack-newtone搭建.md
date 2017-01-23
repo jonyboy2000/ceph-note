@@ -577,6 +577,7 @@ yum install lvm2
 systemctl enable lvm2-lvmetad.service
 systemctl start lvm2-lvmetad.service
 
+
 [root@volume ~]# lsblk -f
 NAME                         FSTYPE      LABEL UUID                                   MOUNTPOINT
 fd0
@@ -587,6 +588,8 @@ sda
   ├─bclinux-swap             swap              ef5c4b36-c315-43ff-a9d4-ff0fe796bf8f   [SWAP]
   └─bclinux-docker--poolmeta
 sdb
+
+/etc/lvm/lvm.conf 修改filter
 [root@volume ~]# pvcreate /dev/sdb
   Physical volume "/dev/sdb" successfully created
 
