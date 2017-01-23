@@ -56,6 +56,9 @@ grant all on nova_api.* to 'nova'@'%' identified by 'nova';
 create database neutron;
 grant all on neutron.* to 'neutron'@'localhost' identified by 'neutron';
 grant all on neutron.* to 'neutron'@'%' identified by 'neutron';
+create database cinder;
+grant all on cinder.* to 'cinder'@'localhost' identified by 'cinder';
+grant all on cinder.* to 'cinder'@'%' identified by 'cinder';
 ```
 
 [compute]
@@ -499,3 +502,180 @@ ssh cirros@192.168.150.208
 user:cirros
 password:cubswin:)
 ```
+[controller]
+```
+openstack user create --domain default --password-prompt cinder
+openstack role add --project service --user cinder admin
+openstack service create --name cinder --description "OpenStack Block Storage" volume
+openstack service create --name cinderv2 --description "OpenStack Block Storage" volumev2
+openstack endpoint create --region RegionOne   volume admin http://192.168.153.148:8776/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne   volume internal http://192.168.153.148:8776/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne   volume public http://192.168.153.148:8776/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne   volumev2 public http://192.168.153.148:8776/v2/%\(tenant_id\)s
+openstack endpoint create --region RegionOne   volumev2 internal http://192.168.153.148:8776/v2/%\(tenant_id\)s
+openstack endpoint create --region RegionOne   volumev2 admin http://192.168.153.148:8776/v2/%\(tenant_id\)s
+
+yum install openstack-cinder -y
+vi /etc/cinder/cinder.conf
+[database]
+connection = mysql+pymysql://cinder:cinder@192.168.153.148/cinder 
+[DEFAULT]
+transport_url = rabbit://openstack:openstack@192.168.153.148
+auth_strategy = keystone
+[keystone_authtoken]
+auth_uri = http://192.168.153.148:5000
+auth_url = http://192.168.153.148:35357
+memcached_servers = 192.168.153.148:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = cinder
+password = cinder
+[oslo_concurrency]
+lock_path = /var/lib/cinder/tmp
+
+
+iscsi_ip_address = 192.168.153.148
+
+su -s /bin/sh -c "cinder-manage db sync" cinder
+
+
+/etc/nova/nova.conf
+[cinder]
+os_region_name = RegionOne
+
+systemctl restart openstack-nova-api.service
+systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service
+systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service
+[root@controller ~]# cinder service-list
++------------------+------------+------+---------+-------+----------------------------+-----------------+
+| Binary           | Host       | Zone | Status  | State | Updated_at                 | Disabled Reason |
++------------------+------------+------+---------+-------+----------------------------+-----------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-23T06:34:56.000000 | -               |
++------------------+------------+------+---------+-------+----------------------------+-----------------+
+
+```
+
+[compute]
+```
+/etc/nova/nova.conf
+[cinder]
+os_region_name = RegionOne
+```
+
+[volume]
+```
+yum install lvm2
+systemctl enable lvm2-lvmetad.service
+systemctl start lvm2-lvmetad.service
+
+[root@volume ~]# lsblk -f
+NAME                         FSTYPE      LABEL UUID                                   MOUNTPOINT
+fd0
+sda
+├─sda1                       ext4              d0f7f2b7-d7f6-47b8-81ee-e7365711a4ba   /boot
+└─sda2                       LVM2_member       qYShvG-Xirl-wLST-j0gU-iXPk-34Qx-15mSKA
+  ├─bclinux-root             ext4              4e448946-20a4-40c4-a9c6-7f5c12d94bc2   /
+  ├─bclinux-swap             swap              ef5c4b36-c315-43ff-a9d4-ff0fe796bf8f   [SWAP]
+  └─bclinux-docker--poolmeta
+sdb
+[root@volume ~]# pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created
+
+[root@volume ~]# vgcreate cinder-volumes /dev/sdb
+  Volume group "cinder-volumes" successfully created
+  
+yum install openstack-cinder targetcli python-keystone -y
+
+/etc/cinder/cinder.conf
+[DEFAULT]
+glance_api_servers = http://192.168.153.148:9292
+auth_strategy = keystone
+enabled_backends = lvm
+transport_url = rabbit://openstack:openstack@192.168.153.148
+[oslo_concurrency]
+lock_path = /var/lib/cinder/tmp
+[database]
+connection = mysql+pymysql://cinder:cinder@192.168.153.148/cinder
+[keystone_authtoken]
+auth_uri = http://192.168.153.148:5000
+auth_url = http://192.168.153.148:35357
+memcached_servers = 192.168.153.148:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = service
+username = cinder
+password = cinder
+
+
+
+iscsi_ip_address = 192.168.153.149
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+iscsi_protocol = iscsi
+iscsi_helper = lioadm
+
+
+systemctl enable openstack-cinder-volume.service target.service
+systemctl start openstack-cinder-volume.service target.service
+```
+
+[controller]
+```
+[root@controller ~]# openstack volume service list
++------------------+------------+------+---------+-------+----------------------------+
+| Binary           | Host       | Zone | Status  | State | Updated At                 |
++------------------+------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-23T06:46:18.000000 |
++------------------+------------+------+---------+-------+----------------------------+
+[root@controller ~]# openstack volume service list
++------------------+------------+------+---------+-------+----------------------------+
+| Binary           | Host       | Zone | Status  | State | Updated At                 |
++------------------+------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-23T06:48:38.000000 |
+| cinder-volume    | volume@lvm | nova | enabled | up    | 2017-01-23T06:48:43.000000 |
++------------------+------------+------+---------+-------+----------------------------+
+
+#1G
+openstack volume create --size 1 volume1
+[root@controller ~]# openstack volume list
++--------------------------------------+--------------+-----------+------+-------------+
+| ID                                   | Display Name | Status    | Size | Attached to |
++--------------------------------------+--------------+-----------+------+-------------+
+| eac8b89c-ca5a-47af-89d0-a9917e1ec11d | volume1      | available |    1 |             |
++--------------------------------------+--------------+-----------+------+-------------+
+
+openstack server add volume public-instance volume1
+[root@controller ~]# ssh cirros@192.168.150.208
+$ lsblk -f
+NAME   FSTYPE LABEL MOUNTPOINT
+vda
+`-vda1              /
+vdb
+
+
+[root@controller ~]# openstack volume list
++--------------------------------------+--------------+--------+------+------------------------------------------+
+| ID                                   | Display Name | Status | Size | Attached to                              |
++--------------------------------------+--------------+--------+------+------------------------------------------+
+| eac8b89c-ca5a-47af-89d0-a9917e1ec11d | volume1      | in-use |    1 | Attached to public-instance on /dev/vdb  |
++--------------------------------------+--------------+--------+------+------------------------------------------+
+[root@controller ~]# openstack server remove volume public-instance volume1
+[root@controller ~]# openstack volume list
++--------------------------------------+--------------+-----------+------+-------------+
+| ID                                   | Display Name | Status    | Size | Attached to |
++--------------------------------------+--------------+-----------+------+-------------+
+| eac8b89c-ca5a-47af-89d0-a9917e1ec11d | volume1      | available |    1 |             |
++--------------------------------------+--------------+-----------+------+-------------+
+[root@controller ~]# ssh cirros@192.168.150.208
+$ lsblk -f
+NAME   FSTYPE LABEL MOUNTPOINT
+vda
+`-vda1              /
+
+```
+
