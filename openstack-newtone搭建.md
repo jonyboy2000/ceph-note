@@ -710,7 +710,9 @@ systemctl start openstack-cinder-backup.service
 backup_swift_url = http://10.128.3.68/swift/v1
 openstack volume list
 openstack server remove volume public-instance volume1
-cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296
+cinder help backup-create
+cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296  
+cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296  --incremental #增量备份
 [onest@ceph04 yuliyang]$ cinder backup-list
 +--------------------------------------+--------------------------------------+----------+------+------+--------------+---------------+
 | ID                                   | Volume ID                            | Status   | Name | Size | Object Count | Container     |
