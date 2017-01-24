@@ -712,7 +712,12 @@ openstack volume list
 openstack server remove volume public-instance volume1
 cinder help backup-create
 cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296  
-cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296  --incremental #增量备份
+cinder backup-create  ef3a93f7-c57b-4834-9f0e-6482fa9e1296  --incremental True
+创建一个全量备份：
+cinder backup-create [--display-name <display-name>] <volume>
+创建一个增量备份：
+cinder backup-create [--display-name <display-name>] --incremental True <volume>
+
 [onest@ceph04 yuliyang]$ cinder backup-list
 +--------------------------------------+--------------------------------------+----------+------+------+--------------+---------------+
 | ID                                   | Volume ID                            | Status   | Name | Size | Object Count | Container     |
