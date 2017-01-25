@@ -261,6 +261,7 @@ novncproxy_base_url = http://192.168.153.148:6080/vnc_auto.html
 api_servers = http://192.168.153.148:9292
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
+[libvirt]
 virt_type=qemu
 
 
