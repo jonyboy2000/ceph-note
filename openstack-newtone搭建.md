@@ -772,6 +772,11 @@ ERROR: Unable to delete any of the specified backups.
 
 ```
 
+```
+#nova机器重启后也有iptable问题，在controller机器上开放端口
+iptables -I INPUT -s 0/0 -p tcp --dport 5672 -j ACCEPT
+```
+
 
 ##部署好后的常用管理命令
 ```
