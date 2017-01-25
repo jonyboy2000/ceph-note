@@ -350,6 +350,7 @@ enable_ipset = True
 
 [linux_bridge]
 physical_interface_mappings = public:eth0
+physical_interface_mappings = public:bond4_1.1003  
 [vxlan]
 enable_vxlan = False
 [securitygroup]
