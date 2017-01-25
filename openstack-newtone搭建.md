@@ -780,6 +780,7 @@ iptables -I INPUT -s 0/0 -p tcp --dport 5672 -j ACCEPT
 
 ##部署好后的常用管理命令
 ```
+openstack catalog list
 openstack volume service list
 openstack server list
 neutron agent-list
@@ -787,5 +788,5 @@ nova service-list
 systemctl restart openstack-cinder-volume.service target.service
 systemctl restart libvirtd.service openstack-nova-compute.service
 systemctl restart openstack-glance-api.service openstack-glance-registry.service
-systemctl start neutron-linuxbridge-agent.service
+systemctl restart neutron-linuxbridge-agent.service
 ```
