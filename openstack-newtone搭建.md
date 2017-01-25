@@ -67,6 +67,7 @@ mysql -uroot -popenstack -e "grant all on neutron.* to 'neutron'@'%' identified 
 mysql -uroot -popenstack -e "create database cinder;"
 mysql -uroot -popenstack -e "grant all on cinder.* to 'cinder'@'localhost' identified by 'cinder';"
 mysql -uroot -popenstack -e "grant all on cinder.* to 'cinder'@'%' identified by 'cinder';"
+mysql -uroot -popenstack -e "FLUSH PRIVILEGES;"
 ```
 
 [compute node]
