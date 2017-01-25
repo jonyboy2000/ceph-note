@@ -509,7 +509,13 @@ ssh cirros@192.168.150.208
 user:cirros
 password:cubswin:)
 
-openstack console url show public-instance 
+[root@controller ~]# openstack console url show public-instance
++-------+--------------------------------------------------------------------------------------+
+| Field | Value                                                                                |
++-------+--------------------------------------------------------------------------------------+
+| type  | novnc                                                                                |
+| url   | http://192.168.153.148:6080/vnc_auto.html?token=d6cb6138-3524-4c9b-ab38-02e3c6365069 |
++-------+--------------------------------------------------------------------------------------+
 ```
 [controller]
 ```
