@@ -877,3 +877,29 @@ vi /etc/sysconfig/iptables
 COMMIT
 
 ```
+
+
+```
+[root@controller ~]# openstack volume service list
++------------------+------------+------+---------+-------+----------------------------+
+| Binary           | Host       | Zone | Status  | State | Updated At                 |
++------------------+------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-25T09:59:29.000000 |
+| cinder-volume    | volume@lvm | nova | enabled | up    | 2017-01-25T09:59:33.000000 |
+| cinder-backup    | controller | nova | enabled | up    | 2017-01-25T09:59:33.000000 |
+| cinder-volume    | controller | nova | enabled | down  | 2017-01-25T08:19:21.000000 |
++------------------+------------+------+---------+-------+----------------------------+
+
+cinder-manage service  remove cinder-volume controller
+
+[root@controller ~]# openstack volume service list
++------------------+------------+------+---------+-------+----------------------------+
+| Binary           | Host       | Zone | Status  | State | Updated At                 |
++------------------+------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-25T10:02:29.000000 |
+| cinder-volume    | volume@lvm | nova | enabled | up    | 2017-01-25T10:02:23.000000 |
+| cinder-backup    | controller | nova | enabled | up    | 2017-01-25T10:02:23.000000 |
++------------------+------------+------+---------+-------+----------------------------+
+
+
+```
