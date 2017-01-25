@@ -95,7 +95,7 @@ ServerName 192.168.153.148
 ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/
 
 systemctl enable httpd.service
-systemctl start httpd.service
+systemctl restart httpd
 
 export OS_USERNAME=admin
 export OS_PASSWORD=admin
