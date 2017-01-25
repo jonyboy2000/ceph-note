@@ -598,6 +598,11 @@ sda
   └─bclinux-docker--poolmeta
 sdb
 
+sudo mkfs.ext4 /dev/vdb
+sudo mount /dev/vdb /tmp
+sudo echo "this file on vdb" >> /tmp/test.txt
+sudo umount /tmp
+
 /etc/lvm/lvm.conf 修改filter
 [root@volume ~]# pvcreate /dev/sdb
   Physical volume "/dev/sdb" successfully created
