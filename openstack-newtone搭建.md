@@ -462,7 +462,7 @@ neutron agent-list
 
 ```
 
-[compute node]
+[controller node]
 ```
 openstack network create --share --provider-physical-network public --provider-network-type flat public
 
