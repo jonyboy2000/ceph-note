@@ -5,12 +5,12 @@
 | ROLE 	|    CONTROLLER   	|      VOLUME     	|     COMPUTE     	|
 
 # base
-[controller/volume]
+[controller && volume && compute nodes]
 ```
 yum install python-openstackclient openstack-selinux -y
 
 ```
-[controller]
+[controller node]
 ```
 yum install rabbitmq-server -y
 systemctl enable rabbitmq-server.service
@@ -23,7 +23,7 @@ systemctl start memcached.service
 rabbitmq-plugins enable rabbitmq_management
 ```
 
-keystone,glance,nova,neutron[controller]
+部署 keystone,glance,nova,neutron[controller node]
 ```
 yum install openstack-keystone httpd mod_wsgi -y
 yum install openstack-glance -y
@@ -31,7 +31,7 @@ yum install openstack-nova-api openstack-nova-conductor  openstack-nova-console 
 yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables -y
 ```
 
-数据库[controller]
+数据库[controller node]
 ```
 yum install mariadb mariadb-server python2-PyMySQL -y
 vi /etc/my.cnf.d/openstack.cnf
@@ -67,13 +67,13 @@ grant all on cinder.* to 'cinder'@'localhost' identified by 'cinder';
 grant all on cinder.* to 'cinder'@'%' identified by 'cinder';
 ```
 
-[compute]
+[compute node]
 ```
 yum install openstack-nova-compute -y
 yum install openstack-neutron-linuxbridge ebtables ipset -y
 ```
 
-[controller配置keystone]
+配置keystone [controller node]
 ```
 /etc/keystone/keystone.conf
 [database]
@@ -113,7 +113,7 @@ openstack role create user
 openstack role add --project demo --user demo user
 ```
 
-[controller配置glance]
+配置glance [controller node]
 ```
 openstack user create --domain default --password-prompt glance
 openstack role add --project service --user glance admin
@@ -176,7 +176,7 @@ openstack image create "cirros"  --file cirros-0.3.4-x86_64-disk.img  --disk-for
 
 openstack image list
 ```
-[controller配置nova]
+配置nova [controller node]
 ```
 openstack user create --domain default --password-prompt nova
 openstack role add --project service --user nova admin
@@ -230,7 +230,7 @@ systemctl start openstack-nova-api.service openstack-nova-consoleauth.service op
 
 ```
 
-[compute]
+[compute node]
 ```
 /etc/nova/nova.conf
 [DEFAULT]
@@ -265,7 +265,7 @@ systemctl enable libvirtd.service openstack-nova-compute.service
 systemctl start libvirtd.service openstack-nova-compute.service
 ```
 
-[controller] neutron
+neutron 配置 [controller node]
 ```
 [root@controller ~]# nova service-list
 +----+------------------+------------+----------+---------+-------+----------------------------+-----------------+
@@ -394,7 +394,7 @@ systemctl enable neutron-server.service neutron-linuxbridge-agent.service neutro
 systemctl start neutron-server.service neutron-linuxbridge-agent.service neutron-dhcp-agent.service neutron-metadata-agent.service
 ```
 
-[compute]
+[compute node]
 ```
 /etc/neutron/neutron.conf
 [DEFAULT]
@@ -443,7 +443,7 @@ systemctl enable neutron-linuxbridge-agent.service
 systemctl start neutron-linuxbridge-agent.service
 ```
 
-[controller]
+[controller node]
 ```
 neutron ext-list
 neutron agent-list
@@ -459,13 +459,13 @@ neutron agent-list
 
 ```
 
-[compute]
+[compute node]
 ```
 openstack network create --share --provider-physical-network public --provider-network-type flat public
 
 openstack subnet create --network public --allocation-pool start=192.168.150.200,end=192.168.150.230 --dns-nameserver 192.168.150.2 --gateway 192.168.150.2 --subnet-range 192.168.0.0/16 public-instance
 ```
-[controller]
+[controller node]
 ```
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
@@ -517,7 +517,7 @@ password:cubswin:)
 | url   | http://192.168.153.148:6080/vnc_auto.html?token=d6cb6138-3524-4c9b-ab38-02e3c6365069 |
 +-------+--------------------------------------------------------------------------------------+
 ```
-[controller]
+[controller node]
 ```
 openstack user create --domain default --password-prompt cinder
 openstack role add --project service --user cinder admin
@@ -573,14 +573,14 @@ systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service
 
 ```
 
-[compute]
+[compute node]
 ```
 /etc/nova/nova.conf
 [cinder]
 os_region_name = RegionOne
 ```
 
-[volume]
+[volume node]
 ```
 yum install lvm2
 systemctl enable lvm2-lvmetad.service
@@ -692,7 +692,7 @@ MariaDB [(none)]>
 
 ```
 
-[controller]
+[controller node]
 ```
 [root@controller ~]# openstack volume service list
 +------------------+------------+------+---------+-------+----------------------------+
@@ -747,13 +747,13 @@ vda
 
 ```
 
-[volume]
+[volume node]
 ```
 systemctl enable openstack-cinder-backup.service
 systemctl start openstack-cinder-backup.service
 ```
 
-[controller]
+[controller node]
 ```
 /etc/cinder/cinder.conf
 backup_swift_url = http://10.128.3.68/swift/v1
@@ -878,7 +878,7 @@ COMMIT
 
 ```
 
-
+去除无效的service 
 ```
 [root@controller ~]# openstack volume service list
 +------------------+------------+------+---------+-------+----------------------------+
