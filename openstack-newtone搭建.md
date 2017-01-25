@@ -642,6 +642,41 @@ iscsi_helper = lioadm
 
 systemctl enable openstack-cinder-volume.service target.service
 systemctl start openstack-cinder-volume.service target.service
+
+##重启机器后出现
+[root@controller ~]# openstack volume service list
++------------------+------------+------+---------+-------+----------------------------+
+| Binary           | Host       | Zone | Status  | State | Updated At                 |
++------------------+------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-25T03:31:56.000000 |
+| cinder-volume    | volume@lvm | nova | enabled | down  | 2017-01-23T16:52:57.000000 |
++------------------+------------+------+---------+-------+----------------------------+
+##发现mysql connect 连接失败
+[root@volume ~]# telnet 192.168.153.148 3306
+Trying 192.168.153.148...
+telnet: connect to address 192.168.153.148: No route to host
+##修改iptables
+[root@controller ~]# iptables -I INPUT -s 0/0 -p tcp --dport 3306 -j ACCEPT
+[root@volume ~]# mysql -u cinder -p -h 192.168.153.148
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 56
+Server version: 10.1.18-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]>
+
+[root@controller ~]# openstack volume service list
++------------------+------------+------+---------+-------+----------------------------+
+| Binary           | Host       | Zone | Status  | State | Updated At                 |
++------------------+------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller | nova | enabled | up    | 2017-01-25T05:49:47.000000 |
+| cinder-volume    | volume@lvm | nova | enabled | up    | 2017-01-25T05:49:40.000000 |
++------------------+------------+------+---------+-------+----------------------------+
+
 ```
 
 [controller]
