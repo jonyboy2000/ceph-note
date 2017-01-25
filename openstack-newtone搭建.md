@@ -46,25 +46,27 @@ character-set-server = utf8
 systemctl enable mariadb.service
 systemctl start mariadb.service
 mysql_secure_installation
+#
+设置root密码 openstack
 
-create database keystone;
-grant all on keystone.* to 'keystone'@'localhost' identified by 'keystone';
-grant all on keystone.* to 'keystone'@'%' identified by 'keystone';
-create database glance;
-grant all on glance.* to 'glance'@'localhost' identified by 'glance';
-grant all on glance.* to 'glance'@'%' identified by 'glance';
-create database nova;
-grant all on nova.* to 'nova'@'localhost' identified by 'nova';
-grant all on nova.* to 'nova'@'%' identified by 'nova';
-create database nova_api;
-grant all on nova_api.* to 'nova'@'localhost' identified by 'nova';
-grant all on nova_api.* to 'nova'@'%' identified by 'nova';
-create database neutron;
-grant all on neutron.* to 'neutron'@'localhost' identified by 'neutron';
-grant all on neutron.* to 'neutron'@'%' identified by 'neutron';
-create database cinder;
-grant all on cinder.* to 'cinder'@'localhost' identified by 'cinder';
-grant all on cinder.* to 'cinder'@'%' identified by 'cinder';
+mysql -uroot -popenstack -e "create database keystone;"
+mysql -uroot -popenstack -e "grant all on keystone.* to 'keystone'@'localhost' identified by 'keystone';"
+mysql -uroot -popenstack -e "grant all on keystone.* to 'keystone'@'%' identified by 'keystone';"
+mysql -uroot -popenstack -e "create database glance;"
+mysql -uroot -popenstack -e "grant all on glance.* to 'glance'@'localhost' identified by 'glance';"
+mysql -uroot -popenstack -e "grant all on glance.* to 'glance'@'%' identified by 'glance';"
+mysql -uroot -popenstack -e "create database nova;"
+mysql -uroot -popenstack -e "grant all on nova.* to 'nova'@'localhost' identified by 'nova';"
+mysql -uroot -popenstack -e "grant all on nova.* to 'nova'@'%' identified by 'nova';"
+mysql -uroot -popenstack -e "create database nova_api;"
+mysql -uroot -popenstack -e "grant all on nova_api.* to 'nova'@'localhost' identified by 'nova';"
+mysql -uroot -popenstack -e "grant all on nova_api.* to 'nova'@'%' identified by 'nova';"
+mysql -uroot -popenstack -e "create database neutron;"
+mysql -uroot -popenstack -e "grant all on neutron.* to 'neutron'@'localhost' identified by 'neutron';"
+mysql -uroot -popenstack -e "grant all on neutron.* to 'neutron'@'%' identified by 'neutron';"
+mysql -uroot -popenstack -e "create database cinder;"
+mysql -uroot -popenstack -e "grant all on cinder.* to 'cinder'@'localhost' identified by 'cinder';"
+mysql -uroot -popenstack -e "grant all on cinder.* to 'cinder'@'%' identified by 'cinder';"
 ```
 
 [compute node]
