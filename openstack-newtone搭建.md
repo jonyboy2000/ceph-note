@@ -796,10 +796,18 @@ openstack volume service list
 openstack server list
 neutron agent-list
 nova service-list
-systemctl restart openstack-cinder-volume.service target.service
-systemctl restart libvirtd.service openstack-nova-compute.service
-systemctl restart openstack-glance-api.service openstack-glance-registry.service
-systemctl restart neutron-linuxbridge-agent.service
+systemctl start rabbitmq-server.service
+systemctl start memcached.service
+systemctl start mariadb.service
+systemctl start openstack-glance-api.service openstack-glance-registry.service
+systemctl start openstack-nova-api.service openstack-nova-consoleauth.service openstack-nova-scheduler.service openstack-nova-conductor.service openstack-nova-novncproxy.service
+systemctl start libvirtd.service openstack-nova-compute.service
+systemctl start neutron-server.service neutron-linuxbridge-agent.service neutron-dhcp-agent.service neutron-metadata-agent.service
+systemctl start neutron-linuxbridge-agent.service
+systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service
+systemctl start lvm2-lvmetad.service
+systemctl start openstack-cinder-volume.service target.service
+systemctl start openstack-cinder-backup.service
 ```
 
 
