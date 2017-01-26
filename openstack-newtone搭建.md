@@ -3,7 +3,13 @@
 |  IP  	| 192.168.153.148 	| 192.168.153.149 	| 192.168.153.150 	|
 |:----:	|:---------------:	|:---------------:	|:---------------:	|
 | ROLE 	|    CONTROLLER   	|      VOLUME     	|     COMPUTE     	|
-
+修改/etc/hosts
+```
+127.0.0.1  localhost
+192.168.153.148 controller
+192.168.153.149 volume
+192.168.153.150 compute
+```
 # base
 [controller && volume && compute nodes]
 ```
