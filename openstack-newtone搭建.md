@@ -830,7 +830,6 @@ service iptables restart
 [controller]
 ```
 vi /etc/sysconfig/iptables
-
 # sample configuration for iptables service
 # you can edit this manually or use system-config-firewall
 # please do not ask us to add additional ports/services to this default configuration
@@ -877,12 +876,14 @@ COMMIT
 [compute]
 ```
 vi /etc/sysconfig/iptables
+
 # sample configuration for iptables service
 # you can edit this manually or use system-config-firewall
 # please do not ask us to add additional ports/services to this default configuration
 *filter
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -i lo -j ACCEPT
