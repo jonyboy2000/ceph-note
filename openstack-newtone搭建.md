@@ -933,3 +933,18 @@ systemctl enable iscsid
 [computer]
 telnet 192.168.150.148 3260
 ```
+
+
+ceph swift配置
+```
+rgw_keystone_admin_user = admin
+rgw_keystone_admin_password = openstack
+rgw_keystone_admin_tenant = admin
+#rgw_keystone_admin_token = openstack
+rgw_keystone_accepted_roles = admin, Member, swiftoperator
+rgw_keystone_url = http://192.168.153.142:5000
+#rgw_keystone_admin_domain = RegionOne
+rgw_keystone_token_cache_size = 100
+rgw_keystone_revocation_interval = 600
+rgw_s3_auth_use_keystone = true
+```
