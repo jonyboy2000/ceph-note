@@ -913,6 +913,7 @@ cinder-manage service  remove cinder-volume controller
 targetcli ls
 systemctl stop firewalld
 systemctl start iscsid
+systemctl enable iscsid
 
 
 [computer]
