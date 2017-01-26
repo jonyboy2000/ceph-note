@@ -907,3 +907,14 @@ cinder-manage service  remove cinder-volume controller
 
 
 ```
+重启后volume卷无法挂载
+```
+[volume]
+targetcli ls
+systemctl stop firewalld
+systemctl start iscsid
+
+
+[computer]
+telnet 192.168.150.148 3260
+```
