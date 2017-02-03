@@ -134,4 +134,8 @@ backup_ceph_stripe_unit = 0
 backup_ceph_stripe_count = 0
 restore_discard_excess_bytes = true
 ```
-
+多个backup
+```
+cinder backup-create 3c4813bb-4fd1-4f5e-a577-2c1f6d5aa742 --container volumebackups --name test1
+cinder backup-create 3c4813bb-4fd1-4f5e-a577-2c1f6d5aa742 --container backups --name test2
+```
