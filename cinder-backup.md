@@ -46,3 +46,67 @@ Request to delete backup 461b51c1-7c9e-4c41-9f03-23cba4c0ef23 has been accepted.
 +----+-----------+--------+------+------+--------------+-----------+
 
 ```
+
+vi /etc/cinder/cinder.conf
+```
+backup_swift_url = http://192.168.153.151/swift/v1/AUTH_
+backup_swift_auth_url = http://192.168.153.151/auth
+backup_swift_project = yuliyang
+backup_swift_auth = single_user
+backup_swift_auth_version = 1
+backup_swift_user = yuliyang:swift
+backup_swift_key = iRhOTDllsGyikWjefpjD575ZTfMCo2KDXJLrMs8N
+backup_swift_container = volumebackups
+backup_swift_object_size = 52428800
+backup_swift_retry_attempts = 3
+backup_swift_retry_backoff = 2
+backup_compression_algorithm = zlib
+```
+
+ceph用户信息,无需配置ceph.conf,直接创建用户就可以了
+```
+[root@ceph01 ~]# radosgw-admin user info --uid=yuliyang
+{
+    "user_id": "yuliyang",
+    "display_name": "yuliyang",
+    "email": "",
+    "suspended": 0,
+    "max_buckets": 1000,
+    "auid": 0,
+    "subusers": [
+        {
+            "id": "yuliyang:swift",
+            "permissions": "full-control"
+        }
+    ],
+    "keys": [
+        {
+            "user": "yuliyang",
+            "access_key": "yuliyang",
+            "secret_key": "yuliyang"
+        }
+    ],
+    "swift_keys": [
+        {
+            "user": "yuliyang:swift",
+            "secret_key": "iRhOTDllsGyikWjefpjD575ZTfMCo2KDXJLrMs8N"
+        }
+    ],
+    "caps": [],
+    "op_mask": "read, write, delete",
+    "default_placement": "",
+    "placement_tags": [],
+    "bucket_quota": {
+        "enabled": false,
+        "max_size_kb": -1,
+        "max_objects": -1
+    },
+    "user_quota": {
+        "enabled": false,
+        "max_size_kb": -1,
+        "max_objects": -1
+    },
+    "temp_url_keys": []
+}
+
+```
