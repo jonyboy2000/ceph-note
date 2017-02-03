@@ -110,3 +110,28 @@ ceph用户信息,无需配置ceph.conf,直接创建用户就可以了
 }
 
 ```
+
+
+rbd backup
+```
+[ceph node]
+ceph osd pool create backups 8
+ssh 192.168.153.149 sudo tee /etc/ceph/ceph.conf </etc/ceph/ceph.conf   #192.168.153.149 is cinder-backup 
+ceph auth get-or-create client.cinder-backup mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=backups'
+ceph auth get-or-create client.cinder-backup | ssh 192.168.153.149 sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+ssh 192.168.153.149 sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
+
+[cinder-backup node]
+yum install ceph
+
+vi /etc/cinder/cinder.conf
+backup_driver = cinder.backup.drivers.ceph
+backup_ceph_conf = /etc/ceph/ceph.conf
+backup_ceph_user = cinder-backup
+backup_ceph_chunk_size = 134217728
+backup_ceph_pool = backups
+backup_ceph_stripe_unit = 0
+backup_ceph_stripe_count = 0
+restore_discard_excess_bytes = true
+```
+
