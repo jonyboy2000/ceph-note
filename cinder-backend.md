@@ -1,4 +1,8 @@
 ```
+cinder service-disable volume cinder-backup
+cinder service-enable volume cinder-backup
+cinder service-disable volume@lvm cinder-volume
+
 openstack server add volume public-instance3 vol-ceph3
 openstack server remove volume public-instance3 vol-ceph3
 
