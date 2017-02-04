@@ -1,4 +1,20 @@
 ```
+openstack server add volume public-instance3 vol-ceph3
+openstack server remove volume public-instance3 vol-ceph3
+
+
+cinder backup-create 61d4aab0-a81e-4ef2-8806-0ffd2ad59806  --name from_rbd_b1 --force
+cinder backup-list
+cinder backup-delete 94fb00bb-0bdf-487a-867b-435c3011908a
+
+openstack volume delete f3239565-d0c9-4516-9264-e82ef8b47b75
+openstack volume list
+cinder create --volume_type ceph --display_name vol-ceph3 1
+
+
+```
+
+```
 [controller node]
 cinder type-create ceph
 cinder type-create lvm
@@ -73,6 +89,8 @@ systemctl restart openstack-nova-compute.service
 -rwxrwxrwx. 1 root   root   3760 2月   3 14:46 ceph.conf
 -rwxr-xr-x  1 root   root     92 9月  28 09:28 rbdmap
 drwxr-xr-x  2 root   root   4096 12月  1 20:56 supervisord.d
+
+
 
 
 
