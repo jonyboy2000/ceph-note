@@ -124,3 +124,24 @@ vdd
 
 
 ```
+
+
+```
+[onest@ceph04 yuliyang]$ cat create_volume.sh
+cinder create --volume_type $1 --display_name $2 $3
+
+[onest@ceph04 yuliyang]$ cat attach_volume.sh
+nova volume-attach 1eee9a3f-8eea-40bb-b403-5e3cd0a380be $1
+
+[onest@ceph04 yuliyang]$ cat detach_volume.sh
+nova volume-detach 1eee9a3f-8eea-40bb-b403-5e3cd0a380be $1
+
+[onest@ceph04 yuliyang]$ cat enable-swift-backup-disable-rbd-backup.sh
+cinder service-disable ceph04 cinder-backup
+cinder service-enable ceph05 cinder-backup
+
+[onest@ceph04 yuliyang]$ cat enable-rbd-backup-disable-swift-backup.sh
+cinder service-disable ceph05 cinder-backup
+cinder service-enable ceph04 cinder-backup
+
+```
