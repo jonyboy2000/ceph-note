@@ -139,3 +139,9 @@ restore_discard_excess_bytes = true
 cinder backup-create 3c4813bb-4fd1-4f5e-a577-2c1f6d5aa742 --container volumebackups --name test1
 cinder backup-create 3c4813bb-4fd1-4f5e-a577-2c1f6d5aa742 --container backups --name test2
 ```
+
+
+http://docs.ceph.com/docs/master/rbd/rbd-openstack/#create-a-pool
+
+
+单独部署的cinder-backup(swift)如果要备份type=ceph的volume，cinder.conf也需要配置ceph,并且需要有对应的rpm包安装和/etc/ceph/下的keyring文件
