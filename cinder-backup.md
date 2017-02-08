@@ -47,6 +47,8 @@ Request to delete backup 461b51c1-7c9e-4c41-9f03-23cba4c0ef23 has been accepted.
 
 ```
 
+
+
 vi /etc/cinder/cinder.conf
 ```
 backup_swift_url = http://192.168.153.151/swift/v1/AUTH_
@@ -57,7 +59,8 @@ backup_swift_auth_version = 1
 backup_swift_user = yuliyang:swift
 backup_swift_key = iRhOTDllsGyikWjefpjD575ZTfMCo2KDXJLrMs8N
 backup_swift_container = volumebackups
-backup_swift_object_size = 52428800
+backup_swift_object_size = 52428800  #50MB
+backup_swift_block_size = 32768     #32KB
 backup_swift_retry_attempts = 3
 backup_swift_retry_backoff = 2
 backup_compression_algorithm = zlib
@@ -134,6 +137,10 @@ backup_ceph_stripe_unit = 0
 backup_ceph_stripe_count = 0
 restore_discard_excess_bytes = true
 ```
+```
+
+```
+
 多个backup
 ```
 cinder backup-create 3c4813bb-4fd1-4f5e-a577-2c1f6d5aa742 --container volumebackups --name test1
