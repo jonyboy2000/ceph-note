@@ -56,6 +56,11 @@ rbd_user = cinder
 rbd_secret_uuid = 457eb676-33da-42ec-9a8c-9293d545c337
 
 
+[cinder-backup node]
+/etc/ceph/ceph.conf
+[client.cinder]
+keyring = /etc/ceph/cinder.keyring
+
 [controller node]
 [root@controller ~]# openstack volume service list
 +------------------+-------------+------+---------+-------+----------------------------+
@@ -93,10 +98,6 @@ systemctl restart openstack-nova-compute.service
 -rwxrwxrwx. 1 root   root   3760 2月   3 14:46 ceph.conf
 -rwxr-xr-x  1 root   root     92 9月  28 09:28 rbdmap
 drwxr-xr-x  2 root   root   4096 12月  1 20:56 supervisord.d
-
-
-
-
 
 
 [controller]
