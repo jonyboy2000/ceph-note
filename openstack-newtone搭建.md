@@ -76,6 +76,11 @@ mysql -uroot -popenstack -e "create database cinder;"
 mysql -uroot -popenstack -e "grant all on cinder.* to 'cinder'@'localhost' identified by 'cinder';"
 mysql -uroot -popenstack -e "grant all on cinder.* to 'cinder'@'%' identified by 'cinder';"
 mysql -uroot -popenstack -e "FLUSH PRIVILEGES;"
+
+#[option]enable root remote query
+mysql -uroot -popenstack -e "grant all on *.* to 'root'@'%' identified by 'openstack';"
+mysql -uroot -popenstack -e "FLUSH PRIVILEGES;"
+
 ```
 
 [compute node]
