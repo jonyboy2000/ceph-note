@@ -149,3 +149,24 @@ http://docs.ceph.com/docs/master/rbd/rbd-openstack/#create-a-pool
 
 
 > 单独部署的cinder-backup(swift)如果要备份type=ceph的volume，cinder.conf也需要配置ceph,并且需要有对应的rpm包安装和/etc/ceph/下的keyring文件
+
+
+
+[cinder volume & cinder backup node]
+```
+/etc/ceph/cinder-ceph.conf
+
+[global]
+fsid = 855385b9-7ff7-44d6-b479-2fe79885096d
+max_open_files = 131072
+mon_initial_members = ceph01
+mon_host = 192.168.153.151
+public_network = 192.168.153.0/24
+cluster_network = 192.168.153.0/24
+
+[client.cinder-backup]
+keyring = /etc/ceph/ceph.client.cinder-backup.keyring
+
+[client.cinder]
+keyring = /etc/ceph/ceph.client.cinder.keyring
+```
