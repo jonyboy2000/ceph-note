@@ -209,7 +209,8 @@ http://192.168.153.159/dashboard
 admin
 openstack
 
-
+systemctl start httpd
+systemctl enable httpd
 screen -c devstack/stack-screenrc
 openstack security group rule create --protocol tcp --dst-port 22 default  
 openstack security group rule create --protocol icmp --dst-port -1 default
