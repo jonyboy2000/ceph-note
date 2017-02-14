@@ -204,6 +204,7 @@ source openrc
 
 ```
 sudo iptables -I INPUT -s 0/0 -p tcp --dport 80 -j ACCEPT
+sudo iptables -I INPUT -s 0/0 -p tcp --dport 6080 -j ACCEPT
 http://192.168.153.159/dashboard
 admin
 openstack
