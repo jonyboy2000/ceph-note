@@ -3,7 +3,6 @@ proxychains git clone https://git.openstack.org/openstack-dev/devstack -b stable
 ./tools/create-stack-user.sh
 
 
-GIT_BASE=http://github.com
 export http_proxy=http://192.168.153.1:7777
 export https_proxy=http://192.168.153.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
