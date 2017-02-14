@@ -8,9 +8,9 @@ export https_proxy=http://192.168.153.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
 
 proxychains pip install --upgrade pip
-proxychains  pip install -U os-testr
-proxychains yum  install ebtables
-proxychains  yum install install bridge-utils
+proxychains pip install -U os-testr
+proxychains yum install ebtables bridge-utils
+
 
 
 vi local.conf
@@ -203,4 +203,36 @@ sudo iptables -I INPUT -s 0/0 -p tcp --dport 80 -j ACCEPT
 http://192.168.153.159/dashboard
 admin
 openstack
+```
+```
++-------------+----------------+--------------------------------------------------------------------------------+
+| Name        | Type           | Endpoints                                                                      |
++-------------+----------------+--------------------------------------------------------------------------------+
+| glance      | image          | RegionOne                                                                      |
+|             |                |   publicURL: http://192.168.153.159:9292                                       |
+|             |                |   internalURL: http://192.168.153.159:9292                                     |
+|             |                |   adminURL: http://192.168.153.159:9292                                        |
+|             |                |                                                                                |
+| nova        | compute        | RegionOne                                                                      |
+|             |                |   publicURL: http://192.168.153.159:8774/v2.1                                  |
+|             |                |   internalURL: http://192.168.153.159:8774/v2.1                                |
+|             |                |   adminURL: http://192.168.153.159:8774/v2.1                                   |
+|             |                |                                                                                |
+| nova_legacy | compute_legacy | RegionOne                                                                      |
+|             |                |   publicURL: http://192.168.153.159:8774/v2/3824fdf4a57d436f8462cd41658ef929   |
+|             |                |   internalURL: http://192.168.153.159:8774/v2/3824fdf4a57d436f8462cd41658ef929 |
+|             |                |   adminURL: http://192.168.153.159:8774/v2/3824fdf4a57d436f8462cd41658ef929    |
+|             |                |                                                                                |
+| keystone    | identity       | RegionOne                                                                      |
+|             |                |   publicURL: http://192.168.153.159/identity                                   |
+|             |                |   internalURL: http://192.168.153.159/identity                                 |
+|             |                |   adminURL: http://192.168.153.159/identity_v2_admin                           |
+|             |                |                                                                                |
+| neutron     | network        | RegionOne                                                                      |
+|             |                |   publicURL: http://192.168.153.159:9696/                                      |
+|             |                |   internalURL: http://192.168.153.159:9696/                                    |
+|             |                |   adminURL: http://192.168.153.159:9696/                                       |
+|             |                |                                                                                |
++-------------+----------------+--------------------------------------------------------------------------------+
+
 ```
