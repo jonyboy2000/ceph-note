@@ -44,7 +44,7 @@ yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridg
 yum install mariadb mariadb-server python2-PyMySQL -y
 vi /etc/my.cnf.d/openstack.cnf
 [mysqld]
-bind-address = 192.168.153.148
+bind-address = 0.0.0.0
 default-storage-engine = innodb
 innodb_file_per_table
 max_connections = 4096
