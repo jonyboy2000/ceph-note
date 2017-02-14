@@ -208,6 +208,14 @@ sudo iptables -I INPUT -s 0/0 -p tcp --dport 6080 -j ACCEPT
 http://192.168.153.159/dashboard
 admin
 openstack
+
+
+screen -c devstack/stack-screenrc
+openstack security group rule create --protocol tcp --dst-port 22 default  
+openstack security group rule create --protocol icmp --dst-port -1 default
+
+
+https://communities.cisco.com/community/developer/openstack/blog/2016/12/03/how-to-stack-devstack-newton-on-centos-7-in-virtualbox-on-mac
 ```
 ```
 +-------------+----------------+--------------------------------------------------------------------------------+
