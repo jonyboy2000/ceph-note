@@ -197,6 +197,10 @@ export OS_PASSWORD=openstack
 export OS_AUTH_URL="http://192.168.153.159:5000/v2.0"
 export OS_ENDPOINT="http://192.168.153.159:35357/v2.0"
 ```
+or
+```
+source openrc
+```
 
 ```
 sudo iptables -I INPUT -s 0/0 -p tcp --dport 80 -j ACCEPT
