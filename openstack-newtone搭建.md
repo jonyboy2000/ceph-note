@@ -7,7 +7,7 @@
 | ROLE 	|    CONTROLLER   	|      VOLUME     	|     COMPUTE     	|
 修改/etc/hosts
 ```
-127.0.0.1  localhost
+127.0.0.1  localhost dev(当前主机名字)
 192.168.153.148 controller
 192.168.153.149 volume
 192.168.153.150 compute
