@@ -821,6 +821,17 @@ systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service
 systemctl start lvm2-lvmetad.service
 systemctl start openstack-cinder-volume.service target.service
 systemctl start openstack-cinder-backup.service
+
+[cinder-volume]
+tgt-admin --show
+
+[compute]
+[stack@devstack devstack]$ sudo virsh list
+ Id    名称                         状态
+----------------------------------------------------
+ 1     instance-00000001              running
+ 2     instance-00000002              running
+
 ```
 
 
