@@ -275,4 +275,4 @@ https://communities.cisco.com/community/developer/openstack/blog/2016/12/03/how-
 
 ```
 
-![http://imgur.com/tXNYvqK](http://imgur.com/tXNYvqK)
+![http://7o504d.com1.z0.glb.clouddn.com/tXNYvqK.png](http://7o504d.com1.z0.glb.clouddn.com/tXNYvqK.png)
