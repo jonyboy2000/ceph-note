@@ -23,6 +23,7 @@ GIT_BASE=http://git.trystack.cn
 NOVNC_REPO=http://git.trystack.cn/kanaka/noVNC.git
 SPICE_REPO=http://git.trystack.cn/git/spice/spice-html5.git
 ENABLE_IDENTITY_V2=True
+SERVICE_IP_VERSION=4
 #OFFLINE=True
 RECLONE=no
 HORIZON_BRANCH=stable/newton
