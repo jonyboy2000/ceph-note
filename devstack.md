@@ -57,6 +57,7 @@ NOVA_BRANCH=stable/newton
 NEUTRON_BRANCH=stable/newton
 GLANCE_BRANCH=stable/newton
 CINDER_BRANCH=stable/newton
+NOVNC_BRANCH=v0.6.2
 
 ADMIN_PASSWORD=openstack
 DATABASE_PASSWORD=openstack
