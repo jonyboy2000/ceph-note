@@ -3,6 +3,17 @@ proxychains git clone https://git.openstack.org/openstack-dev/devstack -b stable
 ./tools/create-stack-user.sh
 
 
+[stack@devstack devstack]$ cat ~/.pip/pip.conf
+[global]
+default-timeout = 60
+download-cache = ~/.pip/cache
+log-file = ~/.pip/pip.log
+build = ~/.pip/build
+index-url = https://pypi.python.org/simple/
+
+[install]
+index-url = https://pypi.python.org/simple/
+
 export http_proxy=http://192.168.153.1:7777
 export https_proxy=http://192.168.153.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
