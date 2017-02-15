@@ -30,6 +30,7 @@ KEYSTONE_BRANCH=stable/newton
 NOVA_BRANCH=stable/newton
 NEUTRON_BRANCH=stable/newton
 GLANCE_BRANCH=stable/newton
+CINDER_BRANCH=stable/newton
 
 ADMIN_PASSWORD=openstack
 DATABASE_PASSWORD=openstack
@@ -42,7 +43,7 @@ LOGDAYS=2
 ENABLED_SERVICES=rabbit,mysql,key
 ENABLED_SERVICES+=,n-api,n-crt,n-obj,n-cpu,n-cond,n-sch,n-novnc,n-cauth
 ENABLED_SERVICES+=,g-api,g-reg
-ENABLED_SERVICES+=,horizon
+ENABLED_SERVICES+=,horizon,c-bak
 
 # Neutron
 DISABLED_SERVICES=n-net
