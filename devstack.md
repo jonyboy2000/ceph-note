@@ -19,6 +19,8 @@ keepcache=1
 export http_proxy=http://192.168.153.1:7777
 export https_proxy=http://192.168.153.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
+sudo proxychains yum install -y https://www.rdoproject.org/repos/rdo-release.rpm
+sudo yum makecache
 sudo proxychains yum remove mariadb-libs mariadb mariadb-common mariadb-config -y
 sudo proxychains yum install python-pip gcc openssl-devel python-psycopg2 postgresql-devel screen memcached mariadb-server ebtables bridge-utils -y
 sudo proxychains pip install --upgrade pip
