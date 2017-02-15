@@ -43,7 +43,8 @@ LOGDAYS=2
 ENABLED_SERVICES=rabbit,mysql,key
 ENABLED_SERVICES+=,n-api,n-crt,n-obj,n-cpu,n-cond,n-sch,n-novnc,n-cauth
 ENABLED_SERVICES+=,g-api,g-reg
-ENABLED_SERVICES+=,horizon,c-bak
+ENABLED_SERVICES+=,horizon
+ENABLED_SERVICES+=,cinder,c-api,c-vol,c-sch,c-bak
 
 # Neutron
 DISABLED_SERVICES=n-net
