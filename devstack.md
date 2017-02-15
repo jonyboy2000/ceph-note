@@ -14,6 +14,11 @@ index-url = https://pypi.python.org/simple/
 [install]
 index-url = https://pypi.python.org/simple/
 
+
+/etc/yum.conf
+keepcache=1
+
+
 export http_proxy=http://192.168.153.1:7777
 export https_proxy=http://192.168.153.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
