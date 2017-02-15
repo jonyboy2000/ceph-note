@@ -72,8 +72,8 @@ failovermethod=priority
 baseurl=http://mirrors.aliyun.com/centos/$releasever/os/$basearch/
         http://mirrors.aliyuncs.com/centos/$releasever/os/$basearch/
 #mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os
-gpgcheck=1
-gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-7
+gpgcheck=0
+
 
 #released updates
 [updates]
@@ -82,8 +82,8 @@ failovermethod=priority
 baseurl=http://mirrors.aliyun.com/centos/$releasever/updates/$basearch/
         http://mirrors.aliyuncs.com/centos/$releasever/updates/$basearch/
 #mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates
-gpgcheck=1
-gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-7
+gpgcheck=0
+
 
 #additional packages that may be useful
 [extras]
@@ -92,8 +92,8 @@ failovermethod=priority
 baseurl=http://mirrors.aliyun.com/centos/$releasever/extras/$basearch/
         http://mirrors.aliyuncs.com/centos/$releasever/extras/$basearch/
 #mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras
-gpgcheck=1
-gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-7
+gpgcheck=0
+
 
 #additional packages that extend functionality of existing packages
 [centosplus]
@@ -102,9 +102,8 @@ failovermethod=priority
 baseurl=http://mirrors.aliyun.com/centos/$releasever/centosplus/$basearch/
         http://mirrors.aliyuncs.com/centos/$releasever/centosplus/$basearch/
 #mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus
-gpgcheck=1
+gpgcheck=0
 enabled=0
-gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-7
 
 #contrib - packages by Centos Users
 [contrib]
@@ -113,9 +112,8 @@ failovermethod=priority
 baseurl=http://mirrors.aliyun.com/centos/$releasever/contrib/$basearch/
         http://mirrors.aliyuncs.com/centos/$releasever/contrib/$basearch/
 #mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=contrib
-gpgcheck=1
+gpgcheck=0
 enabled=0
-gpgkey=http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-7
 
 [openstack]
 name=openstack
@@ -159,8 +157,8 @@ name=Extra Packages for Enterprise Linux 7 - Testing - $basearch
 mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=testing-epel7&arch=$basearch
 failovermethod=priority
 enabled=0
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+gpgcheck=0
+
 
 [epel-testing-debuginfo]
 name=Extra Packages for Enterprise Linux 7 - Testing - $basearch - Debug
@@ -168,8 +166,7 @@ name=Extra Packages for Enterprise Linux 7 - Testing - $basearch - Debug
 mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=testing-debug-epel7&arch=$basearch
 failovermethod=priority
 enabled=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-gpgcheck=1
+gpgcheck=0
 
 [epel-testing-source]
 name=Extra Packages for Enterprise Linux 7 - Testing - $basearch - Source
@@ -177,8 +174,7 @@ name=Extra Packages for Enterprise Linux 7 - Testing - $basearch - Source
 mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=testing-source-epel7&arch=$basearch
 failovermethod=priority
 enabled=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
-gpgcheck=1
+gpgcheck=0
 ```
 
 ```
