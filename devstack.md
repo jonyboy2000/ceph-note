@@ -199,7 +199,7 @@ export OS_ENDPOINT="http://192.168.153.159:35357/v2.0"
 ```
 or
 ```
-source openrc
+. openrc admin
 ```
 
 ```
