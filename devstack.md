@@ -22,7 +22,7 @@ keepcache=1
 export http_proxy=http://192.168.153.1:7777
 export https_proxy=http://192.168.153.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
-proxychains yum install python-pip
+proxychains yum install python-pip gcc
 proxychains pip install --upgrade pip
 proxychains pip install -U os-testr
 proxychains yum install ebtables bridge-utils
