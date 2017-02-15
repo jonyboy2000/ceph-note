@@ -10,3 +10,11 @@ journalctl -b -f -u  ceph-rest-api
 	Speed: 1000Mb/s
 
 ```
+
+
+```
+yum groupinstall "GNOME Desktop"
+yum install tigervnc-server -y
+vncserver :1
+vncconfig -nowin&
+```
