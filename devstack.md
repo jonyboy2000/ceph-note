@@ -6,9 +6,6 @@ proxychains git clone https://git.openstack.org/openstack-dev/devstack -b stable
 [stack@devstack devstack]$ cat ~/.pip/pip.conf
 [global]
 default-timeout = 60
-download-cache = ~/.pip/cache
-log-file = ~/.pip/pip.log
-build = ~/.pip/build
 index-url = https://pypi.python.org/simple/
 
 [install]
