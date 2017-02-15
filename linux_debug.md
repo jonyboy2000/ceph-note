@@ -15,6 +15,7 @@ journalctl -b -f -u  ceph-rest-api
 ```
 yum groupinstall "GNOME Desktop"
 yum install tigervnc-server -y
+vncpasswd #设置密码
 vncserver :1
 vncconfig -nowin&
 ```
