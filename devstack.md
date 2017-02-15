@@ -19,6 +19,7 @@ DOWNLOAD_DEFAULT_IMAGES=False
 IMAGE_URLS="http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img"
 HOST_IP=192.168.153.159
 SERVICE_IP_VERSION=4
+RECLONE=no
 GIT_BASE=http://git.trystack.cn
 NOVNC_REPO=http://git.trystack.cn/kanaka/noVNC.git
 SPICE_REPO=http://git.trystack.cn/git/spice/spice-html5.git
