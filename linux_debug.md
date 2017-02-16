@@ -20,3 +20,11 @@ vncserver :1
 vncserver -geometry 1280x1024 
 vncconfig -nowin&
 ```
+
+```
+yum install privoxy
+vim /etc/privoxy/config
+systemctl start privoxy
+forward-socks5   /               127.0.0.1:1080 .
+listen-address 127.0.0.1:7777
+```
