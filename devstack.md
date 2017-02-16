@@ -30,6 +30,7 @@ sudo proxychains pip install -U os-testr
 
 vi local.conf
 [[local|localrc]]
+DEST=/opt/stack
 DOWNLOAD_DEFAULT_IMAGES=False
 IMAGE_URLS="http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img"
 HOST_IP=192.168.153.159
