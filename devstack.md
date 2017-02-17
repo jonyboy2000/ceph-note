@@ -1,5 +1,7 @@
 http://dasheyuan.com/post/openstack-dev-environment/
+
 http://chenyingkof.iteye.com/blog/2233315
+
 http://blog.csdn.net/wenwenxiong/article/details/52700833
 ```
 proxychains git clone https://git.openstack.org/openstack-dev/devstack -b stable/newton
