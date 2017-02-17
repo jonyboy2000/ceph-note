@@ -9,6 +9,9 @@ http://yikun.github.io/2016/02/23/%E4%BC%98%E9%9B%85%E5%9C%B0%E8%B0%83%E8%AF%95O
 https://osxfuse.github.io/
 
 sshfs stack@192.168.35.10:/opt/stack /Users/yuliyang/openstack/code
+
+eventlet.monkey_patch(all=False, socket=True, time=True, thread=False)
+
 ```
 proxychains git clone https://git.openstack.org/openstack-dev/devstack -b stable/newton
 ./tools/create-stack-user.sh
