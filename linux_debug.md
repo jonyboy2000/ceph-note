@@ -17,7 +17,8 @@ yum groupinstall "GNOME Desktop"
 yum install tigervnc-server -y
 vncpasswd #设置密码
 vncserver :1
-vncserver -geometry 1280x1024 
+vncserver -geometry 1920x1200   
+vncserver -geometry 1680x1050  
 vncconfig -nowin&
 ```
 
