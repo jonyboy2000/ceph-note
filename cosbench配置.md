@@ -13,3 +13,15 @@ https://github.com/intel-cloud/cosbench/tree/master/release/conf
 </workflow>
 </workload>
 ```
+# ceph s3
+```
+<?xml version="1.0" encoding="UTF-8" ?>
+<workload name="s3-sample" description="sample benchmark for s3">
+<storage type="s3" config="accesskey=yuliyang;secretkey=yuliyang;endpoint=http://192.168.153.156:7480/" />
+<workflow>
+<workstage name="init">
+<work type="init" workers="1" config="cprefix=s3testqwer;containers=r(1,2)" />
+</workstage>
+</workflow>
+</workload>
+```
