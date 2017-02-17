@@ -21,9 +21,7 @@ index-url = https://pypi.python.org/simple/
 keepcache=1
 
 
-export http_proxy=http://192.168.153.1:7777
-export https_proxy=http://192.168.153.1:7777
-export no_proxy=127.0.0.1,192.168.153.159
+
 sudo proxychains yum install -y https://www.rdoproject.org/repos/rdo-release.rpm
 sudo yum makecache
 sudo proxychains yum remove mariadb-libs mariadb mariadb-common mariadb-config -y
@@ -31,7 +29,9 @@ sudo proxychains yum install python-pip gcc openssl-devel python-psycopg2 postgr
 sudo proxychains pip install --upgrade pip
 sudo proxychains pip install -U os-testr
 
-
+export http_proxy=http://192.168.153.1:7777
+export https_proxy=http://192.168.153.1:7777
+export no_proxy=127.0.0.1,192.168.153.159
 
 vi local.conf
 [[local|localrc]]
