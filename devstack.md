@@ -302,4 +302,6 @@ pxe问题
 [root@ceph04 ~]# rpm -qa|grep qemu-kvm
 qemu-kvm-common-ev-2.6.0-27.1.el7.x86_64
 qemu-kvm-ev-2.6.0-27.1.el7.x86_64
+
+yum install openstack-neutron-linuxbridge
 ```
