@@ -967,3 +967,8 @@ rgw_keystone_token_cache_size = 100
 rgw_keystone_revocation_interval = 600
 rgw_s3_auth_use_keystone = true
 ```
+配置文件工具
+```
+crudini --set $CONFIG_FILE database connection mysql://nova:nova@$(hostname -i)/nova
+crudini --set $CONFIG_FILE keystone_authtoken auth_uri http://$(hostname -i):5000/v2.0
+```
