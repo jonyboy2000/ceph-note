@@ -294,3 +294,12 @@ https://communities.cisco.com/community/developer/openstack/blog/2016/12/03/how-
 ```
 
 ![http://7o504d.com1.z0.glb.clouddn.com/tXNYvqK.png](http://7o504d.com1.z0.glb.clouddn.com/tXNYvqK.png)
+
+
+pxe问题
+```
+#更新qemu版本
+[root@ceph04 ~]# rpm -qa|grep qemu-kvm
+qemu-kvm-common-ev-2.6.0-27.1.el7.x86_64
+qemu-kvm-ev-2.6.0-27.1.el7.x86_64
+```
