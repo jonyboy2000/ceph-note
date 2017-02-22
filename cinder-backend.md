@@ -1,3 +1,5 @@
+https://github.com/tigerlinux/tigerlinux-extra-recipes/blob/master/recipes/openstack/openstack-mitaka-with-ceph-backend/RECIPE-LAB-Ceph-Rados-Mitaka-PART2.md
+
 ```
 cinder service-disable volume cinder-backup
 cinder service-enable volume cinder-backup
