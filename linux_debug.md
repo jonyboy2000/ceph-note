@@ -33,3 +33,8 @@ listen-address 127.0.0.1:7777
 ```
 [root@ceph13 devstack]# ip route add 10.128.3.0/24 via 10.142.50.254
 ```
+
+http://vasir.net/blog/ubuntu/replace_string_in_multiple_files
+```
+grep -rl yum openstack/ | xargs sed -i 's/yum/proxychains yum/g'
+```
