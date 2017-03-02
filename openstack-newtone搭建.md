@@ -699,3 +699,63 @@ rbd_secret_uuid = 457eb676-33da-42ec-9a8c-9293d545c337
 
 systemctl restart openstack-nova-compute.service 
 ```
+
+#创建loop0 lvm
+```
+#!/bin/sh
+function truncate_file()
+{
+    local f=$1
+    # calc wanted size
+    size=$(df -P -k $(dirname $f)|tail -1| \
+                  perl -ne 'm/^\S+\s*\d+\s+\d+\s+(\d+)/; print int($1*0.3)')
+
+    if [ $size -le 2000000 ] ; then
+        echo "error detecting free space or FS too small: $size KB"
+        exit 12
+    fi
+    truncate --size=${size}K $f
+}
+
+function setup_vg()
+{
+    local vg_name=$1
+    local vg_dev=$2
+    local loop_file=$3
+
+    vgchange -an $vg_name
+    if [ -n "$loop_file" ] && [ ! -e "$loop_file" ] ; then
+        truncate_file $loop_file
+        losetup $vg_dev $loop_file
+    fi
+
+    pvcreate $vg_dev
+    vgcreate $vg_name $vg_dev
+    vgchange -ay $vg_name
+
+    echo "using device $vg_dev for VG $vg_name"
+}
+
+####################
+# script starts here
+####################
+systemctl enable lvm2-lvmetad
+systemctl start lvm2-lvmetad
+
+modprobe loop
+
+# enable or create cinder-volumes VG
+if vgs |grep -q cinder-volumes ; then
+  echo "using existing cinder-volumes VG"
+  vgchange -ay cinder-volumes
+else
+    # create new VG
+    dev="/dev/loop0"
+    loop_file="/var/lib/cinder/volumes-pv"
+    if [ -n "$CINDER_VOLUMES_DEV" ]; then
+        dev=$CINDER_VOLUMES_DEV
+        loop_file=""
+    fi
+    setup_vg "cinder-volumes" "$dev" "$loop_file"
+fi
+```
