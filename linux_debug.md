@@ -58,3 +58,8 @@ ExecStop=/bin/sh -c '/usr/bin/vncserver -kill :3 > /dev/null 2>&1 || :'
 WantedBy=multi-user.target
 
 ```
+
+random 1.1GiB
+```
+openssl rand -out 1,1GiB.bin  -base64 $(( 2**30 * 3/4 ))
+```
