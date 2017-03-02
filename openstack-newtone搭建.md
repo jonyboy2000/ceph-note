@@ -650,3 +650,52 @@ rgw_s3_auth_use_keystone = true
 crudini --set $CONFIG_FILE database connection mysql://nova:nova@$(hostname -i)/nova
 crudini --set $CONFIG_FILE keystone_authtoken auth_uri http://$(hostname -i):5000/v2.0
 ```
+
+
+# cinder操着
+```
+#enable and disable
+cinder service-enable volume cinder-backup
+cinder service-disable volume@lvm cinder-volume
+
+cinder type-create ceph
+cinder type-create lvm
+cinder type-key ceph set volume_backend_name=ceph
+cinder type-key lvm set volume_backend_name=lvm
+cinder extra-specs-list
+
+cinder create --volume_type ceph --display_name vol-ceph3 1
+
+/etc/cinder/cinder.conf
+enabled_backends = lvm,ceph
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+volume_backend_name=lvm
+iscsi_protocol = iscsi
+iscsi_helper = lioadm
+[ceph]
+volume_driver = cinder.volume.drivers.rbd.RBDDriver
+volume_backend_name=ceph
+rbd_pool = volumes
+rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_flatten_volume_from_snapshot = false
+rbd_max_clone_depth = 5
+rbd_store_chunk_size = 4
+rados_connect_timeout = -1
+glance_api_version = 2
+rbd_user = cinder
+rbd_secret_uuid = 457eb676-33da-42ec-9a8c-9293d545c337
+
+ceph auth get-or-create client.cinder | ssh {your-volume-server} sudo tee /etc/ceph/ceph.client.cinder.keyring
+ssh {your-cinder-volume-server} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
+
+
+[computer node]
+vi /etc/nova/nova.conf
+[libvirt]
+rbd_user = cinder
+rbd_secret_uuid = 457eb676-33da-42ec-9a8c-9293d545c337
+
+systemctl restart openstack-nova-compute.service 
+```
