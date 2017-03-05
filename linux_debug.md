@@ -61,5 +61,5 @@ WantedBy=multi-user.target
 
 random 1.1GiB
 ```
-openssl rand -out 1,1GiB.bin  -base64 $(( 2**30 * 3/4 ))
+openssl rand -out 1.1GiB.bin  -base64 $(( 2**30 * 3/4 ))
 ```
