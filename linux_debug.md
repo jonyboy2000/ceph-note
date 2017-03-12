@@ -63,3 +63,10 @@ random 1.1GiB
 ```
 openssl rand -out 1.1GiB.bin  -base64 $(( 2**30 * 3/4 ))
 ```
+
+
+python venv
+```
+import os,sys
+sys.path.insert(1,os.path.join(os.path.abspath('.'),'venv/lib/python2.7/site-packages'))
+```
