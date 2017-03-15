@@ -70,3 +70,7 @@ python venv
 import os,sys
 sys.path.insert(1,os.path.join(os.path.abspath('.'),'venv/lib/python2.7/site-packages'))
 ```
+umount sshfs
+```
+fusermount -u /root/yuliyang/development/openstack/ceph24
+```
