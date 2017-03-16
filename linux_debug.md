@@ -74,3 +74,14 @@ umount sshfs
 ```
 fusermount -u /root/yuliyang/development/openstack/ceph24
 ```
+
+route
+```
+在128的机器上：route add -net 10.142.50.0/24 gw 10.128.3.254
+在142的机器上：route add -net 10.128.3.0/24 gw 10.142.50.254
+[root@ceph13 ~]# cat  /etc/sysconfig/network-scripts/route-bond4
+10.133.0.0/16 via 10.142.50.254 dev bond4
+10.139.0.0/16 via 10.142.50.254 dev bond4
+172.16.0.0/16 via 10.142.50.254 dev bond4
+10.128.3.0/24 via 10.142.50.254 dev bond4
+```
