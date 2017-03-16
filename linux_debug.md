@@ -90,3 +90,67 @@ xarg
 ```
 for i in `seq 1 100`;do echo $i;done | xargs -n 1 -P 100  sh -c  'curl http://10.128.3.240:7480'
 ```
+
+bond
+```
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/ifcfg-bond1
+DEVICE=bond1
+TYPE=Ethernet
+ONBOOT=yes
+NM_CONTROLLED=no
+BOOTPROTO=static
+BONDING_OPTS="mode=1 miimon=100"
+IPADDR=10.254.9.35
+NETMASK=255.255.255.0
+GATEWAY=10.254.9.254
+
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/ifcfg-enp130s0f0
+DEVICE=enp130s0f0
+BOOTPROTO=none
+ONBOOT=yes
+TYPE=Ethernet
+NM_CONTROLLED=no
+MASTER=bond1
+SLAVE=yes
+
+
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/ifcfg-enp130s0f1
+DEVICE=enp130s0f1
+BOOTPROTO=dhcp
+ONBOOT=no
+TYPE=Ethernet
+NM_CONTROLLED=no
+
+
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/ifcfg-bond4
+DEVICE=bond4
+TYPE=Bond
+BONDING_MASTER=yes
+ONBOOT=yes
+BOOTPROTO=static
+BONDING_OPTS="miimon=100 undelay=0 downdelay=0 mode=802.3ad xmit_hash_policy=2"
+NAME=bond4
+IPADDR=10.142.50.35
+NETMASK=255.255.255.0
+
+
+
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/ifcfg-enp2s0f0
+TYPE=Ethernet
+BOOTPROTO=none
+UUID=4e1575f7-7ec2-4ebd-8ebc-90161908467a
+DEVICE=enp2s0f0
+ONBOOT=yes
+NM_CONTROLLED=yes
+MASTER=bond4
+SLAVE=yes
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/ifcfg-enp2s0f1
+TYPE=Ethernet
+BOOTPROTO=none
+UUID=d986d92c-ad07-4634-8daa-dc1c15319616
+DEVICE=enp2s0f1
+ONBOOT=yes
+NM_CONTROLLED=yes
+MASTER=bond4
+SLAVE=yes
+```
