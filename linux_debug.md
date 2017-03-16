@@ -153,4 +153,12 @@ ONBOOT=yes
 NM_CONTROLLED=yes
 MASTER=bond4
 SLAVE=yes
+
+
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/route-bond1
+172.16.0.0/16 via 10.254.9.254
+[root@ceph35 ~]# cat  /etc/sysconfig/network-scripts/route-bond4
+172.16.0.0/16 via 10.142.50.254 dev bond4
+10.128.3.0/24 via 10.142.50.254 dev bond4
+
 ```
