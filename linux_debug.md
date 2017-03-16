@@ -85,3 +85,8 @@ route
 172.16.0.0/16 via 10.142.50.254 dev bond4
 10.128.3.0/24 via 10.142.50.254 dev bond4
 ```
+
+xarg
+```
+for i in `seq 1 100`;do echo $i;done | xargs -n 1 -P 100  sh -c  'curl http://10.128.3.240:7480'
+```
