@@ -2,6 +2,9 @@
 ~/.bashrc
 alias json="python -mjson.tool"
 alias xml="xmllint --format -"
+
+
+apt-get install libxml2-utils
 ```
 
 ```
