@@ -70,7 +70,13 @@ python venv
 import os,sys
 sys.path.insert(1,os.path.join(os.path.abspath('.'),'venv/lib/python2.7/site-packages'))
 ```
-umount sshfs
+
+sshfs mount
+```
+sshfs -o workaround=nodelaysrv:buflimit -o no_check_root -o kernel_cache -o auto_cache -o reconnect root@10.142.50.24:/usr/lib/python2.7/site-packages/cinder  /root/openstack/tmp
+```
+
+sshfs umount
 ```
 fusermount -u /root/yuliyang/development/openstack/ceph24
 ```
