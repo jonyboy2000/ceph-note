@@ -179,3 +179,11 @@ sudo apt-get install ttf-wqy-microhei  #文泉驿-微米黑
 sudo apt-get install ttf-wqy-zenhei  #文泉驿-正黑
 sudo apt-get install xfonts-wqy #文泉驿-点阵宋体
 ```
+
+ubuntu static ip
+```
+auto eth1
+iface eth1 inet static
+address 192.168.153.101
+netmask 255.255.255.0
+```
