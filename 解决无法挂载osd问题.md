@@ -1,5 +1,9 @@
 
 ```
+for i in `mount |grep osd | awk '{ print $3}' | awk  -F"/" '{print $NF}' | cut -d - -f2`;do systemctl enable ceph-osd@$i;done
+```
+
+```
 #check
 ansible -i nanji_slave_all_172.16.127  osds  -v -u root -a "ls -l  /etc/systemd/system/ceph-osd.target.wants/" -f 100
 #do link
