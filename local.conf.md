@@ -1,4 +1,14 @@
 ```
+$ cd /opt/
+$ sudo git clone https://git.openstack.org/openstack-dev/devstack.git
+$ sudo devstack/tools/create-stack-user.sh
+$ sudo chown -R stack:stack devstack
+$ sudo su - stack
+$ cd /opt/devstack
+$ cp samples/local.conf .
+```
+
+```
 [[local|localrc]]
 GIT_BASE=http://git.trystack.cn
 NOVNC_REPO=http://git.trystack.cn/kanaka/noVNC.git
