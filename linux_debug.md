@@ -1,7 +1,10 @@
 ```
 journalctl -b -f -u  ceph-rest-api
 ```
-
+fast scp
+```
+tar -c bcsds_installer/ |pigz -p 16|ssh -c arcfour128 -o"MACs umac-64@openssh.com" 192.168.153.109  "gzip -d|tar -xC /root/test/"
+```
 
 ```
 [root@ceph13 ~]# ethtool bond4 |grep Speed
