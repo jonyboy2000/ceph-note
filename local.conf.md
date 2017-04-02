@@ -1,6 +1,7 @@
 ```
 $ cd /opt/
 $ sudo git clone https://git.openstack.org/openstack-dev/devstack.git
+#sudo git clone  https://git.openstack.org/openstack-dev/devstack.git -b stable/newton
 $ sudo devstack/tools/create-stack-user.sh
 $ sudo chown -R stack:stack devstack
 $ sudo su - stack
@@ -67,7 +68,8 @@ REGION_NAME=RegionOne
 ##### Horizon - Dashboard Service #####
 #--------------------------------------
 enable_service horizon
-enable_service +=,n-api,n-crt,n-obj,n-cpu,n-cond,n-sch,n-novnc,n-cauth,placement-api
+#enable_service +=,n-api,n-crt,n-obj,n-cpu,n-cond,n-sch,n-novnc,n-cauth,placement-api
+enable_service +=,n-api,n-crt,n-obj,n-cpu,n-cond,n-sch,n-novnc,n-cauth
 disable_service n-net
 enable_service neutron
 # Neutron options
