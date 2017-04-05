@@ -50,4 +50,6 @@ plink.exe  root@192.168.10.202  -pw qwe123 "ssh -CNR 1080:127.0.0.1:1080 root@19
 下载yum源
 ```
 proxychains wget -r --no-parent --reject "*11.0.1*" --reject "*11.0.2*" --reject "*debug*"    https://download.ceph.com/rpm-kraken/el7/x86_64/  /root/yum/
+
+yum install ceph --downloadonly --downloaddir=/root/download/
 ```
