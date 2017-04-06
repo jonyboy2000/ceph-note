@@ -53,3 +53,10 @@ proxychains wget -r --no-parent --reject "*11.0.1*" --reject "*11.0.2*" --reject
 
 yum install ceph --downloadonly --downloaddir=/root/download/
 ```
+```
+1、在ssh服务端上更改/etc/ssh/sshd_config文件中的配置为如下内容：
+UseDNS no
+# GSSAPI options
+GSSAPIAuthentication no
+然后，执行/etc/init.d/sshd restart重启sshd进程使上述配置生效，在连接一般就不慢了。
+```
