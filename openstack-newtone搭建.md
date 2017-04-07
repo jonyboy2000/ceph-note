@@ -529,7 +529,8 @@ sdb
 32768 bytes (33 kB) copied, 0.0034822 s, 9.4 MB/s
 [onest@ceph04 yuliyang]$ sudo pvcreate /dev/sdb
   Physical volume "/dev/sdb" successfully created
-  
+
+sudo dd if=/dev/urandom of=/root/dir/512MiB  bs=1M count=51
   
   
 yum install openstack-cinder targetcli python-keystone -y
