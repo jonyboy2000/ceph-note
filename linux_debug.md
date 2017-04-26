@@ -17,11 +17,20 @@ tar -c bcsds_installer/ |pigz -p 16|ssh -c arcfour128 -o"MACs umac-64@openssh.co
 
 ```
 yum groupinstall "GNOME Desktop"
+# yum groupinstall 'KDE' 'X Window System'
+Update default target
+Once the above installation is complete, instruct CentOS 7 system to boot into a graphical target by default:
+# systemctl set-default graphical.target
+Removed symlink /etc/systemd/system/default.target.
+Created symlink from /etc/systemd/system/default.target to /usr/lib/systemd/system/graphical.target.
+
+
 yum install tigervnc-server -y
 vncpasswd #设置密码
 vncserver :1
 vncserver -geometry 1920x1200   
 vncserver -geometry 1680x1050  
+vncserver -geometry 1366x768
 vncconfig -nowin&
 ```
 
