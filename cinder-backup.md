@@ -170,3 +170,51 @@ keyring = /etc/ceph/ceph.client.cinder-backup.keyring
 [client.cinder]
 keyring = /etc/ceph/ceph.client.cinder.keyring
 ```
+
+
+
+cinder调试环境快速搭建,虚拟机ubuntu16.04，推荐测试环境都用ubuntu
+```
+[[local|localrc]]
+GIT_BASE=http://git.trystack.cn
+NOVNC_REPO=http://git.trystack.cn/kanaka/noVNC.git
+SPICE_REPO=http://git.trystack.cn/git/spice/spice-html5.git
+
+ADMIN_PASSWORD=stack
+DATABASE_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+MYSQL_PASSWORD=$ADMIN_PASSWORD
+SERVICE_TOKEN=111222333444
+
+HOST_IP=10.140.0.3
+SERVICE_HOST=$HOST_IP
+
+OS_PROJECT_NAME=demo
+OS_USERNAME=demo
+OS_PASSWORD=password
+OS_AUTH_URL=http://$SERVICE_HOST:5000/v2.0
+
+DEST=/opt/stack
+#RECLONE=yes
+PIP_UPGRADE=True
+#OFFLINE=True
+VERSION=master
+NOVNC_BRANCH=v0.6.2
+#VERSION=stable/ocata
+KEYSTONE_REPO=$GIT_BASE/openstack/keystone.git
+KEYSTONE_BRANCH=$VERSION
+CINDER_REPO=$GIT_BASE/openstack/cinder.git
+CINDER_BRANCH=$VERSION
+disable_all_services
+enable_service mysql
+enable_service rabbit
+enable_service key
+REGION_NAME=RegionOne
+enable_service +=,cinder,c-api,c-vol,c-sch,c-bak
+LOGFILE=$DEST/logs/stack.sh.log
+LOGDIR=$DEST/logs
+LOGDAYS=1
+LOG_COLOR=False
+
+```
