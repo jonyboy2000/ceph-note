@@ -27,6 +27,8 @@ date -s "2016-06-21 16:42:00"
 
 //设置ntp服务器本地
 ```
+timedatectl set-timezone Asia/Shanghai
+
 vi /etc/ntp.conf
 restrict default nomodify
 server  127.127.1.0     # local clock
