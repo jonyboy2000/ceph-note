@@ -760,3 +760,16 @@ else
     setup_vg "cinder-volumes" "$dev" "$loop_file"
 fi
 ```
+
+```
+ovs-vsctl del-port br-bond1 bond1
+ovs-vsctl del-br br-tun
+ovs-vsctl del-br br-int
+ovs-vsctl del-br br-ex
+systemctl stop openvswitch.service
+systemctl disable openvswitch.service
+systemctl stop openvswitch-nonetwork.service
+systemctl disable openvswitch-nonetwork.service
+rmmod openvswitch
+```
+
