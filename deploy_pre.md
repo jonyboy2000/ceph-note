@@ -23,6 +23,7 @@ chronyc sources -v
 date +%Y%m%d -s "20160616"
 date +%T -s "8:55:30"
 date -s "2016-06-21 16:42:00"
+timedatectl set-timezone Asia/Shanghai
 ```
 
 //设置ntp服务器本地
