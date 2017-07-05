@@ -135,7 +135,7 @@ from requests_toolbelt.utils import dump
 logging.basicConfig(level=logging.DEBUG)
 access_key = 'yly'
 secret_key = 'yly'
-url = 'http://bucket1.eos.cloud.com/?website'
-response = requests.get(url, auth=S3Auth(access_key, secret_key,service_url='eos.cloud.com'))
+url = 'http://bucket1.s3.amazonaws.com/?website'
+response = requests.get(url, auth=S3Auth(access_key, secret_key,service_url='s3.amazonaws.com'))
 data = dump.dump_all(response)
 print(data.decode('utf-8'))
