@@ -137,5 +137,6 @@ access_key = 'yly'
 secret_key = 'yly'
 url = 'http://bucket1.s3.amazonaws.com/?website'
 response = requests.get(url, auth=S3Auth(access_key, secret_key,service_url='s3.amazonaws.com'))
+#response = requests.put(url, auth=S3Auth(access_key, secret_key,service_url='s3.amazonaws.com'),data='''<?xml version="1.0" encoding="UTF-8"?><WebsiteConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><IndexDocument><Suffix>index.html</Suffix></IndexDocument><ErrorDocument><Key>error.html</Key></ErrorDocument></WebsiteConfiguration>''')
 data = dump.dump_all(response)
 print(data.decode('utf-8'))
