@@ -7,6 +7,7 @@ $ sudo chown -R stack:stack devstack
 $ sudo su - stack
 $ cd /opt/devstack
 $ cp samples/local.conf .
+$ sudo setfacl -m u:stack:rx /usr/lib/python2.7/site-packages
 ```
 
 部署单节点swift
@@ -31,9 +32,22 @@ SWIFT_DATA_DIR=$DEST/data
 ```
 开始部署
 ./stack.sh
-source openrc admin admin
-swift list
-swift info
+
+
+sudo swift -A http://localhost:8080/auth/v1.0 -U swiftprojecttest1:swiftusertest3 -K testing3 stat
+                        Account: TEMPAUTH_swiftprojecttest1
+                     Containers: 2
+                        Objects: 0
+                          Bytes: 0
+Containers in policy "policy-0": 2
+   Objects in policy "policy-0": 0
+     Bytes in policy "policy-0": 0
+         X-Openstack-Request-Id: tx2c74163dd1c540fb86e11-005966209b
+                    X-Timestamp: 1499864992.62258
+                     X-Trans-Id: tx2c74163dd1c540fb86e11-005966209b
+                   Content-Type: text/plain; charset=utf-8
+                  Accept-Ranges: bytes
+
 ```
 
 ```
