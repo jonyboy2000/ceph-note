@@ -9,6 +9,32 @@ $ cd /opt/devstack
 $ cp samples/local.conf .
 ```
 
+部署单节点swift
+vi  local.conf
+```
+[[local|localrc]]
+ADMIN_PASSWORD=devstack
+MYSQL_PASSWORD=devstack
+SERVICE_PASSWORD=devstack
+SERVICE_TOKEN=devstack
+DATABASE_PASSWORD=stackdb
+RABBIT_PASSWORD=stackqueue
+LOGFILE=$DEST/logs/stack.sh.log
+LOGDAYS=2
+SWIFT_HASH=66a3d6b56c1f479c8b4e70ab5c2000f5
+SWIFT_REPLICAS=1
+disable_all_services
+enable_service key swift mysql
+SWIFT_DATA_DIR=$DEST/data
+```
+
+开始部署
+./stack.sh
+source openrc admin admin
+swift list
+swift info
+
+
 ```
 [[local|localrc]]
 GIT_BASE=http://git.trystack.cn
