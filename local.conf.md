@@ -21,7 +21,7 @@ trusted-host=mirrors.aliyun.com
 (root)$ su - stack
 (stack)$ cd /opt/devstack
 (stack)$ wget -O /opt/devstack/files/get-pip.py  https://bootstrap.pypa.io/get-pip.py
-(stack)$ sudo yum install python-pip -y
+(stack)$ sudo yum install python-pip openssl-devel gcc -y
 (stack)$ sudo pip install --upgrade pip
 (stack)$ sudo pip install -U os-testr
 #fix error
@@ -30,6 +30,7 @@ trusted-host=mirrors.aliyun.com
 #    from os_testr.generate_subunit import main
 #ImportError: No module named os_testr.generate_subunit
 (stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib/python2.7/site-packages/*
+(stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib64/python2.7/site-packages/*
 (stack)$ echo "127.0.0.1 `hostname`" | sudo tee /etc/hosts
 ```
 
@@ -42,6 +43,8 @@ GIT_BASE=http://git.trystack.cn
 VERSION=master
 SWIFT_REPO=$GIT_BASE/openstack/swift.git
 SWIFT_BRANCH=$VERSION
+OFFLINE=True
+RECLONE=no
 ADMIN_PASSWORD=devstack
 MYSQL_PASSWORD=devstack
 SERVICE_PASSWORD=devstack
