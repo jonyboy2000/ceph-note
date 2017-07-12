@@ -46,8 +46,8 @@ Containers in policy "policy-0": 2
                     X-Timestamp: 1499864992.62258
                      X-Trans-Id: tx2c74163dd1c540fb86e11-005966209b
                    Content-Type: text/plain; charset=utf-8
-                  Accept-Ranges: bytes
-
+                  Accept-Ranges: bytes
+swift 命令参考 ：http://blog.bit-isle.jp/bird/2013/01/50
 ```
 
 ```
