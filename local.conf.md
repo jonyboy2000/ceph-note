@@ -27,13 +27,13 @@ disable_all_services
 enable_service key swift mysql
 SWIFT_DATA_DIR=$DEST/data
 ```
-
+```
 开始部署
 ./stack.sh
 source openrc admin admin
 swift list
 swift info
-
+```
 
 ```
 [[local|localrc]]
