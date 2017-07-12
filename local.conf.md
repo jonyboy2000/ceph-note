@@ -1,20 +1,44 @@
 ```
-$ cd /opt/
-$ sudo git clone https://git.openstack.org/openstack-dev/devstack.git
-$ sudo devstack/tools/create-stack-user.sh
-$ sudo chown -R stack:stack devstack
-$ sudo su - stack
-$ cd /opt/devstack
-$ cp samples/local.conf .
-$ sudo setfacl -m u:stack:rx /usr/lib/python2.7/site-packages
+# 备份原有的 yum 源文件
+(root)$ cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+# 替换
+(root)$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo 
+# 添加 epel 7的源
+(root)$ wget -P /etc/yum.repos.d/ http://mirrors.aliyun.com/repo/epel-7.repo
+(root)$ mkdir ~/.pip
+# 编辑 pip.conf 配置文件
+(root)$ cat ~/.pip/pip.conf
+[global]
+index-url = http://mirrors.aliyun.com/pypi/simple/
+[install]
+trusted-host=mirrors.aliyun.com
+
+(root)$ cd /opt/
+#(root)$ git clone  https://git.openstack.org/openstack-dev/devstack.git -b stable/newton #国外机器
+(root)$ git clone  http://git.trystack.cn/openstack-dev/devstack.git -b stable/newton #国内机器
+(root)$ devstack/tools/create-stack-user.sh
+(root)$ chown -R stack:stack devstack
+(root)$ su - stack
+(stack)$ cd /opt/devstack
+(stack)$ wget -O /opt/devstack/files/get-pip.py  https://bootstrap.pypa.io/get-pip.py
+(stack)$ sudo yum install python-pip -y
+(stack)$ sudo pip install --upgrade pip
+(stack)$ sudo pip install -U os-testr
+#fix error
+#Traceback (most recent call last):
+#  File "/bin/generate-subunit", line 7, in <module>
+#    from os_testr.generate_subunit import main
+#ImportError: No module named os_testr.generate_subunit
+(stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib/python2.7/site-packages/*
+(stack)$ echo "127.0.0.1 `hostname`" | sudo tee /etc/hosts
 ```
 
 部署单节点swift
 
-vi  local.conf
+(stack)$vi /opt/devstack/local.conf
 ```
 [[local|localrc]]
-GIT_BASE=https://git.openstack.org
+GIT_BASE=http://git.trystack.cn
 VERSION=master
 SWIFT_REPO=$GIT_BASE/openstack/swift.git
 SWIFT_BRANCH=$VERSION
