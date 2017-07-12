@@ -10,6 +10,7 @@ $ cp samples/local.conf .
 ```
 
 部署单节点swift
+
 vi  local.conf
 ```
 [[local|localrc]]
