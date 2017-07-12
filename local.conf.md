@@ -1,7 +1,6 @@
 ```
 $ cd /opt/
 $ sudo git clone https://git.openstack.org/openstack-dev/devstack.git
-#sudo git clone  https://git.openstack.org/openstack-dev/devstack.git -b stable/newton
 $ sudo devstack/tools/create-stack-user.sh
 $ sudo chown -R stack:stack devstack
 $ sudo su - stack
@@ -15,6 +14,10 @@ $ sudo setfacl -m u:stack:rx /usr/lib/python2.7/site-packages
 vi  local.conf
 ```
 [[local|localrc]]
+GIT_BASE=https://git.openstack.org
+VERSION=master
+SWIFT_REPO=$GIT_BASE/openstack/swift.git
+SWIFT_BRANCH=$VERSION
 ADMIN_PASSWORD=devstack
 MYSQL_PASSWORD=devstack
 SERVICE_PASSWORD=devstack
