@@ -36,8 +36,6 @@ trusted-host=mirrors.aliyun.com
 
 #userdel --remove stack 删除stack用户，如果失败想重来的话
 ```
-
-
 部署单节点swift
 
 (stack)$vi /opt/devstack/local.conf
