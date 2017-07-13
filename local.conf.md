@@ -80,6 +80,8 @@ Containers in policy "policy-0": 2
 swift 命令参考 ：http://blog.bit-isle.jp/bird/2013/01/50
 ```
 
+
+以下是部署整个openstack的local.conf
 ```
 [[local|localrc]]
 GIT_BASE=http://git.trystack.cn
