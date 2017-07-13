@@ -32,7 +32,11 @@ trusted-host=mirrors.aliyun.com
 (stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib/python2.7/site-packages/*
 (stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib64/python2.7/site-packages/*
 (stack)$ echo "127.0.0.1 `hostname`" | sudo tee /etc/hosts
+
+
+#userdel --remove stack 删除stack用户，如果失败想重来的话
 ```
+
 
 部署单节点swift
 
@@ -43,7 +47,7 @@ GIT_BASE=http://git.trystack.cn
 VERSION=master
 SWIFT_REPO=$GIT_BASE/openstack/swift.git
 SWIFT_BRANCH=$VERSION
-#OFFLINE=True  
+#OFFLINE=True  
 #RECLONE=no
 ADMIN_PASSWORD=devstack
 MYSQL_PASSWORD=devstack
