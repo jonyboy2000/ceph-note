@@ -1,4 +1,5 @@
 ```
+使用国内源
 # 备份原有的 yum 源文件
 (root)$ cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
 # 替换
@@ -12,6 +13,14 @@
 index-url = https://mirrors.ustc.edu.cn/pypi/web/simple
 [install]
 trusted-host=mirrors.ustc.edu.cn
+
+或者使用代理
+vi ／opt/devstack/stackrc
+export http_proxy=http://127.0.0.1:7777
+export https_proxy=http://127.0.0.1:7777
+export no_proxy=127.0.0.1,192.168.153.159
+
+
 
 (root)$ cd /opt/
 #(root)$ git clone  https://git.openstack.org/openstack-dev/devstack.git -b stable/newton #国外机器
