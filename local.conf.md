@@ -9,9 +9,9 @@
 # 编辑 pip.conf 配置文件
 (root)$ cat ~/.pip/pip.conf
 [global]
-index-url = http://mirrors.aliyun.com/pypi/simple/
+index-url = https://mirrors.ustc.edu.cn/pypi/web/simple
 [install]
-trusted-host=mirrors.aliyun.com
+trusted-host=mirrors.ustc.edu.cn
 
 (root)$ cd /opt/
 #(root)$ git clone  https://git.openstack.org/openstack-dev/devstack.git -b stable/newton #国外机器
