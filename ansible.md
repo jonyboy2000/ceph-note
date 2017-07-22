@@ -14,4 +14,9 @@
 
 - debug: msg="{{ mon_secret_file['content'] | b64decode }}"
 
+
+#copy large file
+yum install -y sshpass rsync
+local_action: "shell rsync -avz -e 'sshpass -p {{ ansible_ssh_pass }} ssh -p 22' {{ role_path }}/files/quay.io_coreos_dex_v2.0.0.tar {{ ansible_ssh_user }}@{{hostvars[groups['user_management'][0]]['ip']}}:{{paas_images_dir}}/quay.io_coreos_dex_v2.0.0.tar"
 ```
+
