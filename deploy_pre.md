@@ -50,6 +50,7 @@ for i in `seq 1 5`;do ssh ceph0$i df -lP | awk '{total+=$3} END {printf "%d G\n"
 systemctl disable firewalld
 systemctl stop firewalld
 sed -i  s'/SELINUX.*=.*enforcing/SELINUX=disabled'/g /etc/selinux/config
+sed -i  s'/SELINUX.*=.*enforcing/SELINUX=disabled'/g s/etc/sysconfig/selinux
 sed -i  s'/Defaults    requiretty/#Defaults    requiretty'/g /etc/sudoers
 setenforce 0
 
