@@ -17,6 +17,11 @@ chronyc sourcestats
 chronyc sources -v
 chronyc tracking
 
+
+通过tcp同步时间
+yum install -y rdate
+proxychains rdate -s time-b.nist.gov
+
 ```
 ```
 chronyc sources -v
