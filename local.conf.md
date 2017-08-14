@@ -15,7 +15,7 @@ index-url = https://mirrors.ustc.edu.cn/pypi/web/simple
 trusted-host=mirrors.ustc.edu.cn
 
 或者使用代理
-vi ／opt/devstack/stackrc
+vi /opt/devstack/stackrc
 export http_proxy=http://127.0.0.1:7777
 export https_proxy=http://127.0.0.1:7777
 export no_proxy=127.0.0.1,192.168.153.159
