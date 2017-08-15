@@ -19,8 +19,10 @@ swift -A http://localhost:8080/auth/v1.0 -U swiftprojecttest1:swiftusertest3 -K 
  {"path": "/c2/2.txt"}]
 ```
 ```
-#curl -i 'http://127.0.0.1:8080/v1/TEMPAUTH_swiftprojecttest1/container1/test?multipart-manifest=put' -X PUT -H "Accept-Encoding: gzth-Token: TEMPAUTH_tk2560a95287ea4f83bf3dd1c855c75979" --data-binary @manifest.json
-#curl -i 'http://127.0.0.1:8080/v1/TEMPAUTH_swiftprojecttest1/c1/1.txt' -X GET -H "Accept-Encoding: gzip" -H "X-A7ea4f83bf3dd1c855c75979"
+#curl -i 'http://127.0.0.1:8080/v1/TEMPAUTH_swiftprojecttest1/container1/test?multipart-manifest=put' -X PUT -H "Accept-Encoding: gzip" -H "X-Auth-Token: TEMPAUTH_tk2560a95287ea4f83bf3dd1c855c75979" --data-binary @manifest.json
+
+
+#curl -i 'http://127.0.0.1:8080/v1/TEMPAUTH_swiftprojecttest1/c1/1.txt' -X GET -H "Accept-Encoding: gzip" -H "X-Auth-Token: TEMPAUTH_tk2560a95287ea4f83bf3dd1c855c75979"
 HTTP/1.1 200 OK
 Content-Length: 7
 Content-Type: text/plain
@@ -34,7 +36,7 @@ X-Openstack-Request-Id: txccf5668069fc42cbae1ae-00599310c6
 Date: Tue, 15 Aug 2017 15:18:30 GMT
 
 111111
-# curl -i 'http://127.0.0.1:8080/v1/TEMPAUTH_swiftprojecttest1/c2/2.txt' -X GET -H "Accept-Encoding: gzip" -H "X-A7ea4f83bf3dd1c855c75979"
+# curl -i 'http://127.0.0.1:8080/v1/TEMPAUTH_swiftprojecttest1/c2/2.txt' -X GET -H "Accept-Encoding: gzip" -H "X-Auth-Token: TEMPAUTH_tk2560a95287ea4f83bf3dd1c855c75979"
 HTTP/1.1 200 OK
 Content-Length: 7
 Content-Type: text/plain
