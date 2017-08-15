@@ -14,6 +14,10 @@ index-url = https://mirrors.ustc.edu.cn/pypi/web/simple
 [install]
 trusted-host=mirrors.ustc.edu.cn
 
+yum install ftp://195.220.108.108/linux/fedora/linux/releases/22/Everything/x86_64/os/Packages/p/polipo-1.1.1-2.fc22.x86_64.rpm
+polipo socksParentProxy=127.0.0.1:1080
+http_proxy=http://localhost:8123 wget http://www.youtube.com
+
 或者使用代理
 vi /opt/devstack/stackrc
 export http_proxy=http://127.0.0.1:7777
