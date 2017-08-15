@@ -7,6 +7,8 @@
 # 添加 epel 7的源
 (root)$ wget -P /etc/yum.repos.d/ http://mirrors.aliyun.com/repo/epel-7.repo
 (root)$ mkdir ~/.pip
+#rpm不gpgcheck
+(root)$ sudo sed -i  s'/gpgcheck=1/gpgcheck=0'/g  /etc/yum.repos.d/*.repo
 # 编辑 pip.conf 配置文件
 (root)$ cat ~/.pip/pip.conf
 [global]
