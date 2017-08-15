@@ -9,6 +9,7 @@
 (root)$ mkdir ~/.pip
 #rpm不gpgcheck
 (root)$ sudo sed -i  s'/gpgcheck=1/gpgcheck=0'/g  /etc/yum.repos.d/*.repo
+(root)$ git config --global http.postBuffer 524288000
 # 编辑 pip.conf 配置文件
 (root)$ cat ~/.pip/pip.conf
 [global]
@@ -39,6 +40,7 @@ export no_proxy=127.0.0.1,192.168.153.159
 (stack)$ sudo yum install python-pip openssl-devel gcc -y
 (stack)$ sudo pip install --upgrade pip
 (stack)$ sudo pip install -U os-testr
+(stack)$ git config --global http.postBuffer 524288000
 #fix error
 #Traceback (most recent call last):
 #  File "/bin/generate-subunit", line 7, in <module>
