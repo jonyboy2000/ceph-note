@@ -8,3 +8,9 @@ master branch
 --keyring /etc/ceph/keyring  --logfile /var/log/ceph-rgw.debug \
 --debug-rgw 10/10  -m 192.168.153.156:6789
 ```
+
+
+jewel版本vstart启动
+```
+CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --short -r -X -i 127.0.0.1
+```
