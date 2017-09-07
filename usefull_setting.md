@@ -69,3 +69,14 @@ screen -d -m -S shared
 screen -x shared
 ```
 
+```
+useradd -M -s /usr/sbin/nologin -N onlyssh
+passwd onlyssh
+
+http://www.cnblogs.com/litifeng/p/6076235.html
+
+proxy.bat
+@echo off
+echo y | plink -C -N -D 1889 -v onlyssh@67.218.159.42 -pw onest123
+Pause
+```
