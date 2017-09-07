@@ -60,3 +60,12 @@ UseDNS no
 GSSAPIAuthentication no
 然后，执行/etc/init.d/sshd restart重启sshd进程使上述配置生效，在连接一般就不慢了。
 ```
+
+终端共享
+```
+#开启共享终端
+screen -d -m -S shared
+#接入共享终端
+screen -x shared
+```
+
