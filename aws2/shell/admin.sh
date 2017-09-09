@@ -2,7 +2,7 @@
 KEY_ACCESS="yly"
 KEY_SECRET="yly"
 relativePath="/admin/usage"
-cmd="${relativePath}?format=json&uid=yly"
+cmd="${relativePath}?format=json&uid=yly&subuser=swift"
 current=`TZ=GMT LANG=en_US date "+%a, %d %b %Y %H:%M:%S GMT"`
 stringToSign="GET\n\n\n${current}\n${relativePath}"
 signature=`echo -en ${stringToSign} | openssl sha1 -hmac ${KEY_SECRET} -binary | base64`
