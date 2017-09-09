@@ -68,6 +68,12 @@ screen -d -m -S shared
 #接入共享终端
 screen -x shared
 ```
+git走ss代理
+```
+git config --global http.proxy 'socks5://127.0.0.1:1080'
+git config --global https.proxy 'socks5://127.0.0.1:1080'
+```
+
 
 ```
 useradd -M -s /usr/sbin/nologin -N onlyssh
