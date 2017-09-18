@@ -3,6 +3,15 @@
 
 master branch
 ```
+单机启动1个集群
+CEPH_NUM_OSD=1 ../src/vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --mgr_num 1 --rgw_num 1
+
+单机启动2个集群
+CEPH_NUM_OSD=1 ../src/mstart.sh ceph1  -n -d --mon_num 1 --osd_num 1 --mds_num 0 --mgr_num 1 --rgw_num 1
+CEPH_NUM_OSD=1 ../src/mstart.sh ceph2  -n -d --mon_num 1 --osd_num 1 --mds_num 0 --mgr_num 1 --rgw_num 1
+```
+```
+#restart rgw
 ./bin/radosgw -f  -c /etc/ceph/ceph.conf --cluster ceph \
 --name client.rgw.rgw1 --setuser ceph --setgroup ceph  \
 --keyring /etc/ceph/keyring  --logfile /var/log/ceph-rgw.debug \
@@ -10,7 +19,7 @@ master branch
 ```
 
 
-jewel vstart 启动rpm安装的单机集群
+# jewel vstart 启动rpm安装的单机集群
 
 vstart.sh
 ```
@@ -960,7 +969,7 @@ root       11299  0.0  0.0 112644   952 pts/0    R+   15:01   0:00 grep --color=
 
 ```
 
-jewel版本vstart启动(非rpm安装)
+# jewel版本vstart启动(非rpm安装)
 ```
 CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --short -r -X -i 127.0.0.1
 ```
