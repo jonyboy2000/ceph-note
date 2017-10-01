@@ -19,19 +19,20 @@ trusted-host=mirrors.ustc.edu.cn
 
 yum install -y https://copr-be.cloud.fedoraproject.org/results/jasonbrooks/polipo/epel-7-x86_64/polipo-1.1.1-2.fc22/polipo-1.1.1-2.el7.centos.x86_64.rpm
 polipo socksParentProxy=127.0.0.1:1080
-http_proxy=http://localhost:8123 wget http://www.youtube.com
+http_proxy=http://localhost:8123 https_proxy=http://localhost:8123 wget http://www.youtube.com
 
 或者使用代理
 vi /opt/devstack/stackrc
-export http_proxy=http://127.0.0.1:7777
-export https_proxy=http://127.0.0.1:7777
-export no_proxy=127.0.0.1,192.168.153.159
+export http_proxy=http://127.0.0.1:8123
+export https_proxy=http://127.0.0.1:8123
+export no_proxy=127.0.0.1,192.168.153.159,git.trystack.cn
 
 
 
 (root)$ cd /opt/
-#(root)$ git clone  http://git.openstack.org/openstack-dev/devstack.git -b stable/newton #国外机器
-(root)$ git clone  http://git.trystack.cn/openstack-dev/devstack.git -b stable/newton #国内机器
+(root)$ git clone  http://git.openstack.org/openstack-dev/devstack.git 
+#
+(root)$ git clone  http://git.trystack.cn/openstack-dev/devstack.git  
 (root)$ devstack/tools/create-stack-user.sh
 (root)$ chown -R stack:stack devstack
 (root)$ su - stack
@@ -40,6 +41,7 @@ export no_proxy=127.0.0.1,192.168.153.159
 (stack)$ sudo yum install python-pip openssl-devel gcc -y
 (stack)$ sudo pip install --upgrade pip
 (stack)$ sudo pip install -U os-testr
+(stack)$ echo "127.0.0.1 `hostname`" | sudo tee /etc/hosts
 (stack)$ git config --global http.postBuffer 524288000
 #fix error
 #Traceback (most recent call last):
@@ -48,8 +50,6 @@ export no_proxy=127.0.0.1,192.168.153.159
 #ImportError: No module named os_testr.generate_subunit
 (stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib/python2.7/site-packages/*
 (stack)$ sudo setfacl -m u:stack:rwx -R  /usr/lib64/python2.7/site-packages/*
-(stack)$ echo "127.0.0.1 `hostname`" | sudo tee /etc/hosts
-
 
 #userdel --remove stack 删除stack用户，如果失败想重来的话
 ```
