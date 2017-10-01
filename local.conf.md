@@ -13,11 +13,35 @@
 # 编辑 pip.conf 配置文件
 (root)$ mkdir  ~/.pip/ && vi ~/.pip/pip.conf
 [global]
+proxy = http://localhost:8123
 timeout = 300
 index-url = http://pypi.python.org/simple
 
 [install]
 trusted-host = pypi.python.org
+
+
+cat > ~/.curlrc <<EOF
+proxy = http://localhost:8123
+EOF
+
+cat > ~/.gitconfig <<EOF
+[http]
+   proxy = http://localhost:8123
+[https]
+   proxy = http://localhost:8123
+EOF
+
+ 
+cat >> /etc/yum.conf  <<EOF
+proxy = http://localhost:8123
+EOF
+
+cat >> /etc/wgetrc <<EOF
+http_proxy = http://localhost:8123
+https_proxy = http://localhost:8123
+ftp_proxy = http://localhost:8123
+EOF
 
 yum install -y https://copr-be.cloud.fedoraproject.org/results/jasonbrooks/polipo/epel-7-x86_64/polipo-1.1.1-2.fc22/polipo-1.1.1-2.el7.centos.x86_64.rpm
 polipo socksParentProxy=127.0.0.1:1080
