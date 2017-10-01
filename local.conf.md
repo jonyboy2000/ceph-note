@@ -30,7 +30,7 @@ export no_proxy=127.0.0.1,192.168.153.159
 
 
 (root)$ cd /opt/
-#(root)$ git clone  https://git.openstack.org/openstack-dev/devstack.git -b stable/newton #国外机器
+#(root)$ git clone  http://git.openstack.org/openstack-dev/devstack.git -b stable/newton #国外机器
 (root)$ git clone  http://git.trystack.cn/openstack-dev/devstack.git -b stable/newton #国内机器
 (root)$ devstack/tools/create-stack-user.sh
 (root)$ chown -R stack:stack devstack
