@@ -187,9 +187,9 @@ nameserver 192.168.100.2
 ```
 brctl show
 bridge name	 bridge id	      	STP enabled	interfaces
-br0		       8000.000c29a2ca27	no		      ens32        #bridge
-						                	              vnet0
-virbr0		   8000.525400a8ceff	yes		      virbr0-nic   #NAT
+br0		 8000.000c29a2ca27	no		ens32        #bridge
+						        net0
+virbr0		 8000.525400a8ceff	yes		virbr0-nic   #NAT
 ```
 本机ssh root@192.168.100.200 就可以了
 
@@ -240,3 +240,76 @@ virsh destroy 2
 https://www.linuxtechi.com/install-kvm-hypervisor-on-centos-7-and-rhel-7
 
 http://www.hanbaoying.com/2017/09/19/virsh-create-vm.html
+
+
+# rbd
+
+## vstart 启动测试集群
+```
+yum install ceph-mon ceph-osd
+#vstart.sh脚本参考https://github.com/wzyuliyang/ceph-note/blob/master/ceph-dev/debug_rgw.md
+CEPH_BUILD_ROOT=/usr CEPH_PORT=6789 ./vstart.sh -n --mon_num 1 --mds_num 0  --short -r -X -i 192.168.100.186
+```
+
+## 创建存储池
+```
+ceph osd pool create libvirt-pool 128 128
+```
+## 创建key
+```
+ceph auth get-or-create client.libvirt mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=libvirt-pool'
+```
+
+## 创建 secret.xml
+```
+cat > secret.xml <<EOF
+<secret ephemeral='no' private='no'>
+        <usage type='ceph'>
+                <name>client.libvirt secret</name>
+        </usage>
+</secret>
+EOF
+
+virsh secret-define --file secret.xml
+<uuid of secret is output here>
+```
+
+## ceph机器上获取ceph auth key
+```
+ceph auth get-key client.libvirt | sudo tee client.libvirt.key
+<base64 of client.libvirt.key>
+```
+
+## KVM机器上设置libvirt用到的ceph auth key
+```
+virsh secret-set-value --secret {uuid of secret} --base64 {base64 of client.libvirt.key}
+```
+
+## 创建镜像
+
+ 
+
+```
+#kvm机器上获取ceph.conf
+scp 192.168.100.186:/root/ceph1/ceph.conf /etc/ceph/
+#创建
+qemu-img create -f rbd rbd:libvirt-pool/new-libvirt-image 2G
+```
+
+vi rbddisk.xml
+```
+<disk type='network' device='disk'>
+        <source protocol='rbd' name='libvirt-pool/new-libvirt-image'>
+                    <host name='192.168.100.186' port='6789'/>
+        </source>
+        <auth username='libvirt'>
+            <secret type='ceph' uuid='uuid of secret'/>
+        </auth>
+        <target dev='vdc' bus='virtio'/>
+</disk>
+```
+挂载
+```
+virsh attach-device centos rbddisk.xml
+```
+
