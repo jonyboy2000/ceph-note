@@ -224,6 +224,12 @@ vi network.xml
 virsh attach-device 2 network.xml
 ```
 
+# 删除设备
+```
+virsh detach-device 2 disk.xml
+virsh detach-device 2 network.xml
+```
+
 # 删除虚拟机
 ```
 virsh destroy 2
