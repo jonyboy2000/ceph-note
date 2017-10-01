@@ -17,7 +17,7 @@ index-url = https://mirrors.ustc.edu.cn/pypi/web/simple
 [install]
 trusted-host=mirrors.ustc.edu.cn
 
-yum install ftp://195.220.108.108/linux/fedora/linux/releases/22/Everything/x86_64/os/Packages/p/polipo-1.1.1-2.fc22.x86_64.rpm
+yum install -y https://copr-be.cloud.fedoraproject.org/results/jasonbrooks/polipo/epel-7-x86_64/polipo-1.1.1-2.fc22/polipo-1.1.1-2.el7.centos.x86_64.rpm
 polipo socksParentProxy=127.0.0.1:1080
 http_proxy=http://localhost:8123 wget http://www.youtube.com
 
