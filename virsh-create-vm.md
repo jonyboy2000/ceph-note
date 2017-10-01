@@ -277,7 +277,7 @@ virsh secret-define --file secret.xml
 ## ceph机器上获取ceph auth key
 ```
 ceph auth get-key client.libvirt | sudo tee client.libvirt.key
-<base64 of client.libvirt.key>
+<base64 of client.libvirt.key is output here>
 ```
 
 ## KVM机器上设置libvirt用到的ceph auth key
