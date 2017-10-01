@@ -11,11 +11,13 @@
 (root)$ sudo sed -i  s'/gpgcheck=1/gpgcheck=0'/g  /etc/yum.repos.d/*.repo
 (root)$ git config --global http.postBuffer 524288000
 # 编辑 pip.conf 配置文件
-(root)$ cat ~/.pip/pip.conf
+(root)$ mkdir  ~/.pip/ && vi ~/.pip/pip.conf
 [global]
-index-url = https://mirrors.ustc.edu.cn/pypi/web/simple
+timeout = 300
+index-url = http://pypi.python.org/simple
+
 [install]
-trusted-host=mirrors.ustc.edu.cn
+trusted-host = pypi.python.org
 
 yum install -y https://copr-be.cloud.fedoraproject.org/results/jasonbrooks/polipo/epel-7-x86_64/polipo-1.1.1-2.fc22/polipo-1.1.1-2.el7.centos.x86_64.rpm
 polipo socksParentProxy=127.0.0.1:1080
