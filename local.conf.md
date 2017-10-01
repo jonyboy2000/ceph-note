@@ -1,17 +1,8 @@
 ```
-使用国内源
-# 备份原有的 yum 源文件
-(root)$ cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
-# 替换
-(root)$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo 
-# 添加 epel 7的源
-(root)$ wget -P /etc/yum.repos.d/ http://mirrors.aliyun.com/repo/epel-7.repo
-(root)$ mkdir ~/.pip
 #rpm不gpgcheck
 (root)$ sudo sed -i  s'/gpgcheck=1/gpgcheck=0'/g  /etc/yum.repos.d/*.repo
-(root)$ git config --global http.postBuffer 524288000
-# 编辑 pip.conf 配置文件
-(root)$ mkdir  ~/.pip/ && vi ~/.pip/pip.conf
+# 配置PIP
+(root)$ mkdir  ~/.pip/ && cat >>  ~/.pip/pip.conf <<EOF
 [global]
 proxy = http://localhost:8123
 timeout = 300
@@ -19,12 +10,13 @@ index-url = http://pypi.python.org/simple
 
 [install]
 trusted-host = pypi.python.org
-
-
+EOF
+# 配置curl代理
 cat > ~/.curlrc <<EOF
 proxy = http://localhost:8123
 EOF
 
+# 配置git代理(用于无法访问外网的机器,能连接外网的机器不用配置)
 cat > ~/.gitconfig <<EOF
 [http]
    proxy = http://localhost:8123
@@ -32,43 +24,43 @@ cat > ~/.gitconfig <<EOF
    proxy = http://localhost:8123
 EOF
 
- 
+# 配置yum代理(用于无法访问外网的机器,能连接外网的机器不用配置)
 cat >> /etc/yum.conf  <<EOF
 proxy = http://localhost:8123
 EOF
 
+# 配置wget代理(用于无法访问外网的机器,能连接外网的机器不用配置)
 cat >> /etc/wgetrc <<EOF
 http_proxy = http://localhost:8123
 https_proxy = http://localhost:8123
 ftp_proxy = http://localhost:8123
 EOF
 
+# 安装sock5 -> http代理
 yum install -y https://copr-be.cloud.fedoraproject.org/results/jasonbrooks/polipo/epel-7-x86_64/polipo-1.1.1-2.fc22/polipo-1.1.1-2.el7.centos.x86_64.rpm
+#启动代理转换,localhost:8123
 polipo socksParentProxy=127.0.0.1:1080
+# 测试代理是否可用
 http_proxy=http://localhost:8123 https_proxy=http://localhost:8123 wget http://www.youtube.com
 
-或者使用代理
-vi /opt/devstack/stackrc
-export http_proxy=http://127.0.0.1:8123
-export https_proxy=http://127.0.0.1:8123
-export no_proxy=127.0.0.1,192.168.153.159,git.trystack.cn
 
+###vi /opt/devstack/stackrc
+###export http_proxy=http://127.0.0.1:8123
+###export https_proxy=http://127.0.0.1:8123
+###export no_proxy=127.0.0.1,192.168.153.159,git.trystack.cn
 
 
 (root)$ cd /opt/
-(root)$ git clone  http://git.openstack.org/openstack-dev/devstack.git 
-#
 (root)$ git clone  http://git.trystack.cn/openstack-dev/devstack.git  
 (root)$ devstack/tools/create-stack-user.sh
 (root)$ chown -R stack:stack devstack
 (root)$ su - stack
 (stack)$ cd /opt/devstack
-(stack)$ wget -O /opt/devstack/files/get-pip.py  https://bootstrap.pypa.io/get-pip.py
 (stack)$ sudo yum install python-pip openssl-devel gcc -y
 (stack)$ sudo pip install --upgrade pip
 (stack)$ sudo pip install -U os-testr
 (stack)$ echo "127.0.0.1 `hostname`" | sudo tee /etc/hosts
-(stack)$ git config --global http.postBuffer 524288000
+
 #fix error
 #Traceback (most recent call last):
 #  File "/bin/generate-subunit", line 7, in <module>
@@ -107,7 +99,6 @@ SWIFT_DATA_DIR=$DEST/data
 ```
 开始部署
 ./stack.sh
-
 
 sudo swift -A http://localhost:8080/auth/v1.0 -U swiftprojecttest1:swiftusertest3 -K testing3 stat
                         Account: TEMPAUTH_swiftprojecttest1
