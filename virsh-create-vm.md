@@ -130,7 +130,8 @@ virsh list --all
 ----------------------------------------------------
  -     centos                         shut off
  
-virsh start centos #启动
+virsh start centos     #启动
+virsh shutdown centos  #关机
 Domain centos started
 
 virsh list --all
