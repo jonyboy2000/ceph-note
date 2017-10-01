@@ -210,6 +210,20 @@ vi disk.xml
 virsh attach-device 2 disk.xml
 ```
 
+
+# 添加网卡
+```
+vi network.xml
+<interface type="bridge">
+         <mac address="fa:17:3f:6s:e3:33" />
+         <source bridge="br0" />
+         <model type="virtio" />
+         <alias name="net1" />
+</interface>
+
+virsh attach-device 2 network.xml
+```
+
 # 删除虚拟机
 ```
 virsh destroy 2
