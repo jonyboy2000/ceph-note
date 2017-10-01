@@ -114,6 +114,11 @@ ONBOOT=yes
 </domain>
 ```
 
+# 创建系统盘
+```
+qemu-img create this_is_os_disk.img 20G
+```
+
 # 从配置文件创建虚拟机
 ```
 virsh create centos7.xml
@@ -131,7 +136,7 @@ Domain centos started
 virsh list --all
  Id    Name                           State
 ----------------------------------------------------
- 2     centos                         running
+ 2     centos                         running   #虚拟机 id 此处为2
 ```
 
 # 下载vnc client
@@ -187,6 +192,30 @@ virbr0		   8000.525400a8ceff	yes		      virbr0-nic   #NAT
 ```
 本机ssh root@192.168.100.200 就可以了
 
+
+# 添加硬盘
+
+```
+
+qemu-img create data.img 10G
+
+vi disk.xml
+
+<disk type='file' device='disk'>
+	<driver name='qemu' type='raw'/>
+	<source file='/root/data.img'/>
+	<target dev='vdb' bus='virtio'/>
+</disk>
+
+virsh attach-device 2 disk.xml
+```
+
+# 删除虚拟机
+```
+virsh destroy 2
+```
+
 # 参考博客
 https://www.linuxtechi.com/install-kvm-hypervisor-on-centos-7-and-rhel-7
+
 http://www.hanbaoying.com/2017/09/19/virsh-create-vm.html
