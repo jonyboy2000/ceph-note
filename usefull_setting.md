@@ -86,3 +86,8 @@ proxy.bat
 echo y | plink -C -N -D 1889 -v onlyssh@67.218.159.42 -pw onest123
 Pause
 ```
+
+mac关闭显示器不断网络
+```
+caffeinate -s
+```
