@@ -15,4 +15,6 @@ radosgw-admin  zonegroup placement add --rgw-zonegroup=default --placement-id=te
 radosgw-admin period update --commit --rgw-zone=default --rgw-zonegroup=default --rgw-realm=default
 systemctl restart ceph-radosgw@rgw.yly-test-1
 radosgw-admin period get
+
+s3cmd mb s3://bucket1 --bucket-location=:test
 ```
