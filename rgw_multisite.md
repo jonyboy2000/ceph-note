@@ -7,9 +7,31 @@ radosgw-admin zone  create --rgw-zonegroup=oNest2-zgp1  --rgw-zone=oNest2-zgp1-z
 radosgw-admin period update --commit  --rgw-realm=oNest2  --rgw-zonegroup=oNest2-zgp1  --rgw-zone=oNest2-zgp1-z1
 radosgw-admin user create --uid=zone.user --display-name="Zone User" --access-key=admin --secret=admin --system --rgw-realm=oNest2  --rgw-zonegroup=oNest2-zgp1  --rgw-zone=oNest2-zgp1-z1
 
+chown ceph:ceph /etc/ceph/zgp1z1.ecloud.today.pem
+
+[client.rgw.rgw1]
+keyring = /var/lib/ceph/radosgw/ceph-rgw.rgw1/keyring
+rgw_frontends = "civetweb port=80+443s ssl_certificate=/etc/ceph/zgp1z1.ecloud.today.pem"
+#rgw_frontends = "civetweb port=80"
+rgw zone=oNest2-zgp1-z1
+rgw zonegroup=oNest2-zgp1
+rgw realm=oNest2
+rgw_dns_name = zgp1z1.ecloud.today
+
 
 集群2(master zonegroup slave zone)
 radosgw-admin realm pull --url=http://10.139.12.116  --access-key=admin --secret=admin
 radosgw-admin zone  create --rgw-zonegroup=oNest2-zgp1  --rgw-zone=oNest2-zgp1-z2 --realm-id=ce8e5f88-0571-436f-ab68-ffe55f84eb09  --endpoints https://zgp1z2.ecloud.today:443 --access-key admin --secret admin
 radosgw-admin period update --commit --url=http://10.139.12.116  --rgw-realm=oNest2   --access-key=admin --secret=admin
+
+chown ceph:ceph /etc/ceph/zgp1z2.ecloud.today.pem
+
+[client.rgw.rgw2]
+keyring = /var/lib/ceph/radosgw/ceph-rgw.rgw2/keyring
+rgw_frontends = "civetweb port=80+443s ssl_certificate=/etc/ceph/zgp1z2.ecloud.today.pem"
+#rgw_frontends = "civetweb port=80"
+rgw zone=oNest2-zgp1-z2
+rgw zonegroup=oNest2-zgp1
+rgw realm=oNest2
+rgw_dns_name = zgp1z2.ecloud.today
 ```
