@@ -1,3 +1,4 @@
+```
 [global]
 mon_initial_members = onest
 mon_host = 192.168.10.146
@@ -9,11 +10,13 @@ osd_pool_default_size = 1
 osd_pool_default_min_size = 1
 osd_journal_size = 100
 #osd_crush_update_on_start = False #部署好后解开注释
-osd_max_object_name_len = 460  #目录当磁盘
+osd_max_object_name_len = 460  #目录当磁盘  
 osd_max_object_namespace_len = 64
+```
 
-
-mkdir /var/local/osd1 
+```
+mkdir /var/local/osd1  #有时候用户的/home目录空间比较大,osd放在/home目录下时候需要修改systemd unit文件 
+参考 http://www.jianshu.com/p/d028f51cfbc2 将ProtectHome=true和ProtectSystem=full注释掉
 chmod 777 -R  /var/local/osd1 
 ceph-deploy --overwrite-conf  osd prepare `hostname -s`:/var/local/osd1
 ceph-deploy --overwrite-conf  osd activate `hostname -s`:/var/local/osd1
@@ -45,3 +48,4 @@ rgw_enable_apis = s3, swift, swift_auth, admin, s3website
 /usr/bin/radosgw -f --cluster ceph --name client.rgw.rgw1 --setuser ceph --setgroup ceph
 
 openresty配置或nginx配置为rgw前端参考 [https://github.com/joke-lee/openresty-radosgw](https://github.com/joke-lee/openresty-radosgw)
+```
