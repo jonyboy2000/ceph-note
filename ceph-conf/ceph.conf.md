@@ -21,6 +21,8 @@ chmod 777 -R  /var/local/osd1
 ceph-deploy --overwrite-conf  osd prepare `hostname -s`:/var/local/osd1
 ceph-deploy --overwrite-conf  osd activate `hostname -s`:/var/local/osd1
 
+ceph-disk prepare `ceph-conf  --name=osd.7 --lookup osd_device` --zap-disk   --osd-uuid=`ceph-conf  --name=osd.7 --lookup osd_uuid`
+
 chmod 755 /var/lib/ceph/radosgw/ceph-rgw.`hostname -s`
 chmod 755 /var/lib/ceph/mon/ceph-`hostname -s`
 
