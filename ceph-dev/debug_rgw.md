@@ -2030,5 +2030,5 @@ root       11299  0.0  0.0 112644   952 pts/0    R+   15:01   0:00 grep --color=
 
 # jewel版本vstart启动(非rpm安装)
 ```
-CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --short -r -X -i 127.0.0.1
+CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --short -r -X -i 127.0.0.1
 ```
