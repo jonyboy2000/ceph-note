@@ -25,7 +25,7 @@ radosgw-admin realm pull --url=https://zgp1z1.ecloud.today:443  --access-key=adm
 #realm=`radosgw-admin realm  get --rgw-realm=oNest2 |grep id| awk -F '"' '{print $4}'`
 radosgw-admin zone  create --rgw-zonegroup=oNest2-zgp1  --rgw-zone=oNest2-zgp1-z2 --realm-id=$realm  --endpoints https://zgp1z2.ecloud.today:443 --access-key admin --secret admin
 radosgw-admin period update --commit --url=https://zgp1z1.ecloud.today:443  --rgw-realm=oNest2   --access-key=admin --secret=admin
-
+radosgw-admin metadata sync init --rgw-realm=oNest2 --rgw-zonegroup=oNest2-zgp1
 chown ceph:ceph /etc/ceph/zgp1z2.ecloud.today.pem
 
 [client.rgw.rgw2]
