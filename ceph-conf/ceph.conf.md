@@ -50,4 +50,9 @@ rgw_enable_apis = s3, swift, swift_auth, admin, s3website
 /usr/bin/radosgw -f --cluster ceph --name client.rgw.rgw1 --setuser ceph --setgroup ceph
 
 openresty配置或nginx配置为rgw前端参考 [https://github.com/joke-lee/openresty-radosgw](https://github.com/joke-lee/openresty-radosgw)
+
+
+admin用户
+
+radosgw-admin user create --uid=admin --display-name=admin --access-key=admin --secret-key=admin --caps="users=*;buckets=*;metadata=*;usage=*;zone=*"
 ```
