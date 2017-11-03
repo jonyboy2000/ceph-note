@@ -54,3 +54,13 @@ var_dump($res);
 //    echo $Bucket->Name . "\t" . $Bucket->CreationDate . "\n";
 //}
 ```
+
+```
+#获取zonegroup值
+$Connection->get_bucket_region('bucketname')
+#需要修改老版本SDK代码一行
+s3.class.php 1221行
+$response->body = (string) $response->body->to_array()[0];
+
+
+```
