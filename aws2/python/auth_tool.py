@@ -132,6 +132,8 @@ class S3Auth():
 
 
 url='/test1/1.txt'
+import urllib
+url=urllib.quote("/test1/中文")
 a = S3Auth('onest', 'onest', service_url='zgp2z1.ecloud.today',url=url, headers={
                                                                            'X-Amz-Date': 'Sat, 04 Nov 2017 07:47:41 GMT',
                                                                            'X-Amz-User-Agent':'aws-sdk-js/2.100.0 callback',
