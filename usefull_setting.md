@@ -91,3 +91,9 @@ mac关闭显示器不断网络
 ```
 caffeinate -s
 ```
+
+kubuntu 调整分辨率
+```
+xrandr
+sudo xrandr --output eDP1 --mode 1680x1050
+```
