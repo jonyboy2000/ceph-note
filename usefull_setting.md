@@ -95,5 +95,5 @@ caffeinate -s
 kubuntu 调整分辨率
 ```
 xrandr
-sudo xrandr --output eDP1 --mode 1680x1050
+sudo xrandr --output eDP1 --mode 1280x800
 ```
