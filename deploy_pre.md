@@ -40,6 +40,9 @@ restrict default nomodify
 server  127.127.1.0     # local clock
 fudge   127.127.1.0 stratum 8
 
+
+watch -n1 ntpq -p  #watch util poll reach 77 above
+
 //使用ntpdate客户端
 server 192.168.10.5 iburst minpoll 4 maxpoll 4
 ```
