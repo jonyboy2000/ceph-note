@@ -75,6 +75,21 @@ firewall-cmd --list-all
 firewall-cmd --zone=public --remove-port=8080/tcp --permanent
 firewall-cmd --reload
 
+#foward ip
+#keepalived 防火墙
+firewall-cmd --direct --permanent --add-rule ipv4 filter INPUT 0 --in-interface bond0 --destination 224.0.0.18 --protocol vrrp -j ACCEPT
+firewall-cmd --direct --permanent --add-rule ipv4 filter OUTPUT 0 --out-interface bond0 --destination 224.0.0.18 --protocol vrrp -j ACCEPT
+firewall-cmd --reload 
+
+
+firewall-cmd --direct --permanent --add-rule ipv4 filter INPUT 0 --in-interface bond1 --destination 224.0.0.18 --protocol vrrp -j ACCEPT
+firewall-cmd --direct --permanent --add-rule ipv4 filter OUTPUT 0 --out-interface bond1 --destination 224.0.0.18 --protocol vrrp -j ACCEPT
+firewall-cmd --reload 
+
+firewall-cmd --direct --permanent --add-rule ipv4 filter INPUT 0 --in-interface bond2 --destination 224.0.0.18 --protocol vrrp -j ACCEPT
+firewall-cmd --direct --permanent --add-rule ipv4 filter OUTPUT 0 --out-interface bond2 --destination 224.0.0.18 --protocol vrrp -j ACCEPT
+firewall-cmd --reload 
+
 ```
 
 ## 格式化磁盘
