@@ -51,11 +51,11 @@ radosgw-admin sync status --rgw-realm=oNest2  --rgw-zonegroup=zgp2  --rgw-zone z
   metadata sync syncing
                 full sync: 0/64 shards
                 failed to fetch local sync status: (5) Input/output error
-#调整zgp1为非主
-radosgw-admin zonegroup modify   --rgw-zonegroup=zgp1  --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739  --master=false
-#调整zgp2为主
-radosgw-admin zonegroup modify   --rgw-zonegroup=zgp2  --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739  --master
-#更新period
+#调整zgp1为非主(zgp2上执行)
+radosgw-admin zonegroup modify --rgw-zonegroup=zgp1 --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739 --master=false
+#调整zgp2为主(zgp2上执行)
+radosgw-admin zonegroup modify --rgw-zonegroup=zgp2 --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739 --master
+#更新period(zgp2上执行)
 radosgw-admin period update --commit  --rgw-realm=oNest2   --rgw-zonegroup=zgp2  --rgw-zone=zgp2-z1
 
 radosgw-admin sync status   --rgw-realm=oNest2  --rgw-zonegroup=zgp2  --rgw-zone zgp2-z1
