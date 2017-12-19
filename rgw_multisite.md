@@ -80,3 +80,82 @@ radosgw-admin realm pull --url=http://10.139.13.58  --access-key=admin --secret=
 systemctl restart ceph-radosgw@rgw.rgw1
 ```
 
+
+```
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# yum install gcc python-crypto python-paramiko python-devel -y
+
+import paramiko
+import json
+
+def ssh2(ip, username, passwd, cmd):
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(ip, 22, username, passwd, timeout=5)
+        stdin, stdout, stderr = ssh.exec_command(cmd)
+        output = stdout.read()
+        ssh.close()
+        return output
+    except:
+        print '%stErrorn' % (ip)
+
+
+master_zgp_ip = '10.139.12.23'
+master_zgp_user_ssh = 'root'
+master_zgp_user_ssh_pw = 'jGs*Z+ZQ94TY9T/z'
+
+slave_zgp_ip = '10.139.13.58'
+slave_zgp_user_ssh = 'root'
+slave_zgp_user_ssh_pw = 'jGs*Z+ZQ94TY9T/z'
+
+realm = 'oNest2'
+
+realm_id = ssh2(master_zgp_ip, master_zgp_user_ssh, master_zgp_user_ssh_pw,
+                '''radosgw-admin realm  get --rgw-realm='''+realm +''' |grep id| awk -F '"' '{print $4}' ''')
+if realm_id is None:
+    exit(0)
+else:
+    realm_id = realm_id.rstrip()
+
+period = ssh2(master_zgp_ip, master_zgp_user_ssh, master_zgp_user_ssh_pw,
+              'radosgw-admin period  get --realm-id=%s' % (realm_id,)).rstrip()
+period_json = json.loads(period)
+period_map = period_json['period_map']
+realm_name = period_json['realm_name']
+
+master_zonegroup = {}
+slave_zonegroup = {}
+
+for zonegroup in period_map['zonegroups']:
+    print zonegroup
+    print zonegroup['is_master']
+    if zonegroup['is_master'] == 'true':
+        master_zonegroup['api_name'] = zonegroup['api_name']
+        master_zonegroup['id'] = zonegroup['id']
+        master_zonegroup['master_zone'] = zonegroup['master_zone']
+        master_zonegroup['zone_name'] = zonegroup['zones'][0]['name']
+    else:
+        slave_zonegroup['api_name'] = zonegroup['api_name']
+        slave_zonegroup['id'] = zonegroup['id']
+        slave_zonegroup['master_zone'] = zonegroup['master_zone']
+        slave_zonegroup['zone_name'] = zonegroup['zones'][0]['name']
+
+cmd = "radosgw-admin zonegroup modify --rgw-zonegroup=%s --realm-id=%s --master=false" % (
+master_zonegroup['api_name'], realm_id,)
+print cmd
+ssh2(slave_zgp_ip, slave_zgp_user_ssh, slave_zgp_user_ssh_pw, cmd).rstrip()
+
+cmd = "radosgw-admin zonegroup modify --rgw-zonegroup=%s --realm-id=%s --master" % (
+slave_zonegroup['api_name'], realm_id,)
+print cmd
+ssh2(slave_zgp_ip, slave_zgp_user_ssh, slave_zgp_user_ssh_pw, cmd).rstrip()
+
+cmd = "radosgw-admin period update --commit --rgw-realm=%s --rgw-zonegroup=%s --rgw-zone=%s" % (
+realm_name, slave_zonegroup['api_name'], slave_zonegroup['zone_name'],)
+print cmd
+ssh2(slave_zgp_ip, slave_zgp_user_ssh, slave_zgp_user_ssh_pw, cmd).rstrip()
+```
+
