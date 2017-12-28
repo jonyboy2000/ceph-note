@@ -2,10 +2,16 @@
 环境安装
 ```
 proxychains yum install mono-devel
-proxychains git clone https://github.com/aws/aws-sdk-net.git
+#proxychains git clone https://github.com/aws/aws-sdk-net.git
 proxychains yum install nuget
 proxychains nuget install AWSSDK
-export MONO_PATH=`pwd`/AWSSDK.2.3.55.2/lib/net35:.
+
+nuget config -set http_proxy=http://192.168.153.1:7777
+nuget install  AWSSDK.S3 -Version 3.3.16.2
+
+#export MONO_PATH=`pwd`/AWSSDK.2.3.55.2/lib/net35:.
+
+export MONO_PATH=`pwd`/AWSSDK.S3.3.3.16.2/lib/net35/:.
 ```
 vi s3.cs
 ```
