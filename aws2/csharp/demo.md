@@ -45,6 +45,7 @@ class Upload
 编译
 ```
 mcs s3.cs -r:./AWSSDK.2.3.55.2/lib/net35/AWSSDK.dll
+mcs s3.cs -r:/root/test/AWSSDK.S3.3.3.16.2/lib/net35/AWSSDK.S3.dll  -r:/root/test/AWSSDK.Core.3.3.21.6/lib/net35/AWSSDK.Core.dll
 
 [root@promote test]# ls -l
 total 12
