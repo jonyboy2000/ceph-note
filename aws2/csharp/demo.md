@@ -58,7 +58,7 @@ mono s3.exe
 ```
 
 
-
+list 桶列表
 ```
 using System;
 using Amazon.S3;
@@ -88,4 +88,40 @@ class Upload
       }
     }
 }
+```
+
+获取桶的location
+```
+
+using System;
+using Amazon.S3;
+using Amazon.S3.Model;
+
+class Upload
+{
+  public static void Main(string[] args)
+  {
+    // Create a client
+
+    Amazon.S3.AmazonS3Config clientConfig  = new Amazon.S3.AmazonS3Config()
+    {
+        ServiceURL = "http://eos-beijing-1.cmecloud.cn",
+        ForcePathStyle = true,
+        SignatureMethod = Amazon.Runtime.SigningAlgorithm.HmacSHA256,
+        SignatureVersion = "s3v2",
+        MaxErrorRetry = 1
+    };
+
+    AmazonS3Client client = new AmazonS3Client("xxxx","yyyy",clientConfig);
+
+    var request = new GetBucketLocationRequest()
+    {
+                BucketName = "ylybeijing1"
+    };
+    var response = client.GetBucketLocation(request);
+    Console.WriteLine(response.Location.ToString());
+
+    }
+}
+
 ```
