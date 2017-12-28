@@ -9,9 +9,11 @@ proxychains nuget install AWSSDK
 nuget config -set http_proxy=http://192.168.153.1:7777
 nuget install  AWSSDK.S3 -Version 3.3.16.2
 
+sdk v2
 #export MONO_PATH=`pwd`/AWSSDK.2.3.55.2/lib/net35:.
 
-export MONO_PATH=`pwd`/AWSSDK.S3.3.3.16.2/lib/net35/:.
+sdk v3
+export MONO_PATH=/root/test/AWSSDK.S3.3.3.16.2/lib/net35/:/root/test/AWSSDK.Core.3.3.21.6/lib/net35/:.
 ```
 vi s3.cs
 ```
@@ -44,7 +46,9 @@ class Upload
 ```
 编译
 ```
+sdk v2
 mcs s3.cs -r:./AWSSDK.2.3.55.2/lib/net35/AWSSDK.dll
+sdk v3
 mcs s3.cs -r:/root/test/AWSSDK.S3.3.3.16.2/lib/net35/AWSSDK.S3.dll  -r:/root/test/AWSSDK.Core.3.3.21.6/lib/net35/AWSSDK.Core.dll
 
 [root@promote test]# ls -l
@@ -129,6 +133,42 @@ class Upload
     Console.WriteLine(response.Location.ToString());
 
     }
+}
+
+```
+
+createbucket in other zonegroup
+
+```
+using System;
+using Amazon.S3;
+using Amazon.S3.Model;
+
+class Upload
+{
+  public static void Main(string[] args)
+  {
+    Amazon.S3.AmazonS3Config clientConfig  = new Amazon.S3.AmazonS3Config()
+    {
+        ServiceURL = "http://eos-beijing-2.cmecloud.cn",
+        ForcePathStyle = true,
+        SignatureMethod = Amazon.Runtime.SigningAlgorithm.HmacSHA256,
+        SignatureVersion = "s3v2",
+        MaxErrorRetry = 1
+    };
+
+    AmazonS3Client client = new AmazonS3Client("xxx","yyy",clientConfig);
+    PutBucketRequest request = new PutBucketRequest
+    {
+       BucketName = "beijing2-testbycsharp2",
+       UseClientRegion = true,
+       BucketRegionName = "beijing2",
+
+    };
+    client.PutBucket(request);
+    Console.WriteLine("Bucket Created");
+
+  }
 }
 
 ```
