@@ -56,3 +56,36 @@ drwxr-xr-x. 3 root root   95 Dec 28 05:54 Microsoft.Net.Http.2.1.10
 ```
 mono s3.exe
 ```
+
+
+
+```
+using System;
+using Amazon.S3;
+using Amazon.S3.Model;
+
+class Upload
+{
+  public static void Main(string[] args)
+  {
+    // Create a client
+
+    Amazon.S3.AmazonS3Config clientConfig  = new Amazon.S3.AmazonS3Config()
+    {
+        ServiceURL = "http://eos-beijing-1.cmecloud.cn",
+        ForcePathStyle = true,
+        SignatureMethod = Amazon.Runtime.SigningAlgorithm.HmacSHA256,
+        SignatureVersion = "s3v2",
+        MaxErrorRetry = 1
+    };
+
+    AmazonS3Client client = new AmazonS3Client("xx","yy",clientConfig);
+
+    ListBucketsResponse response = client.ListBuckets();
+    foreach (S3Bucket b in response.Buckets)
+      {
+        Console.WriteLine("{0}\t{1}", b.BucketName, b.CreationDate);
+      }
+    }
+}
+```
