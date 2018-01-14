@@ -49,3 +49,19 @@ include_directories(${Boost_INCLUDE_DIR})
 add_executable(untitled2 main.cpp)
 target_link_libraries(untitled2 ${Boost_LIBRARIES})
 ```
+
+
+nginx
+```
+wget:
+nginx: http://nginx.org/download/nginx-1.12.2.tar.gz
+zlib: http://zlib.net/zlib-1.2.11.tar.gz
+pcre: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
+openssl: https://www.openssl.org/source/openssl-1.1.0g.tar.gz
+
+cd nginx* && mkdir build
+
+./configure --prefix=/Users/yuliyang/Downloads/nginx/build --with-cc=gcc-7.2 --with-debug --with-zlib=../zlib-1.2.11 --with-pcre=../pcre-8.38 --with-openssl=../openssl-1.1.0g
+
+make install
+```
