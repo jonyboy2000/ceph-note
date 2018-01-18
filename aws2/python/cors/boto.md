@@ -23,3 +23,34 @@ for i in range(1,102):
 #bucket.set_cors(cors_cfg)
 print bucket.get_cors()
 ```
+
+
+```
+#!/usr/bin/python
+from boto3.session import Session
+import boto3
+access_key = "yly"
+secret_key = "yly"
+url = "http://10.139.12.23"
+session = Session(access_key, secret_key)
+s3_client = session.client(
+    's3',
+    endpoint_url=url,
+    use_ssl = False,
+    config = boto3.session.Config(
+         signature_version = 's3v4'
+    )
+)
+response = s3_client.put_bucket_cors(
+            Bucket="public",
+            CORSConfiguration={
+                'CORSRules': [
+                    {
+                        'AllowedMethods': ['GET', 'PUT', 'DELETE'],
+                        'AllowedOrigins': ['*'],
+                        'AllowedHeaders': ['*'],
+                    },
+                ],
+            },
+        )
+```
