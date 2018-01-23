@@ -27,6 +27,10 @@ form_data = s3_client.generate_presigned_post(
     Key = KEY
 )
 
+#use request to simulate brower post upload
+#files = {"file": "file_content"}
+#response = requests.post(form_data["url"], data=form_data["fields"], files=files)
+
 html = """\
 <html>
   <head>
@@ -57,7 +61,7 @@ print TEST_FILE + " created."
 
 ```
 
-outputfile:
+output html file and open in brower:
 ```
 
 <html>
@@ -85,6 +89,3 @@ outputfile:
   </form>
 </html>
 ```
-
-
-
