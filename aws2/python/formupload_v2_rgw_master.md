@@ -1,3 +1,5 @@
+rgw master branch 正常 
+jewel 有问题，包Content-type问题
 
 ```
 #!/usr/bin/python
