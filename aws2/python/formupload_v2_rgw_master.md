@@ -1,5 +1,4 @@
-rgw master branch 正常 
-jewel 有问题，包Content-type问题
+> rgw master branch 正常 jewel 有问题，报Content-type问题
 
 ```
 #!/usr/bin/python
@@ -26,6 +25,9 @@ form_data = s3_client.generate_presigned_post(
     Bucket = BUCKET,
     Key = KEY
 )
+
+#files = {"file": "file_content"}
+#response = requests.post(form_data["url"], data=form_data["fields"], files=files)
 
 html = """\
 <html>
@@ -83,7 +85,7 @@ print TEST_FILE + " created."
 
 ```
 
-
+v4签名(非boto)版本
 ```
 import datetime
 import json
