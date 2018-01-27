@@ -107,4 +107,8 @@ echo "cephuser ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/cephuser
 chmod 0440 /etc/sudoers.d/cephuser
 sed -i 's/Defaults    requiretty/#Defaults    requiretty/g' /etc/sudoers
 ```
-
+## 永久路由
+```
+[root@yuliyang ~]# cat /etc/sysconfig/network-scripts/route-ens33
+10.139.11.0/24 via 192.168.100.2 dev ens33
+```
