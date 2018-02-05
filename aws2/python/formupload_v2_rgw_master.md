@@ -1,4 +1,46 @@
-> rgw master branch 正常 jewel 有问题，报Content-type问题
+```
+#!/usr/bin/python
+from boto3.session import Session
+import boto3
+bucketname = 'test2'
+objectname = 'prefix/keyv6'
+access_key = "yly"
+secret_key = "yly"
+url = "http://192.168.153.177:8000"
+session = Session(access_key, secret_key)
+s3_client = session.client(
+    's3',
+    endpoint_url=url,
+    use_ssl = False,
+)
+
+conditions = [
+    ["starts-with", "$Content-Type", "image/"],
+    ["starts-with", "$key", "prefix/"],
+    {"success_action_redirect": "http://www.baidu.com"},
+    ["content-length-range", 0, 20000000],
+]
+
+form_data = s3_client.generate_presigned_post(
+    Conditions = conditions,
+    Bucket = bucketname,
+    Key=objectname
+)
+
+form_data["fields"]['Content-Type'] = 'image/png'
+form_data["fields"]['key'] = objectname
+form_data["fields"]['success_action_redirect'] = 'http://www.baidu.com'
+files = {"file": "this_is_file_content_!!!!!"}
+
+import requests
+import logging
+from requests_toolbelt.utils import dump
+logging.basicConfig(level=logging.DEBUG)
+
+response = requests.post(form_data["url"], data=form_data["fields"], files=files)
+data = dump.dump_all(response)
+print(data.decode('utf-8'))
+```
 
 ```
 #!/usr/bin/python
