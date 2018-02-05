@@ -548,4 +548,68 @@ print "created."
 ```
 
 
+success_action_redirect 和 回调出现，将忽略 success_action_redirect的作用
+```
+#!/usr/bin/python
+from boto3.session import Session
+import boto3
+BUCKET = 'test2'
+KEY    = 'this_object'
+access_key = "yly"
+secret_key = "yly"
+url = "http://192.168.153.177:8000"
+session = Session(access_key, secret_key)
+s3_client = session.client(
+    's3',
+    endpoint_url=url,
+    use_ssl = False,
+)
+
+import base64
+import json
+callback_dict = {}
+callback_var = {}
+headers = {}
+callback_dict['callbackUrl'] = 'http://67.218.159.42:23450/upload?username=123'
+callback_dict['callbackBody'] = 'filename=${object}&size=${size}&mimeType=${mimeType}&my_var=${x:var1}'
+callback_dict['callbackBodyType'] = 'application/x-www-form-urlencoded'
+callback_param = json.dumps(callback_dict).strip()
+base64_callback_body = base64.b64encode(callback_param)
+callback_var["x:var1"] = 'value1'
+callback_var["x:var2"] = 'value2'
+callback_var_param = json.dumps(callback_var).strip()
+base64_callback_var = base64.b64encode(callback_var_param)
+headers['x-oss-callback'] = base64_callback_body
+headers['x-oss-callback-var'] = base64_callback_var
+
+conditions = [
+    ["content-length-range", 10, 1000000000],
+    {"callback":base64_callback_body},
+    {"x:var1": "value1"},
+    {"success_action_redirect": "http://www.baidu.com"},
+]
+
+form_data = s3_client.generate_presigned_post(
+    Conditions = conditions,
+    Bucket = BUCKET,
+    Key = KEY
+)
+
+form_data["fields"]["callback"] = base64_callback_body
+form_data["fields"]["x:var1"] = "value1"
+form_data["fields"]['success_action_redirect'] = 'http://www.baidu.com'
+
+import requests
+import logging
+from requests_toolbelt.utils import dump
+logging.basicConfig(level=logging.DEBUG)
+
+files = {"file": "this_is_file_content_!!!!!"}
+print form_data["url"]
+response = requests.post(form_data["url"], data=form_data["fields"], files=files)
+data = dump.dump_all(response)
+print(data.decode('utf-8'))
+
+
+```
 
