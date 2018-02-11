@@ -97,17 +97,24 @@ EOF
 ldapadd -x -D cn=admin,dc=onest,dc=com -W -f basedomain.ldif 
 
 #创建ceph用户
+[root@yly-ldap vstart]# python
+Python 2.7.5 (default, Nov  6 2016, 00:28:07)
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-11)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from passlib.hash import ldap_salted_sha1 as ssha
+>>> print ssha.encrypt("thisispasswdforceph", salt_size=16)
+{SSHA}oSpzFEzcz52GJcnA7sB2tmTsrQYqJYQQAsA4hxDiPAegNOY8
+
 [root@yly-ldap ~]# cat ceph.ldif
 dn: uid=ceph,ou=People,dc=onest,dc=com
 uid:ceph
 sn: ceph
 cn: ceph
 objectclass: inetOrgPerson
+userPassword: {SSHA}oSpzFEzcz52GJcnA7sB2tmTsrQYqJYQQAsA4hxDiPAegNOY8   #thisispasswdforceph的加密密码
 
 ldapadd -x -D cn=admin,dc=onest,dc=com -W -f ceph.ldif
 
-
-#通过php页面设置密码uid=ceph这个用户的密码(或者ldap命令)
 
 #使用下面命令测试ceph用户是否可以连接ldap服务器
 ldapsearch -x -D "uid=ceph,ou=People,dc=onest,dc=com" -W  -b "ou=People,dc=onest,dc=com" -s sub 'uid=ceph'
@@ -115,11 +122,13 @@ ldapsearch -x -D "uid=ceph,ou=People,dc=onest,dc=com" -W  -b "ou=People,dc=onest
 
 #修改ceph.conf使用ldap认证
 rgw_ldap_secret = "/etc/bindpass"
-rgw_ldap_uri = ldaps://127.0.0.1:389
+rgw_ldap_uri = ldaps://10.139.15.173:389
 rgw_ldap_binddn = "uid=ceph,ou=People,dc=onest,dc=com"
 rgw_ldap_searchdn = "ou=People,dc=onest,dc=com"
 rgw_ldap_dnattr = "uid"
 rgw_s3_auth_use_ldap = true
+
+echo "thisispasswdforceph" > /etc/bindpass
 
 #使用radosgw-token生成token
 [root@yly-ldap vstart]# export RGW_ACCESS_KEY_ID=ceph
@@ -140,8 +149,8 @@ tokenjson = {}
 tokenjson["RGW_TOKEN"] = {}
 tokenjson["RGW_TOKEN"]['version'] = "1"
 tokenjson["RGW_TOKEN"]['type'] = "ldap"
-tokenjson["RGW_TOKEN"]['id'] = "ceph"  #ldap用户名 dnr
-tokenjson["RGW_TOKEN"]['key'] = "ceph" #ldap密码
+tokenjson["RGW_TOKEN"]['id'] = "ceph" #ldap用户名 dnr
+tokenjson["RGW_TOKEN"]['key'] = "thisispasswdforceph" #ceph用户的 ldap密码
 print base64.b64encode(json.dumps(tokenjson)) #也可以使用这个生成的token,和radosgw-token生成的不同是因为多了些\n和空格这些,json解析的时候没问题
 ```
 
