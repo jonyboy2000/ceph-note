@@ -20,7 +20,7 @@ success_action_redirect = "http://www.baidu.com"
 conditions = [
     {"acl": "public-read"},
     ["starts-with", "$Content-Type", "image/"],
-    ["starts-with", "$key", "prefix/"],
+#    ["starts-with", "$key", "prefix/"],
     {"success_action_redirect": success_action_redirect },
     ["content-length-range", 0, 20000000],
 ]
