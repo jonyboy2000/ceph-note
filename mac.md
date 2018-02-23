@@ -1,7 +1,14 @@
-brew curl
+brew install curl
 ```
 ~/.curlrc
 socks5 = "localhost:1080"
+
+```
+
+```
+brew install proxychains-ng --universal
+brew install git
+export PATH="/usr/local/Cellar/git/2.16.2/bin:$PATH"
 ```
 
 g++7.2安装
