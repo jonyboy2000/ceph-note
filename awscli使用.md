@@ -2,6 +2,8 @@
 ```
 #安装
 pip install awscli
+或者
+pip install saws 后 saws 进入交互环境
 #配置
 aws configure
 #使用v2认证
