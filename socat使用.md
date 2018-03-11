@@ -23,8 +23,5 @@
 
 ```
 vps
-
-socat TCP-LISTEN:993,fork TCP:imap.gmail.com:993
-socat TCP-LISTEN:465,fork TCP:smtp.gmail.com:465
-socat TCP-LISTEN:578,fork TCP:smtp.gmail.com:578
+socat TCP-LISTEN:587,fork TCP:smtp.gmail.com:587
 ```
