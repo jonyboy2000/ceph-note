@@ -2,6 +2,8 @@
 #!/usr/bin/python
 from boto3.session import Session
 import boto3
+import botocore
+botocore.session.Session().set_debug_logger()
 bucketname = 'test2'
 objectname = 'prefix/keyv6'
 access_key = "yly"
