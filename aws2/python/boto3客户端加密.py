@@ -44,6 +44,8 @@ encrypt_cipher = AESCipher()
 
 from boto3.session import Session
 import boto3
+import botocore
+botocore.session.Session().set_debug_logger()
 access_key = "yly"
 secret_key = "yly"
 url = "http://10.139.12.23"
