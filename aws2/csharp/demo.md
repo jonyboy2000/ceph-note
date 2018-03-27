@@ -172,3 +172,45 @@ class Upload
 }
 
 ```
+
+设置跨域访问
+```
+CORSConfiguration configuration = new CORSConfiguration
+    {
+        Rules = new System.Collections.Generic.List<CORSRule>
+        {
+            new CORSRule
+            {
+                AllowedMethods = new System.Collections.Generic.List<string> {"POST", "GET", "PUT", "DELETE", "HEAD"},
+                AllowedOrigins = new System.Collections.Generic.List<string> {"*"},
+                AllowedHeaders = new System.Collections.Generic.List<string> {"*"},
+                MaxAgeSeconds = 100
+            }
+        }
+    };
+    PutCORSConfigurationRequest request = new PutCORSConfigurationRequest
+    {
+        BucketName = "xxxxyyyy",
+        Configuration = configuration
+    };
+    client.PutCORSConfiguration(request);
+
+```
+
+获取跨域访问
+```
+GetCORSConfigurationRequest request = new GetCORSConfigurationRequest{
+        BucketName = "xxxxyyyy"
+};
+client.GetCORSConfiguration(request);
+```
+
+删除跨域访问
+```
+DeleteCORSConfigurationRequest request = new DeleteCORSConfigurationRequest
+{
+    BucketName = "xxxxyyyy"
+};
+client.DeleteCORSConfiguration(request);
+
+```
