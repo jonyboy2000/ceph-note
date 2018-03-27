@@ -13,7 +13,7 @@ sdk v2
 #export MONO_PATH=`pwd`/AWSSDK.2.3.55.2/lib/net35:.
 
 sdk v3
-export MONO_PATH=/root/test/AWSSDK.S3.3.3.16.2/lib/net35/:/root/test/AWSSDK.Core.3.3.21.6/lib/net35/:.
+export MONO_PATH=`pwd`/AWSSDK.S3.3.3.16.2/lib/net35/:`pwd`/AWSSDK.Core.3.3.21.6/lib/net35/:.
 ```
 vi s3.cs
 ```
