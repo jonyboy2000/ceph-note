@@ -64,3 +64,57 @@ $response->body = (string) $response->body->to_array()[0];
 
 
 ```
+
+
+```
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
+use Aws\S3\S3Client;
+
+$client = S3Client::factory(array(
+    'base_url' => 'http://10.139.11.90',
+    'port' => '80',
+    'key'      => 's3testuser1',
+    'secret'   => 's3testuser1',
+    S3Client::COMMAND_PARAMS => [
+        'PathStyle' => true,
+    ],
+));
+
+//$client->createBucket(array('Bucket' => 'my-bucket'));
+
+try {
+    $result = $client->putBucketCors(array(
+        'Bucket' => "xxxxyyyy",
+        'CORSRules' => array(
+            array(
+                'AllowedOrigins' => array('*'),
+                'AllowedMethods' => array('POST', 'GET', 'PUT', 'DELETE', 'HEAD'),
+                'MaxAgeSeconds' => 100,
+                'AllowedHeaders' => array('*')
+            )
+        )));
+    var_dump($result);
+} catch (AwsException $e) {
+    // output error message if fails
+    error_log($e->getMessage());
+}
+
+
+$result = $client->getBucketCors(
+    array(
+        'Bucket' => "xxxxyyyy",
+    )
+);
+var_dump($result);
+
+$result = $client->deleteBucketCors(
+    array(
+        'Bucket' => "xxxxyyyy",
+    )
+);
+
+var_dump($result);
+
+?>
+```
