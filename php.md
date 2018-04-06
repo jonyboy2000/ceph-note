@@ -26,14 +26,14 @@ xdebug.remote_port=9001
 
 ```
 
-[Imgur](https://i.imgur.com/ZogfCoq.png)
+![Imgur](https://i.imgur.com/ZogfCoq.png)
 
-[Imgur](https://i.imgur.com/ScN1arq.png)
+![Imgur](https://i.imgur.com/ScN1arq.png)
 
-[Imgur](https://i.imgur.com/3tEp4Ab.png)
+![Imgur](https://i.imgur.com/3tEp4Ab.png)
 
 访问 http://localhost:8080/info.php  [不要访问 http://127.0.0.1:8080/info.php]
 
-[Imgur](https://i.imgur.com/xfg694M.png)
+![Imgur](https://i.imgur.com/xfg694M.png)
 
 
