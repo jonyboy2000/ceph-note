@@ -112,3 +112,9 @@ sed -i 's/Defaults    requiretty/#Defaults    requiretty/g' /etc/sudoers
 [root@yuliyang ~]# cat /etc/sysconfig/network-scripts/route-ens33
 10.139.11.0/24 via 192.168.100.2 dev ens33
 ```
+### 清理无效的systemctl   sudo systemctl status ceph-radosgw@* 就不会显示了
+```
+sudo systemctl reset-failed
+```
+
+
