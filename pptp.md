@@ -14,7 +14,10 @@ Modem hangup
 文件尾部，加上以下内容  
 require-mppe-128  
 
-
-
 pppd call vpn
+```
+
+路由
+```
+ip route replace default dev ppp0
 ```
