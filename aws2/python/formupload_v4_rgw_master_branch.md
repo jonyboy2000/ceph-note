@@ -14,7 +14,7 @@ s3_client = session.client(
     endpoint_url=url,
     use_ssl = False,
     config = boto3.session.Config(
-         signature_version = 's3v4',
+         signature_version = 's3v4',   #v2的话 signature_version = 's3',
 	 addressing_style = 'path' #virtual
     )
 )
