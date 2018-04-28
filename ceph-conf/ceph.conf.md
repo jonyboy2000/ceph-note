@@ -15,11 +15,11 @@ osd_max_object_namespace_len = 64
 ```
 
 ```
-mkdir /var/local/osd1  #有时候用户的/home目录空间比较大,osd放在/home目录下时候需要修改systemd unit文件 
+mkdir /var/local/osd0  #有时候用户的/home目录空间比较大,osd放在/home目录下时候需要修改systemd unit文件 
 参考 http://www.jianshu.com/p/d028f51cfbc2 将ProtectHome=true和ProtectSystem=full注释掉
-chmod 777 -R  /var/local/osd1 
-ceph-deploy --overwrite-conf  osd prepare `hostname -s`:/var/local/osd1
-ceph-deploy --overwrite-conf  osd activate `hostname -s`:/var/local/osd1
+chmod 777 -R  /var/local/osd0
+ceph-deploy --overwrite-conf  osd prepare `hostname -s`:/var/local/osd0
+ceph-deploy --overwrite-conf  osd activate `hostname -s`:/var/local/osd0
 
 ceph-disk prepare `ceph-conf  --name=osd.7 --lookup osd_device` --zap-disk   --osd-uuid=`ceph-conf  --name=osd.7 --lookup osd_uuid`
 
