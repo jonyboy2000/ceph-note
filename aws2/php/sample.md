@@ -81,6 +81,19 @@ $client = S3Client::factory(array(
     ],
 ));
 
+//v4
+$client = S3Client::factory(array(
+    'base_url' => 'http://10.254.3.68',
+    'port' => '80',
+    'signature' => "v4",
+    'region'=>'us-east-1',
+    'key'      => 'eos',
+    'secret'   => 'eos',
+    S3Client::COMMAND_PARAMS => [
+        'PathStyle' => true
+    ],
+));
+
 //$client->createBucket(array('Bucket' => 'my-bucket'));
 
 try {
