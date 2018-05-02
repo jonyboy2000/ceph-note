@@ -206,3 +206,95 @@ data = dump.dump_all(response)
 print(data.decode('utf-8'))
 
 ```
+
+use boto3
+```
+pip uninstall botocore
+#安装支持回调的botocore
+pip install https://github.com/joke-lee/botocore/archive/1.0.zip
+```
+
+
+```
+import base64
+import json
+
+callback_dict = {}
+callback_dict['callbackUrl'] = 'http://10.254.9.35:23450/index.php?id=1&index=2'
+callback_dict['callbackBody'] = 'bucket=${bucket}&filename=${object}&size=${size}&mimeType=${mimeType}&my_var=${x:var1}'
+callback_dict['callbackBodyType'] = 'application/x-www-form-urlencoded'
+
+callback_var = {}
+callback_var["x:var1"]='value1'
+callback_var["x:var2"]='value2'
+
+
+callback_param = json.dumps(callback_dict).strip()
+base64_callback_body = base64.b64encode(callback_param)
+headers={'x-amz-meta-callback': base64_callback_body}
+
+callback_var_param = json.dumps(callback_var).strip()
+base64_callback_var = base64.b64encode(callback_var_param)
+headers['x-amz-meta-callback-var'] = base64_callback_var
+
+from boto3.session import Session
+import boto3
+access_key = "eos"
+secret_key = "eos"
+url = "http://10.254.3.68"
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url,config = boto3.session.Config( signature_version = 's3v4') )
+mpu = s3_client.create_multipart_upload(Bucket="callback",Key="yyy")
+part_info = {
+    'Parts': []
+}
+i = 1
+file = open("5M","rb")
+while 1:
+    data = file.read(5 * 1024 * 1024)
+    if data == b'':
+        break
+    response = s3_client.upload_part(Bucket="callback", Key="yyy", PartNumber=i, UploadId=mpu["UploadId"],Body=data)
+    part_info['Parts'].append({
+        'PartNumber': i,
+        'ETag': response['ETag']
+    })
+    i += 1
+
+response = s3_client.complete_multipart_upload(Bucket="callback", Key="yyy", UploadId=mpu["UploadId"], MultipartUpload=part_info, Metadata={'callback': base64_callback_body,'callback-var': base64_callback_var} )
+print response
+```
+
+```
+import base64
+import json
+
+callback_dict = {}
+callback_dict['callbackUrl'] = 'http://10.254.9.35:23450/index.php?id=1&index=2'
+callback_dict['callbackBody'] = 'bucket=${bucket}&filename=${object}&size=${size}&mimeType=${mimeType}&my_var=${x:var1}'
+callback_dict['callbackBodyType'] = 'application/x-www-form-urlencoded'
+
+callback_var = {}
+callback_var["x:var1"]='value1'
+callback_var["x:var2"]='value2'
+
+
+callback_param = json.dumps(callback_dict).strip()
+base64_callback_body = base64.b64encode(callback_param)
+headers={'x-amz-meta-callback': base64_callback_body}
+
+callback_var_param = json.dumps(callback_var).strip()
+base64_callback_var = base64.b64encode(callback_var_param)
+headers['x-amz-meta-callback-var'] = base64_callback_var
+
+from boto3.session import Session
+import boto3
+access_key = "eos"
+secret_key = "eos"
+url = "http://10.254.3.68"
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url,config = boto3.session.Config( signature_version = 's3v4') )
+response = s3_client.put_object(Bucket="callback",Key="xxxxxxxxxxxx", Metadata={'callback': base64_callback_body, 'callback-var': base64_callback_var }, Body="1234")
+print response
+
+```
