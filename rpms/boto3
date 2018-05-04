@@ -1,0 +1,4 @@
+```
+yum localinstall python2-boto3-1.4.6-1.el7.noarch.rpm python2-botocore-1.6.0-1.el7.noarch.rpm python2-s3transfer-0.1.10-1.el7.noarch.rpmpython2-jmespath-0.9.0-5.el7.noarch.rpm
+```
+
