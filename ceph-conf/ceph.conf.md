@@ -26,6 +26,12 @@ ceph-disk prepare `ceph-conf  --name=osd.7 --lookup osd_device` --zap-disk   --o
 chmod 755 /var/lib/ceph/radosgw/ceph-rgw.`hostname -s`
 chmod 755 /var/lib/ceph/mon/ceph-`hostname -s`
 
+#和vip混合部署的时候
+[osd]
+public_addr = 10.63.33.5
+cluster_addr = 10.63.162.5
+
+
 [client.rgw.rgw1]
 rgw thread pool size = 1000
 rgw_frontends = "civetweb port=80"
