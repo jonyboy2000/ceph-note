@@ -60,7 +60,8 @@ public class S3Sample {
         ClientConfiguration opts = new ClientConfiguration();
 //        opts.setSignerOverride("S3SignerType");     //v2
         opts.setSignerOverride("AWSS3V4SignerType");  //v4
-        AmazonS3 s3 = new AmazonS3Client(credentials, opts);
+        opts.setPathStyleAccess(true); //PathStyle
+        AmazonS3 s3 = new AmazonS3Client(credentials, opts);
         s3.setEndpoint(ENDPOINT);
 
         java.util.Date expiration = new java.util.Date();
