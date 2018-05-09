@@ -1,3 +1,14 @@
+```
+ def canonical_uri(self, http_request):
+        # S3 does **NOT** do path normalization that SigV4 typically does.
+        # Urlencode the path, **NOT** ``auth_path`` (because vhosting).
+        path = urllib.parse.urlparse(http_request.path)
+        # Because some quoting may have already been applied, let's back it out.
+        unquoted = urllib.parse.unquote(path.path)
+        # Requote, this time addressing all characters.
+        encoded = urllib.parse.quote(unquoted, safe='/~')
+```
+
 
 ```
 def canonical_request(self, request):
