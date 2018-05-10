@@ -49,7 +49,7 @@ class Upload
 sdk v2
 mcs s3.cs -r:./AWSSDK.2.3.55.2/lib/net35/AWSSDK.dll
 sdk v3
-mcs s3.cs -r:/root/test/AWSSDK.S3.3.3.16.2/lib/net35/AWSSDK.S3.dll  -r:/root/test/AWSSDK.Core.3.3.21.6/lib/net35/AWSSDK.Core.dll
+mcs s3.cs -r:`pwd`/AWSSDK.S3.3.3.16.2/lib/net35/AWSSDK.S3.dll  -r:`pwd`/AWSSDK.Core.3.3.21.6/lib/net35/AWSSDK.Core.dll
 
 [root@promote test]# ls -l
 total 12
