@@ -142,4 +142,11 @@ url = 'http://iosonesttest.oss-cn-shanghai.aliyuncs.com/1.txt?symlink'
 response = requests.get(url, auth=S3Auth(access_key, secret_key,service_url='oss-cn-shanghai.aliyuncs.com'))
 data = dump.dump_all(response)
 print(data.decode('utf-8'))
+
+#设置
+url = 'http://iosonesttest.oss-cn-shanghai.aliyuncs.com/1.txt-link?symlink'
+headers = {'x-oss-symlink-target': "1.txt"}
+response = requests.put(url, auth=S3Auth(access_key, secret_key,service_url='oss-cn-shanghai.aliyuncs.com'), headers = headers)
+
+#通过认证接口和设置公开可读后，获取的对象都是1.txt
 ```
