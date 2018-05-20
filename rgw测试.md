@@ -12,8 +12,7 @@
 [root@yuliyang src]# s3cmd mb s3://test2 --bucket-location=:new
 ERROR: Access to bucket 'test2' was denied
 ERROR: S3 error: 403 (AccessDenied)
-./radosgw-admin metadata get user:yly > /tmp/json
-vi /tmp/json
+./radosgw-admin metadata get user:yly | jq '.data.placement_tags = ["authuser"]' > /tmp/json
 ./radosgw-admin metadata put user:yly < /tmp/json
 
 s3cmd mb s3://test2 --bucket-location=:new
