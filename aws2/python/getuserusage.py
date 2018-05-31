@@ -139,3 +139,21 @@ url = 'http://10.254.3.68/admin/usage?format=json&start=2018-04-25%2001:00:00&en
 response = requests.get(url, auth=S3Auth(access_key, secret_key,service_url='10.254.3.68'))
 data = dump.dump_all(response)
 print(data.decode('utf-8'))
+
+#< GET /admin/usage?format=json&start=2018-04-25%2001:00:00&end=2018-04-26%2001:00:00&show-entries=False&show-summary=True&uid=yly HTTP/1.1
+#< Host: 10.254.3.68
+#< Connection: keep-alive
+#< Accept-Encoding: gzip, deflate
+#< Accept: */*
+#< User-Agent: python-requests/2.18.4
+#< date: Thu, 31 May 2018 08:07:57 GMT
+#< Authorization: AWS admin:e77/X/M763hX4T6t/4DfWDOb2K0=
+#<
+
+#> HTTP/1.1 200 OK
+#> x-amz-request-id: tx00000000000000000094d-005b0fad5d-ac29c-default
+#> Content-Length: 1780
+#> Date: Thu, 31 May 2018 08:07:57 GMT
+#> Connection: Keep-Alive
+#>
+#{"summary":[{"user":"yly","categories":[{"category":"copy_obj","bytes_sent":327,"bytes_received":0,"ops":21,"successful_ops":12},{"category":"create_bucket","bytes_sent":57,"bytes_received":0,"ops":266,"successful_ops":265},{"category":"delete_bucket","bytes_sent":78,"bytes_received":0,"ops":266,"successful_ops":260},{"category":"delete_obj","bytes_sent":117,"bytes_received":0,"ops":80377,"successful_ops":80365},{"category":"get_acls","bytes_sent":17521314,"bytes_received":0,"ops":40003,"successful_ops":40003},{"category":"get_obj","bytes_sent":2621762563,"bytes_received":0,"ops":100064,"successful_ops":60044},{"category":"init_multipart","bytes_sent":219,"bytes_received":0,"ops":1,"successful_ops":0},{"category":"list_bucket","bytes_sent":114290110,"bytes_received":0,"ops":866,"successful_ops":865},{"category":"list_buckets","bytes_sent":20066,"bytes_received":0,"ops":272,"successful_ops":272},{"category":"put_account_metadata","bytes_sent":0,"bytes_received":0,"ops":1,"successful_ops":1},{"category":"put_acls","bytes_sent":380038,"bytes_received":0,"ops":20002,"successful_ops":20002},{"category":"put_bucket_metadata","bytes_sent":72,"bytes_received":0,"ops":75,"successful_ops":69},{"category":"put_lifecycle","bytes_sent":19,"bytes_received":0,"ops":1,"successful_ops":1},{"category":"put_obj","bytes_sent":6948,"bytes_received":87818724542,"ops":80375,"successful_ops":80366},{"category":"put_obj_metadata","bytes_sent":90,"bytes_received":0,"ops":12,"successful_ops":6},{"category":"stat_account","bytes_sent":0,"bytes_received":0,"ops":507,"successful_ops":507},{"category":"stat_bucket","bytes_sent":57,"bytes_received":0,"ops":60,"successful_ops":48}],"total":{"bytes_sent":2753982075,"bytes_received":87818724542,"ops":323169,"successful_ops":283086}}]}
