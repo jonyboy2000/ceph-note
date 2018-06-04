@@ -16,11 +16,12 @@ python -m SimpleHTTPServer 8080
 
 配置机器yum源
 
+vi /etc/yum.repos.d/ceph.repo
 ```
 [ceph]
 name=ceph
 baseurl=http://127.0.0.1:8080/
-enabled=0
+enabled=1
 gpgcheck=0
 ```
 
