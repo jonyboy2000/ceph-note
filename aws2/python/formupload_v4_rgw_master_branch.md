@@ -9,14 +9,14 @@ access_key = "yly3"
 secret_key = "yly3"
 url = "http://192.168.153.177:8000" 
 session = Session(access_key, secret_key)
+config_dict = { 'signature_version' : 's3', 'connect_timeout': 30000, 'read_timeout': 30000}
+config = boto3.session.Config(**config_dict)
+
 s3_client = session.client(
     's3',
     endpoint_url=url,
     use_ssl = False,
-    config = boto3.session.Config(
-         signature_version = 's3v4',   #v2的话 signature_version = 's3',
-	 addressing_style = 'path' #virtual
-    )
+    config = config_dict
 )
 conditions = [
     ["content-length-range", 10, 1000000000]
