@@ -236,16 +236,6 @@ site.yml
     - ceph-common
     - ceph-config
     - ceph-osd
-
-- hosts: rgws
-  gather_facts: false
-  become: True
-  roles:
-    - ceph-defaults
-    - ceph-common
-    - ceph-config
-    - ceph-rgw
-
 ```
 
 ```
@@ -279,3 +269,68 @@ rpm -qa|grep 12.2.5- | awk '{system("yum remove " $1 " -y ")}' && rm -rf /etc/ce
 #install
 i=10.2.9-25 &&  cmd="yum localinstall ceph-mon-$i.el7.centos.x86_64.rpm ceph-osd-$i.el7.centos.x86_64.rpm ceph-radosgw-$i.el7.centos.x86_64.rpm  ceph-base-$i.el7.centos.x86_64.rpm ceph-common-$i.el7.centos.x86_64.rpm  ceph-selinux-$i.el7.centos.x86_64.rpm  libcephfs1-$i.el7.centos.x86_64.rpm  librados2-$i.el7.centos.x86_64.rpm librbd1-$i.el7.centos.x86_64.rpm  librgw2-$i.el7.centos.x86_64.rpm  libradosstriper1-$i.el7.centos.x86_64.rpm  python-rbd-$i.el7.centos.x86_64.rpm  python-rados-$i.el7.centos.x86_64.rpm  python-cephfs-$i.el7.centos.x86_64.rpm fcgi-2.4.0-25.el7.x86_64.rpm lttng-ust-2.4.1-4.el7.x86_64.rpmleveldb-1.12.0-11.el7.x86_64.rpm libbabeltrace-1.2.4-3.el7.x86_64.rpm userspace-rcu-0.7.16-1.el7.x86_64.rpm" && eval $cmd
 ```
+
+
+multi instance rgw
+
+```
+---
+- hosts: mons
+  become: True
+  roles:
+    - ceph-defaults
+    - ceph-fetch-keys
+
+- hosts: mons
+  become: True
+  tasks:
+  - name: create auth
+    command: "{{ item }}"
+    with_items:
+    - ceph auth get-or-create client.rgw.rgw1  osd 'allow rwx' mon 'allow rw'
+    - ceph auth get-or-create client.rgw.rgw2  osd 'allow rwx' mon 'allow rw'
+    - ceph auth get-or-create client.rgw.rgw3  osd 'allow rwx' mon 'allow rw'
+
+- hosts: rgws
+  become: True
+  tasks:
+  - name: create dir
+    command: "{{ item }}"
+    with_items:
+    - mkdir -p /var/lib/ceph/radosgw/ceph-rgw.rgw1
+    - mkdir -p /var/lib/ceph/radosgw/ceph-rgw.rgw2
+    - mkdir -p /var/lib/ceph/radosgw/ceph-rgw.rgw3
+    - ceph auth get client.rgw.rgw1 -o /var/lib/ceph/radosgw/ceph-rgw.rgw1/keyring
+    - ceph auth get client.rgw.rgw2 -o /var/lib/ceph/radosgw/ceph-rgw.rgw2/keyring
+    - ceph auth get client.rgw.rgw3 -o /var/lib/ceph/radosgw/ceph-rgw.rgw3/keyring
+    - systemctl enable ceph-radosgw@rgw.rgw1
+    - systemctl enable ceph-radosgw@rgw.rgw2
+    - systemctl enable ceph-radosgw@rgw.rgw3
+
+  - name: update ceph.conf
+    ini_file:
+      path: /etc/ceph/ceph.conf
+      section: "{{ item.section }}"
+      option: "{{ item.option }}"
+      value: "{{ item.value }}"
+      backup: yes
+    with_items:
+      - { section: "client.rgw.rgw1", option: "keyring", value: '/var/lib/ceph/radosgw/ceph-rgw.rgw1/keyring' }
+      - { section: "client.rgw.rgw1", option: "log file", value: "/var/log/ceph/ceph-rgw-rgw1.log" }
+      - { section: "client.rgw.rgw1", option: "rgw frontends", value: "civetweb port=0.0.0.0:8081 num_threads=100" }
+      - { section: "client.rgw.rgw2", option: "keyring", value: '/var/lib/ceph/radosgw/ceph-rgw.rgw2/keyring' }
+      - { section: "client.rgw.rgw2", option: "log file", value: "/var/log/ceph/ceph-rgw-rgw2.log" }
+      - { section: "client.rgw.rgw2", option: "rgw frontends", value: "civetweb port=0.0.0.0:8082 num_threads=100" }
+      - { section: "client.rgw.rgw3", option: "keyring", value: '/var/lib/ceph/radosgw/ceph-rgw.rgw3/keyring' }
+      - { section: "client.rgw.rgw3", option: "log file", value: "/var/log/ceph/ceph-rgw-rgw3.log" }
+      - { section: "client.rgw.rgw3", option: "rgw frontends", value: "civetweb port=0.0.0.0:8083 num_threads=100" }
+
+  - name: start rgw
+    command: "{{ item }}"
+    with_items:
+    - systemctl start ceph-radosgw@rgw.rgw1
+    - systemctl start ceph-radosgw@rgw.rgw2
+    - systemctl start ceph-radosgw@rgw.rgw3
+
+```
+
