@@ -15,15 +15,8 @@ ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=
 ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=stack value=102400" -u root --ask-pass
 ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=msgqueue value=8192000" -u root --ask-pass
 ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=msgqueue value=8192000" -u root --ask-pass
-
-
-- ini_file:
-    path: /etc/anotherconf
-    section: drinks
-    option: temperature
-    value: cold
-    backup: yes
-ansible -i inventory rgws -s -m --set /etc/my.cnf.d/openstack.cnf mysqld max_connections 10000
+   
+ansible -i inventory rgws -m ini_file -a "path=/etc/ceph/ceph.conf section=rgw option=rgw_enable_apis value='s3, s3website, swift, swift_auth, admin' backup=yes"  -u root --ask-pass
 
 ansible -i inventory mons -m copy -a "src=10.2.9-25.tar.gz dest=/tmp/" -u root  --ask-pass
 ansible -i inventory mons -m shell -a "tar -m  xzvf /tmp/10.2.9-25.tar.gz -C /tmp/" -u root  --ask-pass
