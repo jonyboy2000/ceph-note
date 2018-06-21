@@ -115,6 +115,8 @@ ceph_conf_overrides:
     rgw_multipart_min_part_size : 4194304
     rgw_enable_apis: "s3, s3website, swift, swift_auth, admin"
   osd:
+    public_addr : "{{ ansible_ens32['ipv4']['address'] }}"
+    cluster_addr : "{{ ansible_ens32['ipv4']['address'] }}"
     osd_client_message_size_cap : 1073741824
     osd_client_message_cap : 200
     osd_op_threads : 4
