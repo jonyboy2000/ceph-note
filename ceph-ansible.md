@@ -16,6 +16,15 @@ ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=
 ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=msgqueue value=8192000" -u root --ask-pass
 ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=msgqueue value=8192000" -u root --ask-pass
 
+
+- ini_file:
+    path: /etc/anotherconf
+    section: drinks
+    option: temperature
+    value: cold
+    backup: yes
+ansible -i inventory rgws -s -m --set /etc/my.cnf.d/openstack.cnf mysqld max_connections 10000
+
 ansible -i inventory mons -m copy -a "src=10.2.9-25.tar.gz dest=/tmp/" -u root  --ask-pass
 ansible -i inventory mons -m shell -a "tar -m  xzvf /tmp/10.2.9-25.tar.gz -C /tmp/" -u root  --ask-pass
 ansible -i inventory mons -m shell -a "yum localinstall /tmp/x86_64/ceph-mon-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-osd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-radosgw-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-base-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-common-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-selinux-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libcephfs1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librados2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librbd1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librgw2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libradosstriper1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rbd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rados-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-cephfs-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/fcgi-2.4.0-25.el7.x86_64.rpm /tmp/x86_64/lttng-ust-2.4.1-4.el7.x86_64.rpm /tmp/x86_64/leveldb-1.12.0-11.el7.x86_64.rpm /tmp/x86_64/libbabeltrace-1.2.4-3.el7.x86_64.rpm /tmp/x86_64/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" -u root  --ask-pass
@@ -35,7 +44,7 @@ dummy:
 ntp_service_enabled: false
 ceph_stable: true
 ceph_custom: true
-ceph_stable_release: jewel
+ceph_stable_release: jewel  #luminous
 ceph_origin: distro
 public_network: "192.168.130.0/24"
 cluster_network: "192.168.130.0/24"
@@ -44,7 +53,7 @@ journal_size: 5120 # OSD journal size in MB
 osd_mkfs_type: xfs
 osd_mkfs_options_xfs: -f -i size=2048 -b size=4096
 osd_mount_options_xfs: noatime,largeio,inode64,swalloc
-osd_objectstore: filestore
+osd_objectstore: filestore   #bluestore
 devices:
   - '/dev/sdb'
 osd_scenario: collocated
@@ -134,6 +143,7 @@ ceph_conf_overrides:
     mon_osd_full_ratio : 0.95
     mon_osd_down_out_interval : 3600
     mon_clock_drift_allowed : 0.15
+    osd_pool_default_erasure_code_profile : "plugin=isa technique=reed_sol_van k=4 m=2 ruleset-root=default crush-failure-domain=osd"
 os_tuning_params:
   - { name: kernel.pid_max, value: 4194303 }
   - { name: kernel.panic, value: 20 }
