@@ -1,6 +1,21 @@
 
 ```
 export ANSIBLE_HOST_KEY_CHECKING=False
+
+/etc/security/limits.conf 更新
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=nofile value=1000000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=nofile value=1000000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=nproc  value=1000000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=nproc  value=1000000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=core value=unlimited" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=core value=unlimited" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=memlock value=32000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=memlock value=32000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=stack value=102400" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=stack value=102400" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=msgqueue value=8192000" -u root --ask-pass
+ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=msgqueue value=8192000" -u root --ask-pass
+
 ansible -i inventory mons -m copy -a "src=10.2.9-25.tar.gz dest=/tmp/" -u root  --ask-pass
 ansible -i inventory mons -m shell -a "tar -m  xzvf /tmp/10.2.9-25.tar.gz -C /tmp/" -u root  --ask-pass
 ansible -i inventory mons -m shell -a "yum localinstall /tmp/x86_64/ceph-mon-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-osd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-radosgw-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-base-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-common-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-selinux-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libcephfs1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librados2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librbd1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librgw2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libradosstriper1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rbd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rados-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-cephfs-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/fcgi-2.4.0-25.el7.x86_64.rpm /tmp/x86_64/lttng-ust-2.4.1-4.el7.x86_64.rpm /tmp/x86_64/leveldb-1.12.0-11.el7.x86_64.rpm /tmp/x86_64/libbabeltrace-1.2.4-3.el7.x86_64.rpm /tmp/x86_64/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" -u root  --ask-pass
@@ -20,25 +35,116 @@ dummy:
 ntp_service_enabled: false
 ceph_stable: true
 ceph_custom: true
-ceph_stable_release: luminous
+ceph_stable_release: jewel
 ceph_origin: distro
 public_network: "192.168.130.0/24"
 cluster_network: "192.168.130.0/24"
 monitor_interface: ens34
 journal_size: 5120 # OSD journal size in MB
 osd_mkfs_type: xfs
-osd_mkfs_options_xfs: -f -i size=2048
+osd_mkfs_options_xfs: -f -i size=2048 -b size=4096
 osd_mount_options_xfs: noatime,largeio,inode64,swalloc
 osd_objectstore: filestore
 devices:
   - '/dev/sdb'
 osd_scenario: collocated
-radosgw_interface: ens34
+radosgw_civetweb_port: 8080
+radosgw_civetweb_num_threads: 100
+radosgw_address: "0.0.0.0"
+email_address: yuliyang@cmss.chinamobile.com
 ceph_conf_overrides:
   global:
     osd_crush_chooseleaf_type : 0
     osd_pool_default_size : 1
     osd_pool_default_min_size : 1
+    auth_supported : cephx
+    auth_cluster_required : cephx
+    auth_service_required : cephx
+    auth_client_required : cephx
+    osd_pool_default_pg_num : 16
+    osd_pool_default_pgp_num : 16
+    debug_tp : 0
+    debug_timer : 0
+    debug_throttle : 0
+    debug_rgw : 0
+    debug_rbd : 0
+    debug_rados : 0
+    debug_perfcounter : 0
+    debug_paxos : 0
+    debug_osd : 0
+    debug_optracker : 0
+    debug_objecter : 0
+    debug_objectcacher : 0
+    debug_objclass : 0
+    debug_ms : 0
+    debug_monc : 0
+    debug_mon : 0
+    debug_mds_migrator : 0
+    debug_mds_log_expire : 0
+    debug_mds_log : 0
+    debug_mds_locker : 0
+    debug_mds_balancer : 0
+    debug_mds : 0
+    debug_lockdep : 0
+    debug_journaler : 0
+    debug_journal : 0
+    debug_hadoop : 0
+    debug_finisher : 0
+    debug_filestore : 0
+    debug_filer : 0
+    debug_crush : 0
+    debug_context : 0
+    debug_client : 0
+    debug_civetweb : 0
+    debug_buffer : 0
+    debug_auth : 0
+    debug_asok : 0
+  rgw:
+    rgw_cache_enabled : True
+    rgw_cache_lru_size : 100000
+    rgw_thread_pool_size : 600
+    rgw_num_rados_handles : 4
+    rgw_override_bucket_index_max_shards : 64
+    rgw_max_chunk_size : 4194304
+    rgw_enable_usage_log : True
+    rgw_user_quota_sync_interval : 1800
+    rgw_user_quota_sync_wait_time : 1800
+    rgw_multipart_min_part_size : 4194304
+    rgw_enable_apis: "s3, s3website, swift, swift_auth, admin"
+  osd:
+    osd_client_message_size_cap : 1073741824
+    osd_client_message_cap : 200
+    osd_op_threads : 4
+    osd_op_thread_timeout : 60
+    osd max scrubs : 1
+    osd_scrub_begin_hour : 1
+    osd_scrub_end_hour : 5
+    osd scrub load threshold : 0.5
+    osd scrub min interval : 60*60*24
+    osd scrub max interval : 60*60*24*7
+    osd deep scrub interval : 60*60*24*7
+    journal_max_write_entries : 1000
+    journal_max_write_bytes : 1073741824
+    filestore_op_threads : 4
+    filestore_queue_max_ops : 1000
+    filestore_queue_max_bytes : 1073741824
+    osd_pool_erasure_code_stripe_width : 65535
+  mon:
+    mon_osd_nearfull_ratio : 0.85
+    mon_osd_full_ratio : 0.95
+    mon_osd_down_out_interval : 3600
+    mon_clock_drift_allowed : 0.15
+os_tuning_params:
+  - { name: kernel.pid_max, value: 4194303 }
+  - { name: kernel.panic, value: 20 }
+  - { name: kernel.hung_task_panic, value: 0 }
+  - { name: kernel.hung_task_timeout_secs, value: 120 }
+  - { name: kernel.threads-max, value: 1000000 }
+  - { name: fs.file-max, value: 26234859 }
+  - { name: vm.zone_reclaim_mode, value: 2 }
+  - { name: vm.swappiness, value: 60 }
+  - { name: vm.min_free_kbytes, value: 4194303 }
+  - { name: vm.extra_free_kbytes, value: 4194303 }
 ```
 
 inventory
