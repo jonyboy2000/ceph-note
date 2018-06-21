@@ -167,14 +167,23 @@ inventory
 inventory.yml
 ```
 mons:
-  hosts:
-    192.168.153.183
+  hosts: 192.168.153.183
 osds:
   hosts:
     192.168.153.183:
-      devices: "['/dev/sdb']"
+      public_addr : 192.168.153.183
+      devices:
+        - '/dev/sdb'
     192.168.153.184:
-      devices: "['/dev/sdc' '/dev/sdb']"
+      public_addr : 192.168.153.184
+      devices:
+        - '/dev/sdb'
+        - '/dev/sdc'
+rgws:
+  hosts:
+    192.168.153.183:
+    192.168.153.184:
+
 
 ```
 
@@ -288,6 +297,10 @@ multi instance rgw
 
 ```
 ---
+# Run ceph-rgw role standalone
+
+# Need to load the facts from mons because ceph-common needs them to generate the ceph.conf
+# and collect keys from a mon to bootstrap the rgw nodes
 - hosts: mons
   become: True
   roles:
@@ -307,6 +320,16 @@ multi instance rgw
 - hosts: rgws
   become: True
   tasks:
+  - name: copy admin
+    copy:
+      src: "fetch/208d409f-7119-4c44-be58-446d444c2531{{ item.name }}"
+      dest: "{{ item.name }}"
+      owner: "ceph"
+      group: "ceph"
+      mode: "0600"
+    with_items:
+      - { name: "/etc/ceph/ceph.client.admin.keyring" }
+
   - name: create dir
     command: "{{ item }}"
     with_items:
@@ -316,9 +339,6 @@ multi instance rgw
     - ceph auth get client.rgw.rgw1 -o /var/lib/ceph/radosgw/ceph-rgw.rgw1/keyring
     - ceph auth get client.rgw.rgw2 -o /var/lib/ceph/radosgw/ceph-rgw.rgw2/keyring
     - ceph auth get client.rgw.rgw3 -o /var/lib/ceph/radosgw/ceph-rgw.rgw3/keyring
-    - systemctl enable ceph-radosgw@rgw.rgw1
-    - systemctl enable ceph-radosgw@rgw.rgw2
-    - systemctl enable ceph-radosgw@rgw.rgw3
 
   - name: update ceph.conf
     ini_file:
@@ -337,13 +357,5 @@ multi instance rgw
       - { section: "client.rgw.rgw3", option: "keyring", value: '/var/lib/ceph/radosgw/ceph-rgw.rgw3/keyring' }
       - { section: "client.rgw.rgw3", option: "log file", value: "/var/log/ceph/ceph-rgw-rgw3.log" }
       - { section: "client.rgw.rgw3", option: "rgw frontends", value: "civetweb port=0.0.0.0:8083 num_threads=100" }
-
-  - name: start rgw
-    command: "{{ item }}"
-    with_items:
-    - systemctl start ceph-radosgw@rgw.rgw1
-    - systemctl start ceph-radosgw@rgw.rgw2
-    - systemctl start ceph-radosgw@rgw.rgw3
-
 ```
 
