@@ -3,25 +3,25 @@
 export ANSIBLE_HOST_KEY_CHECKING=False
 
 /etc/security/limits.conf 更新
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=nofile value=1000000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=nofile value=1000000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=nproc  value=1000000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=nproc  value=1000000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=core value=unlimited" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=core value=unlimited" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=memlock value=32000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=memlock value=32000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=stack value=102400" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=stack value=102400" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=soft limit_item=msgqueue value=8192000" -u root --ask-pass
-ansible -i inventory -m pam_limits mons -a "domain=* limit_type=hard limit_item=msgqueue value=8192000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=nofile value=1000000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=nofile value=1000000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=nproc  value=1000000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=nproc  value=1000000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=core value=unlimited" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=core value=unlimited" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=memlock value=32000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=memlock value=32000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=stack value=102400" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=stack value=102400" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=msgqueue value=8192000" -u root --ask-pass
+ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=msgqueue value=8192000" -u root --ask-pass
    
-ansible -i inventory rgws -m ini_file -a "path=/etc/ceph/ceph.conf section=rgw option=rgw_enable_apis value='s3, s3website, swift, swift_auth, admin' backup=yes"  -u root --ask-pass
+ansible -i inventory.yml rgws -m ini_file -a "path=/etc/ceph/ceph.conf section=rgw option=rgw_enable_apis value='s3, s3website, swift, swift_auth, admin' backup=yes"  -u root --ask-pass
 
-ansible -i inventory all -m shell -a "yum install libselinux-python -y" -u root  --ask-pass
-ansible -i inventory mons -m copy -a "src=10.2.9-25.tar.gz dest=/tmp/" -u root  --ask-pass
-ansible -i inventory mons -m shell -a "tar xzvfm  /tmp/10.2.9-25.tar.gz -C /tmp/" -u root  --ask-pass
-ansible -i inventory mons -m shell -a "yum localinstall /tmp/x86_64/ceph-mon-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-osd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-radosgw-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-base-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-common-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-selinux-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libcephfs1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librados2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librbd1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librgw2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libradosstriper1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rbd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rados-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-cephfs-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/fcgi-2.4.0-25.el7.x86_64.rpm /tmp/x86_64/lttng-ust-2.4.1-4.el7.x86_64.rpm /tmp/x86_64/leveldb-1.12.0-11.el7.x86_64.rpm /tmp/x86_64/libbabeltrace-1.2.4-3.el7.x86_64.rpm /tmp/x86_64/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" -u root  --ask-pass
+ansible -i inventory.yml all -m shell -a "yum install libselinux-python -y" -u root  --ask-pass
+ansible -i inventory.yml all -m copy -a "src=10.2.9-25.tar.gz dest=/tmp/" -u root  --ask-pass
+ansible -i inventory.yml all -m shell -a "tar xzvfm  /tmp/10.2.9-25.tar.gz -C /tmp/" -u root  --ask-pass
+ansible -i inventory.yml all -m shell -a "yum localinstall /tmp/x86_64/ceph-mon-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-osd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-radosgw-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-base-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-common-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-selinux-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libcephfs1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librados2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librbd1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librgw2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libradosstriper1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rbd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rados-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-cephfs-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/fcgi-2.4.0-25.el7.x86_64.rpm /tmp/x86_64/lttng-ust-2.4.1-4.el7.x86_64.rpm /tmp/x86_64/leveldb-1.12.0-11.el7.x86_64.rpm /tmp/x86_64/libbabeltrace-1.2.4-3.el7.x86_64.rpm /tmp/x86_64/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" -u root  --ask-pass
 
 i=10.2.9-25 dir=/tmp/x86_64  && cmd="yum localinstall $dir/ceph-mon-$i.el7.centos.x86_64.rpm  $dir/ceph-osd-$i.el7.centos.x86_64.rpm $dir/ceph-radosgw-$i.el7.centos.x86_64.rpm  $dir/ceph-base-$i.el7.centos.x86_64.rpm $dir/ceph-common-$i.el7.centos.x86_64.rpm  $dir/ceph-selinux-$i.el7.centos.x86_64.rpm  $dir/libcephfs1-$i.el7.centos.x86_64.rpm  $dir/librados2-$i.el7.centos.x86_64.rpm $dir/librbd1-$i.el7.centos.x86_64.rpm  $dir/librgw2-$i.el7.centos.x86_64.rpm $dir/libradosstriper1-$i.el7.centos.x86_64.rpm  $dir/python-rbd-$i.el7.centos.x86_64.rpm  $dir/python-rados-$i.el7.centos.x86_64.rpm  $dir/python-cephfs-$i.el7.centos.x86_64.rpm $dir/fcgi-2.4.0-25.el7.x86_64.rpm $dir/lttng-ust-2.4.1-4.el7.x86_64.rpm $dir/leveldb-1.12.0-11.el7.x86_64.rpm $dir/libbabeltrace-1.2.4-3.el7.x86_64.rpm $dir/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" && echo $cmd
 
@@ -164,6 +164,19 @@ inventory
 [mgrs]
 192.168.130.138
 ```
+inventory.yml
+```
+mons:
+  hosts:
+    192.168.153.183
+osds:
+  hosts:
+    192.168.153.183:
+      devices: "['/dev/sdb']"
+    192.168.153.184:
+      devices: "['/dev/sdc' '/dev/sdb']"
+
+```
 
 site.yml
 ```
@@ -239,7 +252,7 @@ site.yml
 ```
 
 ```
-ansible-playbook -i inventory site.yml  -u root --ask-pass
+ansible-playbook -i inventory.yml site.yml  -u root --ask-pass
 ```
 
 ```
