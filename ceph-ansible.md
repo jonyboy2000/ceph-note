@@ -293,14 +293,12 @@ i=10.2.9-25 &&  cmd="yum localinstall ceph-mon-$i.el7.centos.x86_64.rpm ceph-osd
 ```
 
 
-multi instance rgw
+## multi instance rgw
+rgw-standalone-multi.yml
 
+ansible-playbook -i inventory.yml rgw-standalone-multi.yml  -u root --ask-pass
 ```
 ---
-# Run ceph-rgw role standalone
-
-# Need to load the facts from mons because ceph-common needs them to generate the ceph.conf
-# and collect keys from a mon to bootstrap the rgw nodes
 - hosts: mons
   become: True
   roles:
@@ -320,9 +318,21 @@ multi instance rgw
 - hosts: rgws
   become: True
   tasks:
+  - name: read cluster fsid if it already exists
+    local_action:
+      module: command
+        cat fetch/ceph_cluster_uuid.conf
+    register: cluster_uuid
+    become: false
+    always_run: true
+
+  - name: set_fact fsid
+    set_fact:
+      fsid: "{{ cluster_uuid.stdout }}"
+
   - name: copy admin
     copy:
-      src: "fetch/208d409f-7119-4c44-be58-446d444c2531{{ item.name }}"
+      src: "fetch/{{ fsid }}{{ item.name }}"
       dest: "{{ item.name }}"
       owner: "ceph"
       group: "ceph"
@@ -357,5 +367,14 @@ multi instance rgw
       - { section: "client.rgw.rgw3", option: "keyring", value: '/var/lib/ceph/radosgw/ceph-rgw.rgw3/keyring' }
       - { section: "client.rgw.rgw3", option: "log file", value: "/var/log/ceph/ceph-rgw-rgw3.log" }
       - { section: "client.rgw.rgw3", option: "rgw frontends", value: "civetweb port=0.0.0.0:8083 num_threads=100" }
+  - name: enable and start
+    command: "{{ item }}"
+    with_items:
+      - systemctl enable ceph-radosgw@rgw.rgw1
+      - systemctl enable ceph-radosgw@rgw.rgw2
+      - systemctl enable ceph-radosgw@rgw.rgw3
+      - systemctl start ceph-radosgw@rgw.rgw1
+      - systemctl start ceph-radosgw@rgw.rgw2
+      - systemctl start ceph-radosgw@rgw.rgw3 
 ```
 
