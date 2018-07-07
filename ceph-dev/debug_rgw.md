@@ -2031,7 +2031,7 @@ root       11299  0.0  0.0 112644   952 pts/0    R+   15:01   0:00 grep --color=
 # jewel版本vstart启动(非rpm安装)
 ```
 #单个集群
-CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --short -r -X -i 127.0.0.1
+CEPH_RGW_PORT=80 CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --short -r -X -i 127.0.0.1
 #多集群
 VSTART_DEST=/root/ceph/src/ceph1  CEPH_PORT=6790 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --short -r -X -i 127.0.0.1
 VSTART_DEST=/root/ceph/src/ceph2  CEPH_PORT=6791 CEPH_NUM_MON=1 ./vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --short -r -X -i 127.0.0.1
