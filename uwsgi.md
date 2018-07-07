@@ -36,7 +36,7 @@ vi /etc/supervisord.d/api-server.ini
 autorestart=True
 autostart=True
 redirect_stderr=True
-#environment=PATH="/home/app_env/bin"
+environment=S3_ADMIN_ACCESS_KEY="admin",S3_ADMIN_SECRET_KEY="admin",S3_ENDPOINT="192.168.153.181",BAD_UID="baduid",HLS_UID="admin",HLS_DISPLAYNAME="admin"
 command=/usr/bin/uwsgi --ini /root/api-server/api-server.ini
 user=root
 directory=/root/api-server/rtmp_s3_api
@@ -48,7 +48,7 @@ stdout_logfile = /tmp/api-server.log
 autorestart=True
 autostart=True
 redirect_stderr=True
-#environment=PATH="/home/app_env/bin"
+environment=S3_ADMIN_ACCESS_KEY="admin",S3_ADMIN_SECRET_KEY="admin",S3_ENDPOINT="192.168.153.181",BAD_UID="baduid",HLS_UID="admin",HLS_DISPLAYNAME="admin"
 command=/usr/bin/uwsgi --ini /root/api-server/api-server2.ini
 user=root
 directory=/root/api-server/rtmp_s3_api
@@ -60,13 +60,14 @@ stdout_logfile = /tmp/api-server2.log
 autorestart=True
 autostart=True
 redirect_stderr=True
-#environment=PATH="/home/app_env/bin"
+environment=S3_ADMIN_ACCESS_KEY="admin",S3_ADMIN_SECRET_KEY="admin",S3_ENDPOINT="192.168.153.181",BAD_UID="baduid",HLS_UID="admin",HLS_DISPLAYNAME="admin"
 command=/usr/bin/uwsgi --ini /root/api-server/api-server3.ini
 user=root
 directory=/root/api-server/rtmp_s3_api
 stdout_logfile_maxbytes = 20MB
 stdout_logfile_backups = 20
 stdout_logfile = /tmp/api-server3.log
+
 ```
 
 ```
