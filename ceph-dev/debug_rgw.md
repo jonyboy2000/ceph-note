@@ -2008,9 +2008,9 @@ fi
 yum install ceph-mon ceph-osd ceph-radosgw
 mkdir /tmp/run/ceph1 && cd  /tmp/run/ceph1
 #上传vstart.sh stop.sh 脚本到/tmp/run/ceph1 /tmp/run/ceph2
-CEPH_BUILD_ROOT=/usr CEPH_PORT=6790 ./vstart.sh -n --mon_num 1 --mds_num 0 --rgw_port 8000 --short -r -X -i 127.0.0.1
+CEPH_RGW_PORT=8080 CEPH_BUILD_ROOT=/usr CEPH_PORT=6790 ./vstart.sh -n --mon_num 1 --mds_num 0 --rgw_port 8000 --short -r -X -i 127.0.0.1
 mkdir /tmp/run/ceph2 && cd  /tmp/run/ceph2
-CEPH_BUILD_ROOT=/usr CEPH_PORT=6890 ./vstart.sh -n --mon_num 1 --mds_num 0 --rgw_port 8001 --short -r -X -i 127.0.0.1
+CEPH_RGW_PORT=8080 CEPH_BUILD_ROOT=/usr CEPH_PORT=6890 ./vstart.sh -n --mon_num 1 --mds_num 0 --rgw_port 8001 --short -r -X -i 127.0.0.1
 
 
 [root@k1 ceph1]# ps aux|grep ceph
