@@ -3,12 +3,10 @@
 
 master branch
 ```
-单机启动1个集群
-CEPH_NUM_OSD=1 ../src/vstart.sh -n --mon_num 1 --osd_num 1 --mds_num 0 --mgr_num 1 --rgw_num 1
-
 单机启动2个集群
-CEPH_NUM_OSD=1 ../src/mstart.sh ceph1  -n -d --mon_num 1 --osd_num 1 --mds_num 0 --mgr_num 1 --rgw_num 1
-CEPH_NUM_OSD=1 ../src/mstart.sh ceph2  -n -d --mon_num 1 --osd_num 1 --mds_num 0 --mgr_num 1 --rgw_num 1
+CEPH_NUM_OSD=1 CEPH_NUM_MON=1 CEPH_NUM_MGR=1  CEPH_NUM_MDS=0 CEPH_NUM_RGW=1 VSTART_DEST=cluster1  ../src/vstart.sh --debug --new -x --localhost --without-dashboard --filestore
+CEPH_NUM_OSD=1 CEPH_NUM_MON=1 CEPH_NUM_MGR=1  CEPH_NUM_MDS=0 CEPH_NUM_RGW=1 VSTART_DEST=cluster2  ../src/vstart.sh --debug --new -x --localhost --without-dashboard --filestore
+
 ```
 ```
 #restart rgw
