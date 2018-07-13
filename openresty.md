@@ -46,3 +46,107 @@ http {
     }
 }
 ```
+
+
+```
+         location /test {
+              default_type "text/html";
+              content_by_lua_file /usr/local/openresty/nginx/conf/lua/1.lua;
+         }
+
+```
+
+```
+local cjson = require "cjson"
+local http = require 'resty.http'
+local httpc = http.new()
+httpc:set_timeout(500)
+httpc:connect("192.168.153.181", 8001)
+local aws_access = "admin"
+local aws_secret_key = "admin"
+local now = ngx.cookie_time(ngx.time())
+local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/metadata/bucket/";
+local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
+local aws_signature = ngx.encode_base64(digest)
+local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
+
+bucket = ""
+zonegroup = ""
+endpoint = ""
+for b in string.gmatch(ngx.var.host, '(%w*)%.?eos%-beijing%-1%.cmecloud%.cn') do
+  bucket = b
+end
+local res, err = httpc:request({
+    path = "/admin/metadata/bucket/?key=" .. bucket,
+    headers = {
+        ["Host"] = "192.168.153.181:8001",
+        ["Authorization"] = auth_header,
+        ["Date"] = now,
+    },
+})
+
+if res.status then
+  unjson = cjson.decode(res:read_body())
+  zonegroup = unjson["zonegroup"]
+  ngx.say(zonegroup)
+end
+
+```
+
+```
+[root@localhost build]# curl -H "host: test1.eos-beijing-1.cmecloud.cn"  127.0.0.1/test -v
+* About to connect() to 127.0.0.1 port 80 (#0)
+*   Trying 127.0.0.1...
+* Connected to 127.0.0.1 (127.0.0.1) port 80 (#0)
+> GET /test HTTP/1.1
+> User-Agent: curl/7.29.0
+> Accept: */*
+> host: test1.eos-beijing-1.cmecloud.cn
+>
+< HTTP/1.1 200 OK
+< Server: openresty/1.13.6.1
+< Date: Fri, 13 Jul 2018 12:35:08 GMT
+< Content-Type: text/html
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+<
+zgp1
+* Connection #0 to host 127.0.0.1 left intact
+[root@localhost build]# curl -H "host: test2.eos-beijing-1.cmecloud.cn"  127.0.0.1/test -v
+* About to connect() to 127.0.0.1 port 80 (#0)
+*   Trying 127.0.0.1...
+* Connected to 127.0.0.1 (127.0.0.1) port 80 (#0)
+> GET /test HTTP/1.1
+> User-Agent: curl/7.29.0
+> Accept: */*
+> host: test2.eos-beijing-1.cmecloud.cn
+>
+< HTTP/1.1 200 OK
+< Server: openresty/1.13.6.1
+< Date: Fri, 13 Jul 2018 12:35:14 GMT
+< Content-Type: text/html
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+<
+zgp2
+* Connection #0 to host 127.0.0.1 left intact
+[root@localhost build]# curl -H "host: test3.eos-beijing-1.cmecloud.cn"  127.0.0.1/test -v
+* About to connect() to 127.0.0.1 port 80 (#0)
+*   Trying 127.0.0.1...
+* Connected to 127.0.0.1 (127.0.0.1) port 80 (#0)
+> GET /test HTTP/1.1
+> User-Agent: curl/7.29.0
+> Accept: */*
+> host: test3.eos-beijing-1.cmecloud.cn
+>
+< HTTP/1.1 200 OK
+< Server: openresty/1.13.6.1
+< Date: Fri, 13 Jul 2018 12:32:45 GMT
+< Content-Type: text/html
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+<
+nil
+* Connection #0 to host 127.0.0.1 left intact
+
+```
