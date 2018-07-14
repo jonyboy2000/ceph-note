@@ -150,3 +150,125 @@ nil
 * Connection #0 to host 127.0.0.1 left intact
 
 ```
+
+test sdk (python)
+```
+from boto3.session import Session
+import botocore
+botocore.session.Session().set_debug_logger()
+import boto3
+access_key = "yly"
+secret_key = "yly"
+url = 'http://eos-beijing-1.cmecloud.cn'
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url)
+resp = s3_client.get_object(Bucket="test2", Key="obj22223333333333333333333333333", Range="bytes=0-10")
+print resp['Body'].read()
+resp = s3_client.get_object(Bucket="test1", Key="obj111111111111111111111111111", Range="bytes=0-10")
+print resp['Body'].read()
+```
+boto3 config
+```
+cat ~/.aws/config
+[default]
+s3 =
+    signature_version = s3
+    addressing_style = virtual
+
+```
+
+ceph.conf
+```
+rgw_dns_name = eos-beijing-1.cmecloud.cn
+```
+
+
+dns config in nginx
+```
+cat /etc/dnsmasq.conf
+resolv-file=/etc/resolv.dnsmasq.conf
+strict-order
+resolv-file=/etc/dnsmasq.d/resolv.dnsmasq.conf
+addn-hosts=/etc/dnsmasq.d/dnsmasq.hosts
+address=/eos-beijing-1.cmecloud.cn/127.0.0.1
+address=/*.eos-beijing-1.cmecloud.cn/127.0.0.1
+```
+
+nginx.conf
+```
+user root;
+master_process off;
+daemon off;
+worker_processes  1;
+error_log logs/error.log;
+events {
+    worker_connections 1024;
+}
+
+http {
+    resolver 127.0.0.1;
+    server {
+        listen 80;
+        lua_code_cache off;
+        client_max_body_size 0;
+        location / {
+            set $backend  '';
+            rewrite_by_lua_file  /usr/local/openresty/nginx/conf/lua/router.lua;
+            proxy_pass http://$backend;
+        }
+    }
+}
+
+```
+
+```
+cat /usr/local/openresty/nginx/conf/lua/router.lua
+local cjson = require "cjson"
+local http = require 'resty.http'
+local httpc = http.new()
+httpc:set_timeout(500)
+httpc:connect("192.168.153.181", 8001)
+local aws_access = "admin"
+local aws_secret_key = "admin"
+local now = ngx.cookie_time(ngx.time())
+local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/metadata/bucket/";
+local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
+local aws_signature = ngx.encode_base64(digest)
+local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
+
+bucket = ""
+zonegroup = ""
+endpoint = ""
+for b in string.gmatch(ngx.var.host, '(%w*)%.?eos%-beijing%-1%.cmecloud%.cn') do
+  bucket = b
+end
+local res, err = httpc:request({
+    path = "/admin/metadata/bucket/?key=" .. bucket,
+    headers = {
+        ["Host"] = "192.168.153.181:8001",
+        ["Authorization"] = auth_header,
+        ["Date"] = now,
+    },
+})
+
+if res.status then
+  unjson = cjson.decode(res:read_body())
+  zonegroup = unjson["zonegroup"]
+end
+
+if zonegroup == "zgp1"
+then
+  endpoint = ngx.var.host .. ":8001"
+end
+
+if zonegroup == "zgp2"
+then
+  endpoint = ngx.var.host .. ":8002"
+end
+
+ngx.log(ngx.ERR, "backend: ", endpoint)
+ngx.var.backend = endpoint
+```
+
+
+
