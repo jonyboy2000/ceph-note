@@ -222,7 +222,22 @@ http {
 ```
 
 ```
-cat /usr/local/openresty/nginx/conf/lua/router.lua
+if ngx.var.host == "eos-beijing-1.cmecloud.cn" then
+  if ngx.var.uri == "/" then
+    ngx.var.backend = ngx.var.host .. ":8001"  --list all buckets
+    return
+  else
+   ngx.status = 400
+   ngx.header.content_type = "application/xml"
+   ngx.say('<?xml version="1.0" encoding="UTF-8"?><Error><Code>InvalidRequest</Code><Message>Path Style is Not Support, Please Use Host Style</Message></Error>')
+   ngx.exit(400)
+  end
+end
+
+zonegroup = ""
+endpoint = ""
+bucket = ngx.re.sub(ngx.var.host, "(.*)\\.eos-beijing-1\\.cmecloud\\.cn", "$1", "o")
+
 local cjson = require "cjson"
 local http = require 'resty.http'
 local httpc = http.new()
@@ -236,12 +251,6 @@ local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
 local aws_signature = ngx.encode_base64(digest)
 local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
 
-bucket = ""
-zonegroup = ""
-endpoint = ""
-for b in string.gmatch(ngx.var.host, '(%w*)%.?eos%-beijing%-1%.cmecloud%.cn') do
-  bucket = b
-end
 local res, err = httpc:request({
     path = "/admin/metadata/bucket/?key=" .. bucket,
     headers = {
@@ -256,6 +265,30 @@ if res.status then
   zonegroup = unjson["zonegroup"]
 end
 
+ngx.log(ngx.ERR, "ngx.var.uri: ", ngx.var.uri)
+
+if not zonegroup then
+  -- can not found bucket
+  if ngx.var.request_method == "PUT" then
+    -- check if it is create bucket request
+    ngx.req.read_body()
+    local body_data = ngx.req.get_body_data()
+    if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguratio
+    then
+      ngx.var.backend = ngx.var.host .. ":8001"
+      return
+    end
+
+    if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguratio
+    then
+      ngx.var.backend = ngx.var.host .. ":8002"
+      return
+    end
+  end
+  ngx.var.backend = ngx.var.host .. ":8001"  -- default endpoint
+  return
+end
+
 if zonegroup == "zgp1"
 then
   endpoint = ngx.var.host .. ":8001"
@@ -268,6 +301,7 @@ end
 
 ngx.log(ngx.ERR, "backend: ", endpoint)
 ngx.var.backend = endpoint
+
 ```
 
 
