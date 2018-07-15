@@ -192,6 +192,7 @@ resolv-file=/etc/dnsmasq.d/resolv.dnsmasq.conf
 addn-hosts=/etc/dnsmasq.d/dnsmasq.hosts
 address=/eos-beijing-1.cmecloud.cn/127.0.0.1
 address=/*.eos-beijing-1.cmecloud.cn/127.0.0.1
+address=/192.168.153.181/192.168.153.181
 ```
 
 nginx.conf
@@ -222,21 +223,26 @@ http {
 ```
 
 ```
-if ngx.var.host == "eos-beijing-1.cmecloud.cn" then
-  if ngx.var.uri == "/" then
-    ngx.var.backend = ngx.var.host .. ":8001"  --list all buckets
-    return
+local bucket
+local zonegroup
+local endpoint
+local m_style = ngx.re.match(ngx.var.host, [=[[0-9]+(?:\.[0-9]+){0,3}]=])
+if not m_style then  
+  -- 域名形式
+  local m_domain = ngx.re.match(ngx.var.host, [=[(.*).eos-beijing-1.cmecloud.cn]=])
+  -- 从域名中获取桶名
+  if not m_domain then
+    -- 域名中获取失败,从uri中获取桶名
+    local m_uri = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)")
+    bucket = m_uri[1]
   else
-   ngx.status = 400
-   ngx.header.content_type = "application/xml"
-   ngx.say('<?xml version="1.0" encoding="UTF-8"?><Error><Code>InvalidRequest</Code><Message>Path Style is Not Support, Please Use Host Style</Message></Error>')
-   ngx.exit(400)
+    bucket = m_domain[1]
   end
+else
+  -- ip形式
+  local m, err = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)")
+  bucket = m[1]
 end
-
-zonegroup = ""
-endpoint = ""
-bucket = ngx.re.sub(ngx.var.host, "(.*)\\.eos-beijing-1\\.cmecloud\\.cn", "$1", "o")
 
 local cjson = require "cjson"
 local http = require 'resty.http'
@@ -265,7 +271,7 @@ if res.status then
   zonegroup = unjson["zonegroup"]
 end
 
-ngx.log(ngx.ERR, "ngx.var.uri: ", ngx.var.uri)
+-- ngx.log(ngx.ERR, "ngx.var.uri: ", ngx.var.uri)
 
 if not zonegroup then
   -- can not found bucket
@@ -278,13 +284,25 @@ if not zonegroup then
       ngx.var.backend = ngx.var.host .. ":8001"
       return
     end
-
+    if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguration>'
+    then
+      ngx.log(ngx.ERR, "create bucket in zgp1 " )
+      ngx.var.backend = ngx.var.host .. ":8001"
+      return
+    end
     if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguratio
     then
       ngx.var.backend = ngx.var.host .. ":8002"
       return
     end
+        if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguration>'
+    then
+      ngx.log(ngx.ERR, "create bucket in zgp1 " )
+      ngx.var.backend = ngx.var.host .. ":8002"
+      return
+    end
   end
+  -- 默认上游
   ngx.var.backend = ngx.var.host .. ":8001"  -- default endpoint
   return
 end
