@@ -226,22 +226,22 @@ http {
 local bucket
 local zonegroup
 local endpoint
-local m_style = ngx.re.match(ngx.var.host, [=[[0-9]+(?:\.[0-9]+){0,3}]=])
-if not m_style then  
-  -- 域名形式
-  local m_domain = ngx.re.match(ngx.var.host, [=[(.*).eos-beijing-1.cmecloud.cn]=])
-  -- 从域名中获取桶名
-  if not m_domain then
-    -- 域名中获取失败,从uri中获取桶名
-    local m_uri = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)")
-    bucket = m_uri[1]
-  else
-    bucket = m_domain[1]
-  end
+
+local host_m = ngx.re.match(ngx.var.host, [=[([^.]*)(.?)eos-beijing-1.cmecloud.cn$]=], "jo")
+if not host_m then
+  -- HOST in headers is IP
+  local uri_m = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
+  -- get bucket from uri
+  bucket = uri_m[1]
 else
-  -- ip形式
-  local m, err = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)")
-  bucket = m[1]
+  if host_m[1] == "" then
+    -- domain path style
+    local uri_m2 = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
+    bucket = uri_m2[1]
+  else
+    -- domain vitual host style
+    bucket = host_m[1]
+  end
 end
 
 local cjson = require "cjson"
