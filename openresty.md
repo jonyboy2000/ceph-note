@@ -252,13 +252,13 @@ httpc:connect("192.168.153.181", 8001)
 local aws_access = "admin"
 local aws_secret_key = "admin"
 local now = ngx.cookie_time(ngx.time())
-local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/metadata/bucket/";
+local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/bucket/";
 local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
 local aws_signature = ngx.encode_base64(digest)
 local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
 
 local res, err = httpc:request({
-    path = "/admin/metadata/bucket/?key=" .. bucket,
+    path = "/admin/bucket/?zonegroup&bucket=" .. bucket,
     headers = {
         ["Host"] = "192.168.153.181:8001",
         ["Authorization"] = auth_header,
