@@ -223,103 +223,134 @@ http {
 ```
 
 ```
-local bucket
-local zonegroup
-local endpoint
-
-local host_m = ngx.re.match(ngx.var.host, [=[([^.]*)(.?)eos-beijing-1.cmecloud.cn$]=], "jo")
-if not host_m then
-  -- HOST in headers is IP
-  local uri_m = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
-  -- get bucket from uri
-  bucket = uri_m[1]
-else
-  if host_m[1] == "" then
-    -- domain path style
-    local uri_m2 = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
-    bucket = uri_m2[1]
+local function get_bucket()
+  local host_m = ngx.re.match(ngx.var.host, [=[([^.]*)(.?)eos-beijing-1.cmecloud.cn$]=], "jo")
+  if not host_m then
+    -- HOST头是IP地址,则从uri中取桶名
+    local uri_m = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
+    return uri_m[1]
   else
-    -- domain vitual host style
-    bucket = host_m[1]
+    if host_m[1] == "" then
+      -- 域名形式,桶名在域名后
+      local uri_m2 = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
+      return uri_m2[1]
+    else
+      -- 域名形式,桶名在域名前
+      return host_m[1]
+    end
   end
 end
 
-local cjson = require "cjson"
-local http = require 'resty.http'
-local httpc = http.new()
-httpc:set_timeout(500)
-httpc:connect("192.168.153.181", 8001)
-local aws_access = "admin"
-local aws_secret_key = "admin"
-local now = ngx.cookie_time(ngx.time())
-local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/bucket/";
-local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
-local aws_signature = ngx.encode_base64(digest)
-local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
-
-local res, err = httpc:request({
-    path = "/admin/bucket/?zonegroup&bucket=" .. bucket,
-    headers = {
-        ["Host"] = "192.168.153.181:8001",
-        ["Authorization"] = auth_header,
-        ["Date"] = now,
-    },
-})
-
-if res.status then
-  unjson = cjson.decode(res:read_body())
-  zonegroup = unjson["zonegroup"]
+local function get_zonegroup(bucket)
+  local cjson = require "cjson"
+  local http = require 'resty.http'
+  local httpc = http.new()
+  httpc:set_timeout(500)
+  httpc:connect("192.168.153.181", 8001) --rgw admin 地址
+  local aws_access = "admin"
+  local aws_secret_key = "admin"
+  local now = ngx.cookie_time(ngx.time())
+  local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/bucket/";
+  local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
+  local aws_signature = ngx.encode_base64(digest)
+  local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
+  local res, err = httpc:request({
+      path = "/admin/bucket/?zonegroup&bucket=" .. bucket,
+      headers = {
+          ["Host"] = "192.168.153.181:8001",  --rgw admin 地址
+          ["Authorization"] = auth_header,
+          ["Date"] = now,
+      },
+  })
+  if res.status then
+    unjson = cjson.decode(res:read_body())
+    return unjson["zonegroup"]
+  end
 end
 
--- ngx.log(ngx.ERR, "ngx.var.uri: ", ngx.var.uri)
+local function get_endpoint(zonegroup)
+  if zonegroup == "zgp1" then
+    return ngx.var.host .. ":8001"
+  end
+  if zonegroup == "zgp2" then
+    return ngx.var.host .. ":8002"
+  end
+end
+
+local bucket = get_bucket()
+local zonegroup 
+local endpoint 
+
+-- get from memcached
+local memcached = require "resty.memcached"
+local memc, err = memcached:new()
+if  memc then
+  memc:set_timeout(1000) -- 1 sec
+  memc:set_keepalive(10000, 100)
+  local ok, err = memc:connect("unix:/var/run/memcached/memcached.sock")
+  if ok then
+    local res, flags, err = memc:get(bucket)
+    if not res then
+       zonegroup = get_zonegroup(bucket)
+       --ngx.log(ngx.ERR, "memc not hit: ", zonegroup)
+       --ngx.log(ngx.ERR, "get_zonegroup:", zonegroup)
+       if zonegroup and bucket then
+         local ok, err = memc:set(bucket, zonegroup, 120)
+         if not ok then
+         --ngx.log(ngx.ERR, "memc set error")
+         end
+       end
+    else
+       --ngx.log(ngx.ERR, "memc hit: ", res)
+       zonegroup = res
+    end
+  else
+    zonegroup = get_zonegroup(bucket)
+  end
+else
+  zonegroup = get_zonegroup(bucket)
+end
 
 if not zonegroup then
-  -- can not found bucket
+  --无法找到桶,是否为创建桶请求
+  --ngx.log(ngx.ERR, "ngx.var.request_method:", ngx.var.request_method)
   if ngx.var.request_method == "PUT" then
-    -- check if it is create bucket request
+    --如果是PUT请求
     ngx.req.read_body()
-    local body_data = ngx.req.get_body_data()
-    if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguratio
+    local body_data = ngx.req.get_body_data() 
+    --ngx.log(ngx.ERR, "body_data:", body_data)
+    if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguration>'
     then
-      ngx.var.backend = ngx.var.host .. ":8001"
-      return
+      --ngx.log(ngx.ERR, "create bucket in zgp1 " )
+      zonegroup = "zgp1"
     end
+
     if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguration>'
     then
-      ngx.log(ngx.ERR, "create bucket in zgp1 " )
-      ngx.var.backend = ngx.var.host .. ":8001"
-      return
+      --ngx.log(ngx.ERR, "create bucket in zgp1 " )
+      zonegroup = "zgp1"
     end
-    if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguratio
+
+    if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguration>'
     then
-      ngx.var.backend = ngx.var.host .. ":8002"
-      return
+      --ngx.log(ngx.ERR, "create bucket in zgp2 " )
+      zonegroup = "zgp2"
     end
-        if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguration>'
+
+    if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguration>'
     then
-      ngx.log(ngx.ERR, "create bucket in zgp1 " )
-      ngx.var.backend = ngx.var.host .. ":8002"
-      return
+      --ngx.log(ngx.ERR, "create bucket in zgp2 " )
+      zonegroup = "zgp2"
     end
+  else
+    --ngx.log(ngx.ERR, "(default) " )
+    zonegroup = "zgp1"
   end
-  -- 默认上游
-  ngx.var.backend = ngx.var.host .. ":8001"  -- default endpoint
-  return
 end
 
-if zonegroup == "zgp1"
-then
-  endpoint = ngx.var.host .. ":8001"
-end
-
-if zonegroup == "zgp2"
-then
-  endpoint = ngx.var.host .. ":8002"
-end
-
-ngx.log(ngx.ERR, "backend: ", endpoint)
+endpoint = get_endpoint(zonegroup)
+--ngx.log(ngx.ERR, "backend: ", endpoint)
 ngx.var.backend = endpoint
-
 ```
 
 
