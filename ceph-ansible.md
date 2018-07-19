@@ -165,9 +165,26 @@ inventory
 192.168.130.138
 ```
 inventory.yml
+
+
+mons:
+  hosts:
+    10.144.90.7:
+      monitor_interface: enp129s0f0
+    10.144.90.8:
+      monitor_interface: enp129s0f0
+    10.144.90.16:
+      monitor_interface: enp129s0f0.110@enp129s0f0
+
 ```
 mons:
-  hosts: 192.168.153.183
+  hosts:
+    10.144.90.7:
+      monitor_interface: enp129s0f0
+    10.144.90.8:
+      monitor_interface: enp129s0f0
+    10.144.90.16:
+      monitor_interface: enp129s0f0.110@enp129s0f0
 osds:
   hosts:
     192.168.153.183:
