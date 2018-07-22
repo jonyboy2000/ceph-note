@@ -223,6 +223,9 @@ http {
 ```
 
 ```
+local zgp1 = "023c1d09-3429-4441-8980-ead2d3304ced"
+local zgp2 = "60355b00-1920-4164-b2a5-feb05c74b886"
+
 local function get_bucket()
   local host_m = ngx.re.match(ngx.var.host, [=[([^.]*)(.?)eos-beijing-1.cmecloud.cn$]=], "jo")
   if not host_m then
@@ -255,9 +258,9 @@ local function get_zonegroup(bucket)
   local aws_signature = ngx.encode_base64(digest)
   local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
   local res, err = httpc:request({
-      path = "/admin/bucket/?zonegroup&bucket=" .. bucket,
+      path = "/admin/bucket/?bucket=" .. bucket,
       headers = {
-          ["Host"] = "192.168.153.181:8001",  --rgw admin 地址
+          ["Host"] = "192.168.153.181:8001",  --master zonegroup rgw admin 地址
           ["Authorization"] = auth_header,
           ["Date"] = now,
       },
@@ -269,10 +272,10 @@ local function get_zonegroup(bucket)
 end
 
 local function get_endpoint(zonegroup)
-  if zonegroup == "zgp1" then
+  if zonegroup == zgp1 then
     return ngx.var.host .. ":8001"
   end
-  if zonegroup == "zgp2" then
+  if zonegroup == zgp2 then
     return ngx.var.host .. ":8002"
   end
 end
@@ -295,7 +298,7 @@ if  memc then
        --ngx.log(ngx.ERR, "memc not hit: ", zonegroup)
        --ngx.log(ngx.ERR, "get_zonegroup:", zonegroup)
        if zonegroup and bucket then
-         local ok, err = memc:set(bucket, zonegroup, 120)
+         local ok, err = memc:set(bucket, zonegroup, 300)
          if not ok then
          --ngx.log(ngx.ERR, "memc set error")
          end
@@ -322,29 +325,29 @@ if not zonegroup then
     if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguration>'
     then
       --ngx.log(ngx.ERR, "create bucket in zgp1 " )
-      zonegroup = "zgp1"
+      zonegroup = zgp1
     end
 
     if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguration>'
     then
       --ngx.log(ngx.ERR, "create bucket in zgp1 " )
-      zonegroup = "zgp1"
+      zonegroup = zgp1
     end
 
     if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguration>'
     then
       --ngx.log(ngx.ERR, "create bucket in zgp2 " )
-      zonegroup = "zgp2"
+      zonegroup = zgp2
     end
 
     if body_data == '<CreateBucketConfiguration><LocationConstraint>zgp2</LocationConstraint></CreateBucketConfiguration>'
     then
       --ngx.log(ngx.ERR, "create bucket in zgp2 " )
-      zonegroup = "zgp2"
+      zonegroup = zgp2
     end
   else
     --ngx.log(ngx.ERR, "(default) " )
-    zonegroup = "zgp1"
+    zonegroup = zgp1
   end
 end
 
