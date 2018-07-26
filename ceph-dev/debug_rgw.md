@@ -1,5 +1,3 @@
-# 由于主要关注rgw端，因此在rados直接使用rpm安装,ceph-radosgw模块编译调试
-
 ## (L) (Master) branch ceph
 ```
 单机启动2个集群
