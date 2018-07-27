@@ -21,7 +21,7 @@ using namespace boost;
 using namespace std;
 int main(int argc, char* argv[]){
   std::string url(argv[1]);
-  regex regex_url("^(http|https)://(([a-z0-9])(([a-z0-9-]{1,61})?[a-z0-9]{1})?(\\.[a-z0-9](([a-z0-9-]{1,61})?[a-z0-9]{1})?)?(\\.[a-zA-Z]{2,4})+|((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))))((:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))/|/)(.*)");
+  regex regex_url("^(http|https)://(([a-z0-9A-Z])(([a-zA-Z0-9-]{1,61})?[a-zA-Z0-9]{1})?(\\.[a-zA-Z0-9](([a-zA-Z0-9-]{1,61})?[a-zA-Z0-9]{1})?)?(\\.[a-zA-ZA-Z]{2,4})+|((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))))((:([1-9][0-9]*))/|/)(.*)");
   cmatch m;
   if (regex_match(url.c_str(), m, regex_url)){
      std::cout<<"match\n"<< m[0] << std::endl;
@@ -38,7 +38,7 @@ http://www.baidu.com.comm:90/aa
 ```
 
 ```
-http://Zww.baidu.com:90/aa
+http://Zww.baidu.com:90/aa  <=match
 http://www.baidu.com:abc/aa
 http://www.baidu.com/aa  <=match
 http://127.0.0.1/aa      <=match
