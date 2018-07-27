@@ -20,14 +20,13 @@ main.cpp
 using namespace boost;
 using namespace std;
 int main(int argc, char* argv[]){
-  std::string url = "http://www.baidu.com/aaa";
-//  std::string url = "http://www.baidu.com/aaa,http://www.abc.com/bbb";
-  regex regex_url("^(http|https)://([^:]*)(:\\d*)?");
+  std::string url = "http://127.0.0.1/index.php";
+  regex regex_url("^(http|https)://((\\w+\\.)*\\w+(:[0-9][1-9]*)?)((/\\w*)*)(/\\w+\\.\\w+)?");
   cmatch m;
   if (regex_match(url.c_str(), m, regex_url)){
-     std::cout<<"111"<<std::endl;
+     std::cout<<"match"<<std::endl;
   } else {
-     std::cout<<"222"<<std::endl;
+     std::cout<<"not match"<<std::endl;
   }
 }
 ```
