@@ -1,3 +1,8 @@
+生成随机大小文件
+```
+cat /dev/urandom | strings --bytes 1 | tr -d '\n\t ' | head --bytes 8192K > random.txt
+```
+
 ```
 journalctl -b -f -u  ceph-rest-api
 ```
