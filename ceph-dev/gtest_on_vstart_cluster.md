@@ -33,7 +33,7 @@ main.cpp
 #include "gtest/gtest.h"
 using namespace librados;
 
-TEST  (base,111) {
+TEST  (test1, run_this_test) {   //TEST  (test1, DISABLED_no_run) { 
   int ret = 0;
   /* Declare the cluster handle and required variables. */
   librados::Rados cluster;
