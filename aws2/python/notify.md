@@ -20,6 +20,13 @@ access_key = ""
 secret_key = ""
 url = "http://s3.amazonaws.com"
 session = Session(access_key, secret_key)
+
+AVAILABLE_CONFIGURATIONS = (
+    'LambdaFunctionConfigurations', #LAMBADA
+    'TopicConfigurations',          #SNS
+    'QueueConfigurations'           #SQS
+)
+
 bucket_notifications_config = {
 'TopicConfigurations' : [
         {
