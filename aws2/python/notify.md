@@ -1,6 +1,10 @@
 # 获取桶通知
 ```
 from boto3.session import Session
+
+#import os
+#os.environ['HTTP_PROXY'] = 'http://192.168.153.1:7777'
+
 import json
 import boto3
 access_key = ""
