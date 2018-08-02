@@ -8,7 +8,7 @@ secret_key = ""
 url = "http://s3.amazonaws.com"
 session = Session(access_key, secret_key)
 s3_client = session.client('s3', endpoint_url=url )
-conf = s3_client.get_bucket_notification_configuration(Bucket="wzyuliyangbucket01")
+conf = s3_client.get_bucket_notification_configuration(Bucket="***")
 print json.dumps(conf['TopicConfigurations'], indent=4, sort_keys=True)
 ```
 # 设置桶通知
@@ -61,7 +61,7 @@ bucket_notifications_config = {
 s3_client = session.client('s3', endpoint_url=url )
 print s3_client.put_bucket_notification_configuration(Bucket="***", NotificationConfiguration=bucket_notifications_config)
 ```
-# 清除桶通知
+# 清除桶通知（无法delete, method not allowed）
 ```
 from boto3.session import Session
 import json
