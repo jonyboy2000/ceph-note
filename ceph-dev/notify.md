@@ -664,3 +664,56 @@ TEST  (test1, run1) {
 //  }
 //}
 ```
+```
+ceph-request put "/test1?notification" -c yly.request   --file noti.xml  --verbose
+
+./bin/rados -p  default.rgw.meta  --namespace=root listxattr .bucket.meta.test1:0076671d-928c-4daa-8c3c-c304dfc2d891.14103.1  -c cluster1/ceph.conf
+ceph.objclass.version
+user.rgw.acl
+user.rgw.bn
+./bin/rados -p  default.rgw.meta  --namespace=root getxattr .bucket.meta.test1:0076671d-928c-4daa-8c3c-c304dfc2d891.14103.1  user.rgw.bn  -c cluster1/ceph.conf
+image1^image1(arn:aws:sns:us-east-1:471863637113:images3:ObjectCreated:*1/.jpgimage2^image2(arn:aws:sns:us-east-1:471863637113:images3:ObjectCreated:*2/.jpg
+```
+
+noti.xml
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<NotificationConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <TopicConfiguration>
+    <Id>image1</Id>
+    <Topic>arn:aws:sns:us-east-1:471863637113:image</Topic>
+    <Event>s3:ObjectCreated:*</Event>
+    <Filter>
+      <S3Key>
+        <FilterRule>
+          <Name>prefix</Name>
+          <Value>1/</Value>
+        </FilterRule>
+        <FilterRule>
+          <Name>Suffix</Name>
+          <Value>.jpg</Value>
+        </FilterRule>
+      </S3Key>
+    </Filter>
+  </TopicConfiguration>
+  <TopicConfiguration>
+    <Id>image2</Id>
+    <Topic>arn:aws:sns:us-east-1:471863637113:image</Topic>
+    <Event>s3:ObjectCreated:*</Event>
+    <Filter>
+      <S3Key>
+        <FilterRule>
+          <Name>prefix</Name>
+          <Value>2/</Value>
+        </FilterRule>
+        <FilterRule>
+          <Name>Suffix</Name>
+          <Value>.jpg</Value>
+        </FilterRule>
+      </S3Key>
+    </Filter>
+  </TopicConfiguration>
+</NotificationConfiguration>
+```
+
+
