@@ -35,7 +35,8 @@ RGWRados *store;
 
 int main(int argc, char *argv[]){
   vector<const char*> args;
-  argv_to_vec(argc, (const char **)argv, args);
+  args.push_back("--conf=/ceph/ceph/build/cluster1/ceph.conf");
+//  argv_to_vec(argc, (const char **)argv, args);
   auto cct = global_init(NULL, args, CEPH_ENTITY_TYPE_CLIENT,
              CODE_ENVIRONMENT_UTILITY,
              CINIT_FLAG_NO_DEFAULT_CONFIG_FILE);
@@ -62,6 +63,10 @@ public:
   std::string& get_suffix() { return suffix; }
   std::string& get_topic() { return topic; }
   std::list<string>& get_events() { return events; }
+  void set_id(std::string _i) { id = _i; }
+  void set_prefix(std::string _p) { prefix = _p; }
+  void set_suffix(std::string _s) { suffix = _s; }
+  void set_events(std::list<string> _e) { events = _e; }
   void encode(bufferlist& bl) const {
     ENCODE_START(1, 1, bl);
     encode(id, bl);
@@ -85,27 +90,166 @@ WRITE_CLASS_ENCODER(TopicConfiguration)
 
 class NotificationConfiguration
 {
-  protected:
-    std::list<TopicConfiguration> rules;
-  public:
-    NotificationConfiguration() {}
-    int get_rules_length(){return rules.size();}
-    std::list<TopicConfiguration>& get_rules(){return rules;}
-    ~NotificationConfiguration() {}
+protected:
+  std::map<string, TopicConfiguration> tcs_map;
+  std::list<TopicConfiguration> tcs;
+public:
+  NotificationConfiguration() {}
+  int get_tcs_length(){return tcs.size();}
+  std::list<TopicConfiguration>& get_tcs(){return tcs;}
+  std::map<string, TopicConfiguration>& get_tcs_map(){return tcs_map;}
+  int check_and_add_topic_config(TopicConfiguration *tc);
+  ~NotificationConfiguration() {}
 
   void encode(bufferlist& bl) const {
     ENCODE_START(1, 1, bl);
-    encode(rules, bl);
+    encode(tcs, bl);
     ENCODE_FINISH(bl);
   }
   void decode(bufferlist::const_iterator& bl) {
     DECODE_START(1, bl);
-    decode(rules, bl);
+    decode(tcs, bl);
     DECODE_FINISH(bl);
   }
   void dump(Formatter *f) const;
 };
 WRITE_CLASS_ENCODER(NotificationConfiguration)
+
+static inline int validate_event(const std::string& o) {
+  std::cout << o << std::endl;
+  if (o.compare("s3:ObjectCreated:*") == 0 || o.compare("s3:ObjectCreated:Put") == 0 || o.compare("s3:ObjectCreated:Post") == 0 \
+      || o.compare("s3:ObjectCreated:Copy") == 0 || o.compare("s3:ObjectCreated:CompleteMultipartUpload") == 0 \
+      || o.compare("s3:ObjectRemoved:*") == 0 || o.compare("s3:ObjectRemoved:Delete") == 0 \
+      || o.compare("s3:ObjectRemoved:DeleteMarkerCreated") == 0 || o.compare("s3:ReducedRedundancyLostObject") == 0 \
+   )
+    return 0;
+  return -1;
+}
+
+static inline bool samerule(std::string r1, std::string r2) {
+  if (r1.length() != r2.length())
+    return false;
+  int count = 0;
+  for(int i=0; i< r1.length(); i++) {
+    if (r1.at(i) == r2.at(i) || r1.at(i) == '*' || r2.at(i) == '*') {
+      count++;
+      continue;
+    }
+  }
+  if (count == r1.length()){
+    std::cout << "samerule: true" << std::endl;
+    return true;
+  }
+  std::cout << "samerule: false" << std::endl;
+
+  return false;
+}
+
+static inline bool sameevent(std::list<std::string> e1, std::list<std::string> e2) {
+  std::cout << "sameevent: start" << std::endl;
+  for (std::list<std::string>::iterator i = e1.begin(); i != e1.end() ; i++) {
+    for (std::list<std::string>::iterator j = e2.begin(); j != e2.end() ; j++) {
+      std::string event1 = *i;
+      std::string event2 = *j;
+      if (event1.compare(event2) == 0 \
+ || (event1.compare("s3:ObjectCreated:*") == 0 && (event2.find("s3:ObjectCreated") != std::string::npos)) \
+ || (event2.compare("s3:ObjectCreated:*") == 0 && (event1.find("s3:ObjectCreated") != std::string::npos)) \
+ || (event1.compare("s3:ObjectRemoved:*") == 0 && (event2.find("s3:ObjectRemoved") != std::string::npos)) \
+ || (event2.compare("s3:ObjectRemoved:*") == 0 && (event1.find("s3:ObjectRemoved") != std::string::npos))) {
+//        std::cout << "sameevent: same event found" << std::endl;
+//        std::cout << "event1: " << event1 << " event2:" << event2 << std::endl;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+#define s3_ObjectCreated_Put 0x1
+#define s3_ObjectCreated_Post 0x2
+#define s3_ObjectCreated_Copy 0x4
+#define s3_ObjectCreated_CompleteMultipartUpload 0x8
+#define s3_ObjectCreated_ALL (s3_ObjectCreated_Put    |  \
+                         s3_ObjectCreated_Post    |  \
+                         s3_ObjectCreated_Copy   |  \
+                         s3_ObjectCreated_CompleteMultipartUpload)
+
+
+#define s3_ObjectRemoved_Delete 0x10
+#define s3_ObjectRemoved_DeleteMarkerCreated 0x20
+#define s3_ObjectRemoved_ALL (s3_ObjectRemoved_Delete    |  \
+                         s3_ObjectRemoved_DeleteMarkerCreated)
+
+#define s3_ReducedRedundancyLostObject 0x100
+
+int NotificationConfiguration::check_and_add_topic_config(TopicConfiguration *tc) {
+  string id, topic;
+
+  //check Id
+  id = tc->get_id();
+  if (tcs_map.find(id) != tcs_map.end()) {   //Id shouldn't be the same
+    return -EINVAL;
+  }
+  //check Topic
+  topic = tc->get_topic();
+  if (topic.empty()) {   //Topic not empty
+    return -EINVAL;
+  }
+  // check Event
+  std::set<std::string> events;
+  int ObjectCreatedEventSum = 0;
+  int ObjectRemovedEventSum = 0;
+  int ReducedRedundancyLostObjectSum = 0;
+  for(std::list<std::string>::iterator eit = tc->get_events().begin();
+      eit != tc->get_events().end();
+      ++eit) {
+    const std::string event = *eit;
+
+    if (validate_event(event) !=0 )
+      return -EINVAL;
+
+    if (events.find(event) != events.end()){
+      std::cout << "find same event" << std::endl;
+      return -EINVAL;
+    } else {
+      events.insert(events.end(), event);
+    }
+
+    if (event.compare("s3:ObjectCreated:Put") == 0) {
+      ObjectCreatedEventSum += s3_ObjectCreated_Put;
+    } else if (event.compare("s3:ObjectCreated:Post") == 0) {
+      ObjectCreatedEventSum += s3_ObjectCreated_Post;
+    } else if (event.compare("s3:ObjectCreated:Copy") == 0) {
+      ObjectCreatedEventSum += s3_ObjectCreated_Copy;
+    } else if (event.compare("s3:ObjectCreated:CompleteMultipartUpload") == 0) {
+      ObjectCreatedEventSum += s3_ObjectCreated_CompleteMultipartUpload;
+    } else if (event.compare("s3:ObjectCreated:*") == 0) {
+      ObjectCreatedEventSum += s3_ObjectCreated_ALL;
+    } else if (event.compare("s3:ObjectRemoved:Delete") == 0) {
+      ObjectRemovedEventSum += s3_ObjectRemoved_Delete;
+    } else if (event.compare("s3:ObjectRemoved:DeleteMarkerCreated") == 0) {
+      ObjectRemovedEventSum += s3_ObjectRemoved_DeleteMarkerCreated;
+    } else if (event.compare("s3:ObjectRemoved:*") == 0) {
+      ObjectRemovedEventSum += s3_ObjectRemoved_ALL;
+    } else {
+      ReducedRedundancyLostObjectSum += s3_ReducedRedundancyLostObject;
+    }
+  }
+  if (events.size() == 0)
+    return -EINVAL;
+
+  std::cout << "ObjectCreatedEventSum: " << ObjectCreatedEventSum << std::endl;
+  std::cout << "ObjectRemovedEventSum: " << ObjectRemovedEventSum << std::endl;
+  std::cout << "ReducedRedundancyLostObjectSum: " << ReducedRedundancyLostObjectSum << std::endl;
+  if (ObjectCreatedEventSum > s3_ObjectCreated_ALL)
+    return -EINVAL;
+  if (ObjectRemovedEventSum > s3_ObjectRemoved_ALL)
+    return -EINVAL;
+  if (ReducedRedundancyLostObjectSum > s3_ReducedRedundancyLostObject)
+    return -EINVAL;
+
+  tcs_map.insert(std::pair<string, TopicConfiguration>(id, *tc));
+}
 
 class Id_S3 : public XMLObj {
 public:
@@ -122,6 +266,7 @@ public:
   Event_S3() {}
   ~Event_S3() override {}
 };
+
 
 class FilterRule_S3 : public XMLObj {
   std::string prefix;
@@ -150,7 +295,6 @@ bool S3Key_S3::xml_end(const char *el) {
   XMLObjIter iter = find("FilterRule");
   FilterRule_S3 *obj;
   if (!(obj = static_cast<FilterRule_S3 *>(iter.get_next()))) {
-    std::cout << "S3Key_S3 should have atleast one" << std::endl;
     return false;
   }
   for(; obj; obj = static_cast<FilterRule_S3 *>(iter.get_next())) {
@@ -163,6 +307,8 @@ bool S3Key_S3::xml_end(const char *el) {
     } else if (_name.compare("suffix") == 0 || _name.compare("Suffix") == 0 ) {
       suffix_filter_rule = *obj;
       suffix_filter_rule.set_suffix(_val);
+    } else {
+      return false;
     }
   }
   return true;
@@ -193,27 +339,99 @@ class Value_S3 : public XMLObj {
 public:
   Value_S3() {}
   ~Value_S3() override {}
-
 };
 
 class TopicConfiguration_S3 : public TopicConfiguration, public XMLObj
 {
-  public:
-    TopicConfiguration_S3() {}
-    ~TopicConfiguration_S3() override {}
+private:
+  CephContext *cct;
+public:
+  TopicConfiguration_S3(): cct(nullptr) {}
+  explicit TopicConfiguration_S3(CephContext *_cct): cct(_cct) {}
+  ~TopicConfiguration_S3() override {}
     
-    bool xml_end(const char *el) override;
-    void to_xml(ostream& out);
+  bool xml_end(const char *el) override;
+  void to_xml(ostream& out);
+  void set_ctx(CephContext *ctx) {
+    cct = ctx;
+  }
 };
 
 class NotificationConfiguration_S3 : public NotificationConfiguration, public XMLObj
 {
-  public:
-    NotificationConfiguration_S3() {}
-    ~NotificationConfiguration_S3() override {}
-    bool xml_end(const char *el) override;
-    void to_xml(ostream& out);
+private:
+  CephContext *cct;
+public:
+  NotificationConfiguration_S3(): cct(nullptr) {}
+  explicit NotificationConfiguration_S3(CephContext *_cct) : cct(_cct) {}
+  ~NotificationConfiguration_S3() override {}
+  bool xml_end(const char *el) override;
+  void to_xml(ostream& out);
+  int rebuild(RGWRados *store, NotificationConfiguration& dest);
+  void set_ctx(CephContext *ctx) {
+    cct = ctx;
+  }
 };
+
+#define TOPICCONFIGURATION_ID_MAX_LEN     48
+#define TOPICCONFIGURATION_PREFIX_MAX_LEN 48
+#define TOPICCONFIGURATION_SUFFIX_MAX_LEN 48
+#define TOPICCONFIGURATION_MAX_NUM        5
+
+int NotificationConfiguration_S3::rebuild(RGWRados *store, NotificationConfiguration& dest) {
+  if (tcs.size() > TOPICCONFIGURATION_MAX_NUM)
+    return -EINVAL;
+
+  int ret = 0;
+  int rule_len_max = 0;
+  for(list<TopicConfiguration>::iterator it = tcs.begin();
+      it != tcs.end(); ++it) {
+    TopicConfiguration& src_tc = *it;
+    if (src_tc.get_id().length() > TOPICCONFIGURATION_ID_MAX_LEN)
+      return -EINVAL;
+    if (src_tc.get_prefix().length() > TOPICCONFIGURATION_PREFIX_MAX_LEN)
+      return -EINVAL;
+    if (src_tc.get_suffix().length() > TOPICCONFIGURATION_SUFFIX_MAX_LEN)
+      return -EINVAL;
+    //check rules
+    int rule_length = src_tc.get_prefix().length() + src_tc.get_suffix().length();
+    if (rule_length > rule_len_max)
+      rule_len_max = rule_length;
+
+    ret = dest.check_and_add_topic_config(&src_tc);
+    if (ret < 0)
+      return ret;
+  }
+  std::vector<std::string> rules;
+  std::vector<std::list<std::string>> events;
+
+  for(list<TopicConfiguration>::iterator it = tcs.begin();
+      it != tcs.end(); ++it) {
+    TopicConfiguration& src_tc = *it;
+    if(src_tc.get_prefix().length() + src_tc.get_suffix().length() <= rule_len_max) {
+      std::string tmpr = src_tc.get_prefix() + std::string((rule_len_max - src_tc.get_prefix().length() - \
+      src_tc.get_suffix().length()), '*') +src_tc.get_suffix();
+      std::cout << tmpr << std::endl;
+      rules.push_back(tmpr);
+      events.push_back(src_tc.get_events());
+    }
+  }
+
+  for (int i = 0; i < rules.size(); i++) {
+    for (int j = i+1; j < rules.size(); j++) {
+      std::cout << "compare rule: " << rules.at(i) << "<-->" << rules.at(j) << std::endl;
+      if (samerule(rules.at(i) , rules.at(j))){
+        if (sameevent(events.at(i), events.at(j))) {
+          std::cout << "found same rule" << std::endl;
+          std::cout << rules.at(i) << "<->" <<  rules.at(j) <<std::endl;
+          return -EINVAL;
+        }
+      }
+    }
+  }
+
+  return ret;
+}
 
 class NotificationConfigurationXMLParser_S3 : public RGWXMLParser
 {
@@ -226,25 +444,25 @@ public:
 
 void TopicConfiguration_S3::to_xml(ostream& out) {
   out << "<TopicConfiguration>";
-  if (id.length() > 0) {
+  if (!id.empty())
     out << "<Id>" << id << "</Id>";
-  }
-  if (topic.length() > 0) {
-    out << "<Topic>" << id << "</Topic>";
-  }
-  for(list<string>::iterator it = events.begin(); it != events.end(); ++it) {
+  if (!topic.empty())
+    out << "<Topic>" << topic << "</Topic>";
+  for(std::list<string>::iterator it = events.begin();
+      it != events.end();
+      ++it) {
     out << "<Event>" << *it << "</Event>";
   }
-  if (prefix.length() > 0 || suffix.length() >0) {
+  if (!prefix.empty() || !suffix.empty()) {
     out << "<Filter>";
     out << "<S3Key>";
-    if (prefix.length() > 0) {
+    if (!prefix.empty()) {
       out << "<FilterRule>";
       out << "<Name>Prefix</Name>";
       out << "<Value>" <<  prefix << "</Value>";
       out << "</FilterRule>";
     }
-    if (suffix.length() > 0) {
+    if (!suffix.empty()) {
       out << "<FilterRule>";
       out << "<Name>Suffix</Name>";
       out << "<Value>" <<  suffix << "</Value>";
@@ -258,24 +476,32 @@ void TopicConfiguration_S3::to_xml(ostream& out) {
 
 bool TopicConfiguration_S3::xml_end(const char *el) {
   XMLObj *o = find_first("Id");
-  id.clear();
-  id = o->get_data();
+  if (o) {
+    id.clear();
+    id = o->get_data();
+  } else {
+    char buf[TOPICCONFIGURATION_ID_MAX_LEN + 1];
+    gen_rand_alphanumeric_lower(cct, buf, sizeof(buf));
+    id = std::string(buf);
+  }
 
   o = find_first("Topic");
-  topic.clear();
-  topic = o->get_data();
+  if (!o) {
+    std::cout  << "Topic not found" << std::endl;
+  } else {
+    topic.clear();
+    topic = o->get_data();
+  }
 
   XMLObjIter iter = find("Event");
   XMLObj *obj;
   obj = iter.get_next();
   if (obj) {
     for( ; obj; obj = iter.get_next()) {
-      const char *s = obj->get_data().c_str();
+      std::string s = obj->get_data();
       std::cout  << "TopicConfiguration_S3::xml_end, el : " << el << ", data : " << s << std::endl;
-      if (s) {
+      if (!s.empty()) {
         events.push_back(string(s));
-      } else {
-        return false;
       }
     }
   }
@@ -291,8 +517,8 @@ bool TopicConfiguration_S3::xml_end(const char *el) {
 void NotificationConfiguration_S3::to_xml(ostream& out) {
   out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ;
   out << "<NotificationConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/>";
-  for(list<TopicConfiguration>::iterator it = rules.begin();
-      it != rules.end(); ++it) {
+  for(list<TopicConfiguration>::iterator it = tcs.begin();
+      it != tcs.end(); ++it) {
     (static_cast<TopicConfiguration_S3 &>(*it)).to_xml(out);
   }
   out << "</NotificationConfiguration>";
@@ -302,11 +528,10 @@ bool NotificationConfiguration_S3::xml_end(const char *el) {
   XMLObjIter iter = find("TopicConfiguration");
   TopicConfiguration_S3 *obj;
   if (!(obj = static_cast<TopicConfiguration_S3 *>(iter.get_next()))) {
-    std::cout << "NotificationConfiguration should have atleast one" << std::endl;
     return false;
   }
   for(; obj; obj = static_cast<TopicConfiguration_S3 *>(iter.get_next())) {
-    rules.push_back(*obj);
+    tcs.push_back(*obj);
   }
   return true;
 }
@@ -322,9 +547,9 @@ public:
 
 XMLObj *RGWNotificationConfigurationXMLParser_S3::alloc_obj(const char *el) {
   if (strcmp(el, "NotificationConfiguration") == 0) {
-    return new NotificationConfiguration_S3;
+    return new NotificationConfiguration_S3(cct);
   } else if (strcmp(el, "TopicConfiguration") == 0) {
-    return new TopicConfiguration_S3;
+    return new TopicConfiguration_S3(cct);
   } else if (strcmp(el, "Id") == 0) {
     return new Id_S3;
   } else if (strcmp(el, "Topic") == 0) {
@@ -346,31 +571,96 @@ XMLObj *RGWNotificationConfigurationXMLParser_S3::alloc_obj(const char *el) {
 }
 
 TEST  (test1, run1) {
+
     RGWNotificationConfigurationXMLParser_S3 parser(store->ctx());
-    NotificationConfiguration_S3 *bn_config;
-    string data = string("<NotificationConfiguration><TopicConfiguration><Id>1</Id><Topic>one</Topic><Event>GET</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.jpg</Value></FilterRule></S3Key></Filter></TopicConfiguration><TopicConfiguration><Id>2</Id><Topic>two</Topic><Event>PUT</Event><Event>DELETE</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.png</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>dir1/</Value></FilterRule></S3Key></Filter></TopicConfiguration></NotificationConfiguration>");
+    NotificationConfiguration_S3 *bn_config_s3;
+//    bn_config_s3->set_ctx(store->ctx());
+//    string data = string("<NotificationConfiguration><TopicConfiguration><Id>1</Id><Topic>one</Topic><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.jpg</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>1/</Value></FilterRule></S3Key></Filter></TopicConfiguration><TopicConfiguration><Id>333</Id><Topic>three</Topic><Event>s3:ObjectCreated:Copy</Event><Event>s3:ObjectCreated:Post</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.png</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>image/</Value></FilterRule></S3Key></Filter></TopicConfiguration><TopicConfiguration><Id>2</Id><Topic>two</Topic><Event>s3:ObjectCreated:Copy</Event><Event>s3:ObjectCreated:Post</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.png</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>dir123/</Value></FilterRule></S3Key></Filter></TopicConfiguration></NotificationConfiguration>");
+//    string data = string("<NotificationConfiguration><TopicConfiguration><Topic>one</Topic><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.jpg</Value></FilterRule></S3Key></Filter></TopicConfiguration></NotificationConfiguration>");
+    string data = string("<NotificationConfiguration><TopicConfiguration><Id>1</Id><Topic>one</Topic><Event>s3:ObjectCreated:*</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.jpg</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>1</Value></FilterRule></S3Key></Filter></TopicConfiguration><TopicConfiguration><Id>333</Id><Topic>three</Topic><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.jpg</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>11</Value></FilterRule></S3Key></Filter></TopicConfiguration></NotificationConfiguration>");
     parser.init();
     parser.parse(data.c_str(), data.length(), 1);
-    bn_config = static_cast<NotificationConfiguration_S3 *>(parser.find_first(
-                         "NotificationConfiguration"));
+//    std::cout << "get_unallocated_objs_size: " << parser.get_unallocated_objs_size() << std::endl;
 
-    std::cout << "length(): " << bn_config->get_rules_length() << std::endl;
-
-    std::list<TopicConfiguration> rules =bn_config->get_rules();
-    for(list<TopicConfiguration>::iterator it = rules.begin();it != rules.end(); ++it) {
+    bn_config_s3 = static_cast<NotificationConfiguration_S3 *>(parser.find_first("NotificationConfiguration"));
+    std::cout << "length(): " << bn_config_s3->get_tcs_length() << std::endl;
+    std::list<TopicConfiguration> tcs =bn_config_s3->get_tcs();
+    for(list<TopicConfiguration>::iterator it = tcs.begin();it != tcs.end(); ++it) {
       std::cout << "TopicConfiguration>>" << std::endl;
-      std::cout << (*it).get_id() << std::endl;
-      std::cout << (*it).get_prefix() << std::endl;
-      std::cout << (*it).get_suffix() << std::endl;
-      std::cout << (*it).get_topic() << std::endl;
-      for(list<std::string>::iterator eit = (*it).get_events().begin();eit != (*it).get_events().end(); ++eit) {
+      std::cout << "id: "<< (*it).get_id() << std::endl;
+      std::cout << "prefix: "<<(*it).get_prefix() << std::endl;
+      std::cout << "suffix: "<<(*it).get_suffix() << std::endl;
+      std::cout << "topic: "<<(*it).get_topic() << std::endl;
+      for(std::list<std::string>::iterator eit = (*it).get_events().begin();
+        eit != (*it).get_events().end();
+        ++eit) {
         std::cout << (*eit) << std::endl;
       }
     }
+//  stringstream ss;
+//  bn_config_s3->to_xml(ss);
+//  std::cout << ss.str() << std::endl;
 
-stringstream ss;
-bn_config->to_xml(ss);
-std::cout << ss.str() << std::endl;
+  NotificationConfiguration bn_config;
+  int ret = bn_config_s3->rebuild(store, bn_config);
+  std::cout << "ret: " << ret << std::endl;
 
+//  if (ret == 0) {
+//    std::map<string, TopicConfiguration> m = bn_config.get_tcs_map();
+//    std::cout << "size(): " << m.size() << std::endl;
+//    std::map<string, TopicConfiguration>::iterator iter;
+//    for (iter = m.begin(); iter != m.end(); ++iter) {
+//      TopicConfiguration obj = iter->second;
+//      std::cout << obj.get_id() << std::endl;
+//      std::cout << obj.get_prefix() << std::endl;
+//      std::cout << obj.get_suffix() << std::endl;
+//      for(std::list<std::string>::iterator eit = obj.get_events().begin(); eit != obj.get_events().end(); ++eit) {
+//        std::cout << (*eit) << std::endl;
+//      }
+//    }
+//  }
 }
+
+
+
+//TEST  (test1, run2) {
+//  RGWNotificationConfigurationXMLParser_S3 parser(store->ctx());
+//  NotificationConfiguration_S3 *bn_config_s3;
+//  string data = string("<NotificationConfiguration><TopicConfiguration><Topic>one</Topic><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.jpg</Value></FilterRule></S3Key></Filter></TopicConfiguration><TopicConfiguration><Id>2</Id><Topic>two</Topic><Event>s3:ObjectCreated:Copy</Event><Event>s3:ObjectCreated:Post</Event><Filter><S3Key><FilterRule><Name>Suffix</Name><Value>.png</Value></FilterRule><FilterRule><Name>Prefix</Name><Value>dir1/</Value></FilterRule></S3Key></Filter></TopicConfiguration></NotificationConfiguration>");
+//  parser.init();
+//  parser.parse(data.c_str(), data.length(), 1);
+//  bn_config_s3 = static_cast<NotificationConfiguration_S3 *>(parser.find_first("NotificationConfiguration"));
+//  std::cout << "length(): " << bn_config_s3->get_tcs_length() << std::endl;
+//  std::list<TopicConfiguration> tcs =bn_config_s3->get_tcs();
+//  for(list<TopicConfiguration>::iterator it = tcs.begin();it != tcs.end(); ++it) {
+//    std::cout << "TopicConfiguration>>" << std::endl;
+//    std::cout << (*it).get_id() << std::endl;
+//    std::cout << (*it).get_prefix() << std::endl;
+//    std::cout << (*it).get_suffix() << std::endl;
+//    std::cout << (*it).get_topic() << std::endl;
+//    for(std::set<std::string>::iterator eit = (*it).get_events().begin(); eit != (*it).get_events().end(); ++eit) {
+//      std::cout << (*eit) << std::endl;
+//    }
+//  }
+//  stringstream ss;
+//  bn_config_s3->to_xml(ss);
+//  std::cout << ss.str() << std::endl;
+
+//  NotificationConfiguration bn_config;
+//  int ret = bn_config_s3->rebuild(store, bn_config);
+//  std::cout << "ret: " << ret << std::endl;
+//  std::map<string, TopicConfiguration> m = bn_config.get_tcs_map();
+//  std::cout << "size(): " << m.size() << std::endl;
+//  std::map<string, TopicConfiguration>::iterator iter;
+//
+//  for (iter = m.begin(); iter != m.end(); ++iter) {
+//    TopicConfiguration obj = iter->second;
+//    std::cout << obj.get_id() << std::endl;
+//    std::cout << obj.get_prefix() << std::endl;
+//    std::cout << obj.get_suffix() << std::endl;
+//    for(std::set<std::string>::iterator eit = obj.get_events().begin(); eit != obj.get_events().end(); ++eit) {
+//      std::cout << (*eit) << std::endl;
+//    }
+//  }
+//}
 ```
