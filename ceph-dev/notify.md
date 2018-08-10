@@ -352,10 +352,41 @@ public:
     
   bool xml_end(const char *el) override;
   void to_xml(ostream& out);
+  void dump_xml(Formatter* f) const;
   void set_ctx(CephContext *ctx) {
     cct = ctx;
   }
 };
+
+void TopicConfiguration_S3::dump_xml(Formatter* f) const {
+  f->open_object_section("TopicConfiguration");
+  encode_xml("Id", id, f);
+  encode_xml("Topic", topic, f);
+  for(std::list<std::string>::const_iterator it = events.begin();
+      it != events.end();
+      ++it) {
+    encode_xml("Event", *it, f);
+  }
+  if (!prefix.empty() || !suffix.empty()) {
+    f->open_object_section("Filter");
+    f->open_object_section("S3Key");
+    if (!prefix.empty()) {
+      f->open_object_section("FilterRule");
+      encode_xml("Name", "Preifx", f);
+      encode_xml("Value", prefix, f);
+      f->close_section();
+    }
+    if (!suffix.empty()) {
+      f->open_object_section("FilterRule");
+      encode_xml("Name", "Suffix", f);
+      encode_xml("Value", suffix, f);
+      f->close_section();
+    }
+    f->close_section();
+    f->close_section();
+  }
+  f->close_section(); // topicconfigration
+}
 
 class NotificationConfiguration_S3 : public NotificationConfiguration, public XMLObj
 {
@@ -367,11 +398,23 @@ public:
   ~NotificationConfiguration_S3() override {}
   bool xml_end(const char *el) override;
   void to_xml(ostream& out);
+  void dump_xml(Formatter* f) const;
   int rebuild(RGWRados *store, NotificationConfiguration& dest);
   void set_ctx(CephContext *ctx) {
     cct = ctx;
   }
 };
+
+void NotificationConfiguration_S3::dump_xml(Formatter* f) const {
+  f->open_object_section_in_ns("NotificationConfiguration", XMLNS_AWS_S3);
+
+  for (auto iter = tcs_map.begin(); iter != tcs_map.end(); ++iter) {
+    const TopicConfiguration_S3& topic_config = static_cast<const TopicConfiguration_S3&>(iter->second);
+    topic_config.dump_xml(f);
+  }
+
+  f->close_section(); // notification
+}
 
 #define TOPICCONFIGURATION_ID_MAX_LEN     48
 #define TOPICCONFIGURATION_PREFIX_MAX_LEN 48
@@ -621,6 +664,46 @@ TEST  (test1, run1) {
 //  }
 }
 
+
+TEST  (test1, run2) {
+  map<string, bufferlist> bucket_attrs;
+  RGWBucketInfo bucket_info;
+  RGWObjectCtx obj_ctx(store);
+  int ret = store->get_bucket_info(obj_ctx, "", "test1", bucket_info, NULL, &bucket_attrs);
+  if (ret < 0) {
+    std::cout << "get_bucket_info for " << "test1" << " failed" << std::endl;
+    return;
+  }
+  map<string, bufferlist>::iterator aiter = bucket_attrs.find(RGW_ATTR_BN);
+  if (aiter == bucket_attrs.end()){
+    std::cout << "RGW_ATTR_BN failed" << std::endl;
+    return;
+  }
+  bufferlist::const_iterator iter{&aiter->second};
+  NotificationConfiguration_S3 status;
+  status.set_ctx(store->ctx());
+  try {
+    status.decode(iter);
+  } catch (const buffer::error& e) {
+    std::cout << "decode life cycle config failed" << std::endl;
+    return;
+  }
+  std::map<string, TopicConfiguration> m = status.get_tcs_map();
+//  std::cout << "size(): " << m.size() << std::endl;
+//  std::map<string, TopicConfiguration>::iterator miter;
+//  for (miter = m.begin(); miter != m.end(); ++miter) {
+//    TopicConfiguration obj = miter->second;
+//    std::cout << obj.get_id() << std::endl;
+//    std::cout << obj.get_prefix() << std::endl;
+//    std::cout << obj.get_suffix() << std::endl;
+//    for(std::list<std::string>::iterator eit = obj.get_events().begin(); eit != obj.get_events().end(); ++eit) {
+//      std::cout << (*eit) << std::endl;
+//    }
+//  }
+  Formatter *f = new XMLFormatter(true);
+  status.dump_xml(f);
+  f->flush(std::cout);
+}
 
 
 //TEST  (test1, run2) {
