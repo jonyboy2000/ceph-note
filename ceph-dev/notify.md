@@ -716,4 +716,44 @@ noti.xml
 </NotificationConfiguration>
 ```
 
+```
+TEST  (test1, decode) {
+  map<string, bufferlist> bucket_attrs;
+  RGWBucketInfo bucket_info;
+  RGWObjectCtx obj_ctx(store);
+  std::string bucketname = std::string("test1");
+  int ret = store->get_bucket_info(obj_ctx, "", bucketname.c_str(), bucket_info, NULL, &bucket_attrs);
+  if (ret < 0) {
+    std::cout << "get_bucket_info for " << bucketname.c_str() << " failed" << std::endl;
+    return;
+  }
+  map<string, bufferlist>::iterator aiter = bucket_attrs.find(RGW_ATTR_BN);
+  if (aiter == bucket_attrs.end()){
+    std::cout << "get bucket xattr RGW_ATTR_BN failed" << std::endl;
+    return;
+  }
+  bufferlist::const_iterator iter{&aiter->second};
+  NotificationConfiguration_S3 status;
+  status.set_ctx(store->ctx());
+  try {
+    status.decode(iter);
+  } catch (const buffer::error& e) {
+    std::cout << "decode bucket notification config failed" << std::endl;
+    return;
+  }
+  std::map<string, TopicConfiguration> m = status.get_tcs_map();
+  std::cout << "notification size(): " << m.size() << std::endl;
+  std::map<string, TopicConfiguration>::iterator miter;
+  for (miter = m.begin(); miter != m.end(); ++miter) {
+    TopicConfiguration obj = miter->second;
+    std::cout << obj.get_id() << std::endl;
+    std::cout << obj.get_prefix() << std::endl;
+    std::cout << obj.get_suffix() << std::endl;
+    for(std::list<std::string>::iterator eit = obj.get_events().begin(); eit != obj.get_events().end(); ++eit) {
+      std::cout << (*eit) << std::endl;
+    }
+  }
+}
+```
+
 
