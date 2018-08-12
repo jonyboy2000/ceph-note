@@ -91,7 +91,7 @@ public:
 
 TEST (watch, watch1) {
   librados::Rados *rados = store->get_rados_handle();
-  librados::IoCtx io_ctx; //rados_ioctx_t
+  librados::IoCtx io_ctx;
   int ret = store->get_rados_handle()->ioctx_create("test", io_ctx);
   string oid("1.txt");
   RadosWatchCtx ctx(io_ctx, oid.c_str());
