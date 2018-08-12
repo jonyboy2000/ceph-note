@@ -43,8 +43,6 @@ extern "C"{
 #include "include/object.h"
 #include "cls/statelog/cls_statelog_types.h"
 #include <gtest/gtest.h>
-#define XMLNS_AWS_S3 "http://s3.amazonaws.com/doc/2006-03-01/"
-#include "cat.h"
 
 using namespace std;
 
