@@ -134,3 +134,58 @@ _multipart_IA_1M_6.2~FNVFaxnEsLp5HNeYp1OwugMaOWlUQ9Z.meta
 prefix/keyv6
 
 ```
+
+
+```
+TEST  (notify, run4) {
+  librados::IoCtx io_ctx; //rados_ioctx_t
+  int ret = store->get_rados_handle()->ioctx_create("test", io_ctx);
+  librados::bufferlist bl;
+  bl.append("Hello World!");
+  ret = io_ctx.write_full("hw", bl);
+  if (ret < 0) {
+    std::cerr << "Couldn't write object! error " << ret << std::endl;
+    exit(EXIT_FAILURE);
+  } else {
+    std::cout << "Wrote new object 'hw' " << std::endl;
+  }
+  librados::bufferlist read_buf;
+  int read_len = 4194304;
+  //Create I/O Completion.
+  librados::AioCompletion *read_completion = librados::Rados::aio_create_completion();
+  //Send read request.
+  ret = io_ctx.aio_read("hw", read_completion, &read_buf, read_len, 0);
+  if (ret < 0) {
+    std::cerr << "Couldn't start read object! error " << ret << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  // Wait for the request to complete, and check that it succeeded.
+  read_completion->wait_for_complete();
+  ret = read_completion->get_return_value();
+  if (ret < 0) {
+    std::cerr << "Couldn't read object! error " << ret << std::endl;
+    exit(EXIT_FAILURE);
+  } else {
+    std::cout << "Read object hw asynchronously with contents.\n"
+    << read_buf.c_str() << std::endl;
+  }
+}
+
+
+[root@promote build]# ./bin/ceph_test_yly
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from notify
+[ RUN      ] notify.run4
+Wrote new object 'hw'
+Read object hw asynchronously with contents.
+Hello World!
+[       OK ] notify.run4 (10 ms)
+[----------] 1 test from notify (10 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (10 ms total)
+[  PASSED  ] 1 test.
+
+  YOU HAVE 5 DISABLED TESTS
+```
