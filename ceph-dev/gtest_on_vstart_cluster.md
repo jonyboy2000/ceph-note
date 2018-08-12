@@ -137,8 +137,8 @@ prefix/keyv6
 
 
 ```
-TEST  (notify, run4) {
-  librados::IoCtx io_ctx; //rados_ioctx_t
+TEST  (writeandread, run1) {
+  librados::IoCtx io_ctx; 
   int ret = store->get_rados_handle()->ioctx_create("test", io_ctx);
   librados::bufferlist bl;
   bl.append("Hello World!");
@@ -175,13 +175,13 @@ TEST  (notify, run4) {
 [root@promote build]# ./bin/ceph_test_yly
 [==========] Running 1 test from 1 test case.
 [----------] Global test environment set-up.
-[----------] 1 test from notify
-[ RUN      ] notify.run4
+[----------] 1 test from writeandread
+[ RUN      ] writeandread.run1
 Wrote new object 'hw'
 Read object hw asynchronously with contents.
 Hello World!
-[       OK ] notify.run4 (10 ms)
-[----------] 1 test from notify (10 ms total)
+[       OK ] writeandread.run1 (10 ms)
+[----------] 1 test from writeandread (10 ms total)
 
 [----------] Global test environment tear-down
 [==========] 1 test from 1 test case ran. (10 ms total)
