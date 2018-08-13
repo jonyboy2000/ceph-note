@@ -1,3 +1,66 @@
+# 设置桶通知
+```
+from boto3.session import Session
+import boto3
+access_key = "yly"
+secret_key = "yly"
+url = "http://127.0.0.1:8000"
+session = Session(access_key, secret_key)
+bucket_notifications_config = {
+'TopicConfigurations' : [
+        {
+            "Events": [
+                "s3:ObjectRemoved:Delete"
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "Suffix",
+                            "Value": ".jpg"
+                        }
+                    ]
+                }
+            },
+            "Id": "image",
+            "TopicArn": "arn:aws:sns:us-east-1:471863637113:image"
+        },
+        {
+            "Events": [
+                "s3:ObjectRemoved:Delete"
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "Suffix",
+                            "Value": ".txt"
+                        }
+                    ]
+                }
+            },
+            "Id": "png",
+            "TopicArn": "arn:aws:sns:us-east-1:471863637113:image"
+        }
+    ]
+}
+
+s3_client = session.client('s3', endpoint_url=url )
+print s3_client.put_bucket_notification_configuration(Bucket="test1", NotificationConfiguration=bucket_notifications_config)
+```
+# 查看桶通知
+```
+from boto3.session import Session
+import boto3
+access_key = "yly"
+secret_key = "yly"
+url = "http://127.0.0.1:8000"
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url )
+print s3_client.get_bucket_notification_configuration(Bucket="test1")
+```
+
+
 ```
 #include <iostream>
 #include <stdio.h>
