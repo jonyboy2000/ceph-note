@@ -88,3 +88,18 @@ bucket_notifications_config = {
 s3_client = session.client('s3', endpoint_url=url )
 print s3_client.put_bucket_notification_configuration(Bucket="***", NotificationConfiguration=bucket_notifications_config)
 ```
+
+# 删除多个对象
+
+```
+objects_to_delete = [{'Key':'1.txt'}, {'Key':'2.txt'}]
+print s3_client.delete_objects(
+    Bucket="wzyuliyangbucket01",
+    Delete={
+        'Objects': objects_to_delete
+    }
+)
+```
+
+*每个删除的对象都会有单独的一条通知*
+
