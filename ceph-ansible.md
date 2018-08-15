@@ -152,21 +152,9 @@ os_tuning_params:
   - { name: vm.min_free_kbytes, value: 4194303 }
   - { name: vm.extra_free_kbytes, value: 4194303 }
 ```
-
-inventory
-```
-[mons]
-192.168.130.138
-[osds]
-192.168.130.138
-[rgws]
-192.168.130.138
-[mgrs]
-192.168.130.138
-```
 inventory.yml
 
-
+```
 mons:
   hosts:
     10.144.90.7:
@@ -175,6 +163,7 @@ mons:
       monitor_interface: enp129s0f0
     10.144.90.16:
       monitor_interface: enp129s0f0.110@enp129s0f0
+```
 
 ```
 mons:
@@ -275,6 +264,14 @@ site.yml
     - ceph-common
     - ceph-config
     - ceph-osd
+
+- hosts: rgws
+  gather_facts: false
+  become: True
+  roles:
+    - ceph-defaults
+    - ceph-rgw
+
 ```
 
 ```
