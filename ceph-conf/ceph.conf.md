@@ -34,7 +34,8 @@ cluster_addr = 10.63.162.5
 
 [client.rgw.rgw1]
 rgw thread pool size = 1000
-rgw_frontends = "civetweb port=80"
+#rgw_frontends = "civetweb port=80"
+rgw_frontends = "civetweb port=10.63.33.1:80+10.63.33.1:443s ssl_certificate=/etc/ceph/server.pem"
 debug rgw = 20
 rgw_enable_ops_log = true
 rgw_enable_usage_log = true
