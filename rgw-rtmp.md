@@ -66,7 +66,7 @@ http://10.152.11.36/rtmptest1/channel002/index.m3u8?AWSAccessKeyId=GVXDWEABA4CO2
 ```
 
 ```
-删除点播地址
+#生成点播地址
 from boto3.session import Session
 import boto3
 import time
