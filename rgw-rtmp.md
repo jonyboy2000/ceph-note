@@ -1,3 +1,7 @@
+```
+Tried configuring the server in RAID10 so that the reading speeds become better. But, on the day of rehearsal, there was a problem and the stream was not at all smooth. After a lot of head banging, I was on phone with a close friend of mine(Midhul Varma) discussing this issue and he spotted out something which I completely missed. The GitHub page of Nginx-RTMP module mentions about tmpfs. I quickly read about it and got to know that if I mount my /tmp/ directory on tmpfs, whatever that is written to the /tmp/* will be written directly to the primary memory (RAM). If RAM becomes full it will be written to SWAP, which was another 64GB. It sounded awesome. But, I didn’t get much time to test it and the next day was convocation.
+```
+
 implment like alioss rtmp push video stream to s3
 ```
 rtmp://testyuliyang.oss-cn-shanghai.aliyuncs.com/live
