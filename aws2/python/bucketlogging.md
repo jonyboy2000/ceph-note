@@ -23,6 +23,9 @@ bl =  {
         }
     }
 print s3_client.put_bucket_logging(Bucket="beijing2-logging-loop", BucketLoggingStatus = bl)
+
+
+seq 1 20  | xargs -I{} -P 20 s3cmd -c yly.s3cfg  put onest.s3cfg s3://beijing2-logging-loop/1111111.{}.2222
 ```
 
 ```
