@@ -194,7 +194,10 @@ address=/eos-beijing-1.cmecloud.cn/127.0.0.1
 address=/*.eos-beijing-1.cmecloud.cn/127.0.0.1
 address=/192.168.153.181/192.168.153.181
 ```
-
+mkdir /usr/local/openresty/nginx/conf/lua/resty
+cd /usr/local/openresty/nginx/conf/lua/resty
+proxychains4 wget https://raw.githubusercontent.com/pintsized/lua-resty-http/master/lib/resty/http_headers.lua
+proxychains4 wget https://raw.githubusercontent.com/pintsized/lua-resty-http/master/lib/resty/http.lua
 nginx.conf
 ```
 user root;
@@ -208,6 +211,7 @@ events {
 
 http {
     resolver 127.0.0.1;
+    lua_package_path '/usr/local/openresty/nginx/conf/lua/?.lua;;';
     server {
         listen 80;
         lua_code_cache off;
@@ -258,7 +262,7 @@ local function get_zonegroup(bucket)
   local aws_signature = ngx.encode_base64(digest)
   local auth_header = "AWS ".. aws_access .. ":" .. aws_signature;
   local res, err = httpc:request({
-      path = "/admin/bucket/?bucket=" .. bucket,
+      path = "/admin/bucket/?zonegroup&bucket=" .. bucket,
       headers = {
           ["Host"] = "192.168.153.181:8001",  --master zonegroup rgw admin 地址
           ["Authorization"] = auth_header,
