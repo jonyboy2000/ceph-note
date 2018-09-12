@@ -203,19 +203,22 @@ nginx.conf
 user root;
 master_process off;
 daemon off;
-worker_processes  1;
-error_log logs/error.log;
+worker_processes  1;        #nginx worker 数量
+error_log /tmp/error.log;   #指定错误日志文件路径
 events {
     worker_connections 1024;
 }
 
 http {
-    resolver 127.0.0.1;
+    #resolver 127.0.0.1;
     lua_package_path '/usr/local/openresty/nginx/conf/lua/?.lua;;';
     server {
-        listen 80;
-        lua_code_cache off;
-        client_max_body_size 0;
+        listen 8083;
+        proxy_buffering off;
+        proxy_set_header Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        #lua_code_cache off;
+
         location / {
             set $backend  '';
             rewrite_by_lua_file  /usr/local/openresty/nginx/conf/lua/router.lua;
@@ -226,12 +229,32 @@ http {
 
 ```
 
+run
 ```
-local zgp1 = "023c1d09-3429-4441-8980-ead2d3304ced"
-local zgp2 = "60355b00-1920-4164-b2a5-feb05c74b886"
+/usr/local/openresty/nginx/sbin/nginx
+```
+
+```
+local cjson = require "cjson"
+local http = require 'resty.http'
+
+local zgp1 = "zgp1"
+local zgp2 = "zgp2"
+
+local masster_admin_ip = "10.254.3.68"
+local masster_admin_port = 8081
+local endpoint1 = "10.254.3.68:8081"
+local endpoint2 = "10.254.3.76:8081"
+
+local aws_access = "adminop"
+local aws_secret_key = "adminop"
+
+local httpc = http.new()
+httpc:set_timeout(500)
+httpc:connect(masster_admin_ip, masster_admin_port) --rgw admin 地址
 
 local function get_bucket()
-  local host_m = ngx.re.match(ngx.var.host, [=[([^.]*)(.?)eos-beijing-1.cmecloud.cn$]=], "jo")
+  local host_m = ngx.re.match(ngx.var.host, [=[([^.]*)(.?)eos.cloud.com$]=], "jo")
   if not host_m then
     -- HOST头是IP地址,则从uri中取桶名
     local uri_m = ngx.re.match(ngx.var.uri, "/([^/]*)[/?]*(?<remaining>.*)", "jo")
@@ -249,13 +272,6 @@ local function get_bucket()
 end
 
 local function get_zonegroup(bucket)
-  local cjson = require "cjson"
-  local http = require 'resty.http'
-  local httpc = http.new()
-  httpc:set_timeout(500)
-  httpc:connect("192.168.153.181", 8001) --rgw admin 地址
-  local aws_access = "admin"
-  local aws_secret_key = "admin"
   local now = ngx.cookie_time(ngx.time())
   local string_to_sign = "GET\n\n\n" .. now .. "\n/admin/bucket/";
   local digest = ngx.hmac_sha1(aws_secret_key, string_to_sign)
@@ -264,7 +280,7 @@ local function get_zonegroup(bucket)
   local res, err = httpc:request({
       path = "/admin/bucket/?zonegroup&bucket=" .. bucket,
       headers = {
-          ["Host"] = "192.168.153.181:8001",  --master zonegroup rgw admin 地址
+          ["Host"] = masster_admin_ip .. ":" .. masster_admin_port,  --master zonegroup rgw admin 地址
           ["Authorization"] = auth_header,
           ["Date"] = now,
       },
@@ -273,25 +289,27 @@ local function get_zonegroup(bucket)
     unjson = cjson.decode(res:read_body())
     return unjson["zonegroup"]
   end
+  return zgp1
 end
 
 local function get_endpoint(zonegroup)
   if zonegroup == zgp1 then
-    return ngx.var.host .. ":8001"
+    return endpoint1
   end
   if zonegroup == zgp2 then
-    return ngx.var.host .. ":8002"
+    return endpoint2
   end
+  return endpoint1
 end
 
 local bucket = get_bucket()
-local zonegroup 
-local endpoint 
+local zonegroup
+local endpoint
 
 -- get from memcached
 local memcached = require "resty.memcached"
 local memc, err = memcached:new()
-if  memc then
+if memc then
   memc:set_timeout(1000) -- 1 sec
   memc:set_keepalive(10000, 100)
   local ok, err = memc:connect("unix:/var/run/memcached/memcached.sock")
@@ -299,32 +317,31 @@ if  memc then
     local res, flags, err = memc:get(bucket)
     if not res then
        zonegroup = get_zonegroup(bucket)
-       --ngx.log(ngx.ERR, "memc not hit: ", zonegroup)
-       --ngx.log(ngx.ERR, "get_zonegroup:", zonegroup)
+       ngx.log(ngx.ERR, "memc not hit: ", zonegroup)
+       ngx.log(ngx.ERR, "fetch_from_admin_rgw, call get_zonegroup():", zonegroup)
        if zonegroup and bucket then
-         local ok, err = memc:set(bucket, zonegroup, 300)
+         local ok, err = memc:set(bucket, zonegroup, 300) --update to memcache
          if not ok then
-         --ngx.log(ngx.ERR, "memc set error")
+            --ngx.log(ngx.ERR, "memc set error")
          end
        end
     else
-       --ngx.log(ngx.ERR, "memc hit: ", res)
-       zonegroup = res
+       zonegroup = res  --success get from memcache
     end
   else
-    zonegroup = get_zonegroup(bucket)
+    zonegroup = get_zonegroup(bucket) -- memc connect failed
   end
 else
-  zonegroup = get_zonegroup(bucket)
+  zonegroup = get_zonegroup(bucket) --memc init failed
 end
 
 if not zonegroup then
   --无法找到桶,是否为创建桶请求
-  --ngx.log(ngx.ERR, "ngx.var.request_method:", ngx.var.request_method)
+  ngx.log(ngx.ERR, "ngx.var.request_method:", ngx.var.request_method)
   if ngx.var.request_method == "PUT" then
     --如果是PUT请求
     ngx.req.read_body()
-    local body_data = ngx.req.get_body_data() 
+    local body_data = ngx.req.get_body_data()
     --ngx.log(ngx.ERR, "body_data:", body_data)
     if body_data == '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><LocationConstraint>zgp1</LocationConstraint></CreateBucketConfiguration>'
     then
@@ -354,7 +371,6 @@ if not zonegroup then
     zonegroup = zgp1
   end
 end
-
 endpoint = get_endpoint(zonegroup)
 --ngx.log(ngx.ERR, "backend: ", endpoint)
 ngx.var.backend = endpoint
@@ -409,5 +425,3 @@ location = /memcset {
     ';
 }
 ```
-
-
