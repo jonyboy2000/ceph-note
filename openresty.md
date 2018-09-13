@@ -237,11 +237,7 @@ http {
 
 ```
 
-run
-```
-/usr/local/openresty/nginx/sbin/nginx
-```
-
+/usr/local/openresty/nginx/conf/lua/router.lua
 ```
 local cjson = require "cjson"
 local http = require 'resty.http'
@@ -384,14 +380,22 @@ endpoint = get_endpoint(zonegroup)
 ngx.var.backend = endpoint
 ```
 
-
-## memcached
-
 ```
+# install memcache
 proxychains yum  -y install libevent libevent-devel nc telnet  memcached lsof
 mkdir -p /var/run/memcached/
 memcached -m 100m -d -u root -c 8192 -s /var/run/memcached/memcached.sock -a 0666
+```
 
+run
+```
+/usr/local/openresty/nginx/sbin/nginx
+```
+
+
+
+```
+#test memcache
 location = /memc {
     set $memc_cmd $arg_cmd;
     set $memc_key $arg_key;
