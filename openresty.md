@@ -56,6 +56,7 @@ http {
 
 ```
 
+/usr/local/openresty/nginx/conf/lua/router.lua
 ```
 local cjson = require "cjson"
 local http = require 'resty.http'
