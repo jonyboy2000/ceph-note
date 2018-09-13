@@ -215,6 +215,7 @@ http {
     server {
         listen 8083;
         proxy_buffering off;
+        client_max_body_size 0;  #413 Request Entity Too Large
         proxy_set_header Host $host:$server_port;
         proxy_set_header X-Forwarded-For $remote_addr;
         #lua_code_cache off;
