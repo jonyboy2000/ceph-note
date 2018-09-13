@@ -194,11 +194,17 @@ address=/eos-beijing-1.cmecloud.cn/127.0.0.1
 address=/*.eos-beijing-1.cmecloud.cn/127.0.0.1
 address=/192.168.153.181/192.168.153.181
 ```
+
+```
+#install resty.http
 mkdir /usr/local/openresty/nginx/conf/lua/resty
 cd /usr/local/openresty/nginx/conf/lua/resty
 proxychains4 wget https://raw.githubusercontent.com/pintsized/lua-resty-http/master/lib/resty/http_headers.lua
 proxychains4 wget https://raw.githubusercontent.com/pintsized/lua-resty-http/master/lib/resty/http.lua
-nginx.conf
+
+```
+
+/usr/local/openresty/nginx/conf/nginx.conf
 ```
 user root;
 master_process off;
