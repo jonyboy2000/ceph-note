@@ -1,4 +1,48 @@
 
+## multipart copy upload
+```
+# -*- coding: utf-8 -*-
+import math
+from boto3.session import Session
+import boto3
+access_key = ""
+secret_key = ""
+url = "http://s3.amazonaws.com"
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url)
+
+src_bucket = "wzyuliyangbucket01"
+src_obj = "15M"
+dest_bucket = "wzyuliyangbucket01"
+dest_obj = "copy"
+
+objectSize = s3_client.head_object(Bucket=src_bucket, Key=src_obj)['ContentLength']
+mpu = s3_client.create_multipart_upload(Bucket=dest_bucket, Key=dest_obj, StorageClass='STANDARD_IA')
+psize = 10 * 1024 * 1024
+part_info = {
+    'Parts': []
+}
+bytePosition = 0
+i = 1
+while bytePosition < objectSize:
+    lastbyte = bytePosition + psize - 1
+    if lastbyte >= objectSize:
+        lastbyte = objectSize - 1
+    print "mp.copy_part_from_key part %d (%d %d)" % (i, bytePosition, lastbyte)
+    res = s3_client.upload_part_copy(Bucket=dest_bucket, CopySource=src_bucket+"/"+src_obj,
+                                     CopySourceRange='bytes=%d-%d'%(bytePosition,lastbyte),
+                                     Key=dest_obj,
+                                     PartNumber=i, UploadId=mpu["UploadId"])
+    part_info['Parts'].append({
+        'PartNumber': i,
+        'ETag': res['CopyPartResult']['ETag']
+    })
+    i = i + 1
+    bytePosition += psize
+s3_client.complete_multipart_upload(Bucket=dest_bucket, Key=dest_obj, UploadId=mpu["UploadId"], MultipartUpload=part_info)
+```
+
+
 ## copy object
 ```
 from boto3.session import Session
