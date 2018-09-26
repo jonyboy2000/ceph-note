@@ -57,6 +57,23 @@ s3_client = session.client('s3', endpoint_url=url, config=config)
 print s3_client.copy_object(Bucket="test1", Key="obj_to_ia2", CopySource=str('test1'+'/'+"obj"), StorageClass='STANDARD_IA')
 ```
 
+
+## copy versioned
+
+```
+from boto3.session import Session
+import boto3
+access_key = ""
+secret_key = ""
+session = Session(access_key, secret_key)
+url = "http://s3.amazonaws.com"
+config_dict = { 'signature_version' : 's3', 'connect_timeout': 30000, 'read_timeout': 30000}
+config = boto3.session.Config(**config_dict)
+s3_client = session.client('s3', endpoint_url=url, config=config)
+print s3_client.copy_object(Bucket="wzyuliyangbucket04", Key="2.txt", CopySource={'Bucket': 'wzyuliyangbucket04', 'Key': '1.txt',
+                             'VersionId': '_6KurTtDHj6IWUvdfXejAoxQCgVwsaaG'}, StorageClass='STANDARD_IA')
+```
+
 ## multipart
 
 ```
