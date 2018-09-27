@@ -187,5 +187,30 @@ Hello World!
 [==========] 1 test from 1 test case ran. (10 ms total)
 [  PASSED  ] 1 test.
 
-  YOU HAVE 5 DISABLED TESTS
+  YOU HAVE 5 DISABLED TESTS  
+```
+
+```
+  RGWBucketInfo src_bucket_info;
+  RGWObjectCtx obj_ctx(store);
+  rgw_obj obj;
+  store->get_bucket_info(obj_ctx, "", "test1", src_bucket_info, NULL, NULL);
+  obj = rgw_obj(src_bucket_info.bucket, "16M");
+
+  RGWRados::Object op_target(store, src_bucket_info, obj_ctx, obj);
+  RGWRados::Object::Read read_op(&op_target);
+  uint64_t obj_size;
+  read_op.params.obj_size = &obj_size;
+  ceph::real_time lastmod;
+  read_op.params.lastmod = &lastmod;
+  int op_ret = read_op.prepare();
+  ceph::real_time current = ceph::real_clock::now();
+
+  std::cout << "obj_size = " << obj_size << std::endl;
+  std::cout << "lastmod = " << lastmod << std::endl;
+  std::cout << "current = " << current << std::endl;
+
+  double timediff;
+  timediff = ceph::real_clock::to_time_t(current) - ceph::real_clock::to_time_t(lastmod);
+  std::cout << "timediff = " << timediff << std::endl;
 ```
