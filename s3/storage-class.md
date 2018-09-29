@@ -146,7 +146,7 @@ s3_client = session.client(
     endpoint_url=url,
     use_ssl = False,
 )
-import ipdb; ipdb.set_trace() # BREAKPOINT
+#import ipdb; ipdb.set_trace() # BREAKPOINT
 
 conditions = [
     ["starts-with", "$Content-Type", "image/"],
