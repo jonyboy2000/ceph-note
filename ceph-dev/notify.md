@@ -903,3 +903,44 @@ TEST  (test1, decode) {
 ```
 
 
+java
+```
+        String aKey = "yly";
+        String sKey = "yly";
+        ClientConfiguration opts1 = new ClientConfiguration();
+        AWSCredentials credentials1 = new BasicAWSCredentials(aKey, sKey);
+        AmazonS3 conn;
+        conn = new AmazonS3Client(credentials1,opts1);
+        conn.setEndpoint("http://10.254.3.68:7482");
+
+        String bucketName = "notify";
+
+        BucketNotificationConfiguration notification = new BucketNotificationConfiguration();
+        TopicConfiguration topicConfiguration = new TopicConfiguration();
+        topicConfiguration.setTopicARN("arn:aws:sns:us-west-2:444455556666:sns-topic-xyz");
+        topicConfiguration.addEvent(S3Event.ObjectCreatedByPost);
+        Filter filter = new Filter();
+        S3KeyFilter s3KeyFilter = new S3KeyFilter();
+        s3KeyFilter.addFilterRule(new FilterRule().withName("Prefix").withValue("aaa"));
+        s3KeyFilter.addFilterRule(new FilterRule().withName("Suffix").withValue(".jpg"));
+        filter.setS3KeyFilter(s3KeyFilter);
+        topicConfiguration.setFilter(filter);
+
+
+
+        TopicConfiguration topicConfiguration2 = new TopicConfiguration();
+        topicConfiguration2.setTopicARN("arn:aws:sns:us-west-2:444455556666:sns-topic-xyz");
+        topicConfiguration2.addEvent(S3Event.ObjectCreatedByPut);
+        Filter filter2 = new Filter();
+        S3KeyFilter s3KeyFilter2 = new S3KeyFilter();
+        s3KeyFilter2.addFilterRule(new FilterRule().withName("Prefix").withValue("bbb"));
+        s3KeyFilter2.addFilterRule(new FilterRule().withName("Suffix").withValue(".jpg"));
+        filter2.setS3KeyFilter(s3KeyFilter2);
+        topicConfiguration2.setFilter(filter2);
+
+        notification.addConfiguration("1111",topicConfiguration);
+        notification.addConfiguration("2222",topicConfiguration2);
+
+        conn.setBucketNotificationConfiguration(bucketName, notification);
+```
+
