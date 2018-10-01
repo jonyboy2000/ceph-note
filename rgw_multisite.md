@@ -1,12 +1,12 @@
 
 ```
 集群1(master zonegroup master zone)
-radosgw-admin realm  create --rgw-realm=oNest2
-#realm=`radosgw-admin realm  get --rgw-realm=oNest2 |grep id| awk -F '"' '{print $4}'`
+radosgw-admin realm  create --rgw-realm=default
+#realm=`radosgw-admin realm  get --rgw-realm=default |grep id| awk -F '"' '{print $4}'`
 radosgw-admin zonegroup create  --rgw-zonegroup=zgp1  --realm-id=$realm --master
 radosgw-admin zone  create --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1 --realm-id=$realm  --endpoints https://zgp1z1.ecloud.today:443  --access-key admin --secret admin --master
-radosgw-admin period update --commit  --rgw-realm=oNest2  --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1 --url=https://zgp1z1.ecloud.today:443
-radosgw-admin user create --uid=zone.user --display-name="Zone User" --access-key=admin --secret=admin --system --rgw-realm=oNest2  --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1
+radosgw-admin period update --commit  --rgw-realm=default  --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1 --url=https://zgp1z1.ecloud.today:443
+radosgw-admin user create --uid=zone.user --display-name="Zone User" --access-key=admin --secret=admin --system --rgw-realm=default  --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1
 
 chown ceph:ceph /etc/ceph/zgp1z1.ecloud.today.pem
 
@@ -16,16 +16,16 @@ rgw_frontends = "civetweb port=80+443s ssl_certificate=/etc/ceph/zgp1z1.ecloud.t
 #rgw_frontends = "civetweb port=80"
 rgw zone=zgp1-z1
 rgw zonegroup=zgp1
-rgw realm=oNest2
+rgw realm=default
 rgw_dns_name = zgp1z1.ecloud.today
 
 
 集群2(master zonegroup slave zone)
 radosgw-admin realm pull --url=https://zgp1z1.ecloud.today:443  --access-key=admin --secret=admin
-#realm=`radosgw-admin realm  get --rgw-realm=oNest2 |grep id| awk -F '"' '{print $4}'`
+#realm=`radosgw-admin realm  get --rgw-realm=default |grep id| awk -F '"' '{print $4}'`
 radosgw-admin zone  create --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z2 --realm-id=$realm  --endpoints https://zgp1z2.ecloud.today:443 --access-key admin --secret admin
-radosgw-admin period update --commit --url=https://zgp1z1.ecloud.today:443  --rgw-realm=oNest2   --access-key=admin --secret=admin
-radosgw-admin metadata sync init --rgw-realm=oNest2 --rgw-zonegroup=zgp1
+radosgw-admin period update --commit --url=https://zgp1z1.ecloud.today:443  --rgw-realm=default   --access-key=admin --secret=admin
+radosgw-admin metadata sync init --rgw-realm=default --rgw-zonegroup=zgp1
 chown ceph:ceph /etc/ceph/zgp1z2.ecloud.today.pem
 
 [client.rgw.rgw2]
@@ -34,7 +34,7 @@ rgw_frontends = "civetweb port=80+443s ssl_certificate=/etc/ceph/zgp1z2.ecloud.t
 #rgw_frontends = "civetweb port=80"
 rgw zone=zgp1-z2
 rgw zonegroup=zgp1
-rgw realm=oNest2
+rgw realm=default
 rgw_dns_name = zgp1z2.ecloud.today
 ```
 
@@ -43,8 +43,8 @@ rgw_dns_name = zgp1z2.ecloud.today
 ```
 zgp1上systemctl stop ceph-radosgw@rgw.rgw1
 #查询发现master zgp1挂了
-radosgw-admin sync status --rgw-realm=oNest2  --rgw-zonegroup=zgp2  --rgw-zone zgp2-z1
-          realm 17fc5205-9dc4-447a-8be0-ed2ea664e739 (oNest2)
+radosgw-admin sync status --rgw-realm=default  --rgw-zonegroup=zgp2  --rgw-zone zgp2-z1
+          realm 17fc5205-9dc4-447a-8be0-ed2ea664e739 (default)
       zonegroup 3eb483e4-7ff8-4721-a602-ef2395aad936 (zgp2)
            zone 106d2702-37db-4c1c-bbf7-39480cb5d503 (zgp2-z1)
 2017-10-31 10:50:17.701293 7fcda285a9c0  0 rgw meta sync: ERROR: failed to fetch mdlog info
@@ -56,10 +56,10 @@ radosgw-admin zonegroup modify --rgw-zonegroup=zgp1 --realm-id=17fc5205-9dc4-447
 #调整zgp2为主(zgp2上执行)
 radosgw-admin zonegroup modify --rgw-zonegroup=zgp2 --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739 --master
 #更新period(zgp2上执行)
-radosgw-admin period update --commit  --rgw-realm=oNest2   --rgw-zonegroup=zgp2  --rgw-zone=zgp2-z1
+radosgw-admin period update --commit  --rgw-realm=default   --rgw-zonegroup=zgp2  --rgw-zone=zgp2-z1
 
-radosgw-admin sync status   --rgw-realm=oNest2  --rgw-zonegroup=zgp2  --rgw-zone zgp2-z1
-          realm 17fc5205-9dc4-447a-8be0-ed2ea664e739 (oNest2)
+radosgw-admin sync status   --rgw-realm=default  --rgw-zonegroup=zgp2  --rgw-zone zgp2-z1
+          realm 17fc5205-9dc4-447a-8be0-ed2ea664e739 (default)
       zonegroup 3eb483e4-7ff8-4721-a602-ef2395aad936 (zgp2)
            zone 106d2702-37db-4c1c-bbf7-39480cb5d503 (zgp2-z1)
   metadata sync no sync (zone is master)
@@ -72,7 +72,7 @@ systemctl start ceph-radosgw@rgw.rgw1
 过了比较久的时间zpg1恢复了,切换为主
 radosgw-admin zonegroup modify  --rgw-zonegroup=zgp1  --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739  --master
 radosgw-admin zonegroup modify  --rgw-zonegroup=zgp2  --realm-id=17fc5205-9dc4-447a-8be0-ed2ea664e739  --master=false
-radosgw-admin period update --commit  --rgw-realm=oNest2  --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1
+radosgw-admin period update --commit  --rgw-realm=default  --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z1
 systemctl start ceph-radosgw@rgw.rgw1
 
 zpg2调整为备
@@ -111,7 +111,7 @@ slave_zgp_ip = '10.139.13.58'
 slave_zgp_user_ssh = 'root'
 slave_zgp_user_ssh_pw = 'jGs*Z+ZQ94TY9T/z'
 
-realm = 'oNest2'
+realm = 'default'
 
 realm_id = ssh2(master_zgp_ip, master_zgp_user_ssh, master_zgp_user_ssh_pw,
                 '''radosgw-admin realm  get --rgw-realm='''+realm +''' |grep id| awk -F '"' '{print $4}' ''')
