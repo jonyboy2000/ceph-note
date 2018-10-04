@@ -14,11 +14,14 @@ source proxy/bin/activate
 pip install mitmproxy==0.18.2
 ```
 
+代理s3
+```
+./proxy/bin/mitmproxy -R http://127.0.0.1:7480 --insecure -p 8080 --setheader :~q:Host:127.0.0.1:8080
+./proxy/bin/mitmdump -d  -R http://127.0.0.1:7480 --insecure -p 8080 --setheader :~q:Host:127.0.0.1:8080
+```
+
 ```
 docker run --rm -it -v ~/.mitmproxy:/home/mitmproxy/.mitmproxy -p 8080:8080 mitmproxy/mitmproxy
 ```
 
-代理s3
-```
-./proxy/bin/mitmproxy -R http://127.0.0.1:7480 --insecure -p 8080 --setheader :~q:Host:127.0.0.1:8080
-```
+
