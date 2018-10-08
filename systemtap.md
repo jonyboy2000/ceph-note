@@ -27,7 +27,7 @@ probe process("/root/ceph/build/bin/radosgw").function("*@*rgw_process.cc*").cal
 ```
 
 ```
-stap -x 1270 rgw2.stp 
+stap -x 1270 rgw2.stp  #1270为rgw进程号
 process("/root/ceph/build/bin/radosgw").function("process_request@/root/ceph/src/rgw/rgw_process.cc:121").call
 process("/root/ceph/build/bin/radosgw").function("looks_like_ip_address@/root/ceph/src/rgw/rgw_rest_s3.h:608").call
 process("/root/ceph/build/bin/radosgw").function("get_handler@/root/ceph/src/rgw/rgw_rest_s3.cc:3479").call
