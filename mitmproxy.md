@@ -1,6 +1,6 @@
 
 ```
-yum install -y python-devel libffi-devel openssl-devel libxml2-devel libxslt-devel libjpeg-devel zlib zlib-devel gcc
+yum install -y python-devel libffi-devel openssl-devel libxml2-devel libxslt-devel libjpeg-devel zlib zlib-devel gcc https://rpmfind.net/linux/centos/7.5.1804/os/x86_64/Packages/libjpeg-turbo-devel-1.2.90-5.el7.x86_64.rpm
 
 virtualenv proxy
 source proxy/bin/activate
