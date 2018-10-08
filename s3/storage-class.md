@@ -50,11 +50,20 @@ import boto3
 access_key = "yly"
 secret_key = "yly"
 session = Session(access_key, secret_key)
-url = "http://127.0.0.1"
+url = "http://127.0.0.1:7480"
 config_dict = { 'signature_version' : 's3', 'connect_timeout': 30000, 'read_timeout': 30000}
 config = boto3.session.Config(**config_dict)
 s3_client = session.client('s3', endpoint_url=url, config=config)
-print s3_client.copy_object(Bucket="test1", Key="obj_to_ia2", CopySource=str('test1'+'/'+"obj"), StorageClass='STANDARD_IA')
+dst_bucket = 'test1'
+dst_obj = ''
+src_bucket = 'test1'
+src_obj = ''
+CopySource={
+            'Bucket': src_bucket,           
+            'Key': src_obj,
+         #   'VersionId': '_6KurTtDHj6IWUvdfXejAoxQCgVwsaaG'
+           }
+print s3_client.copy_object(Bucket=dst_bucket, Key=dst_obj, CopySource = CopySource, StorageClass='STANDARD_IA')
 ```
 
 
