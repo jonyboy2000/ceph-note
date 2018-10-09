@@ -1,8 +1,12 @@
 
 ```
+yum install -y systemtap systemtap-runtime
+
 yum install http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-3.10.0-327.el7.x86_64.rpm http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-common-x86_64-3.10.0-327.el7.x86_64.rpm
+https://buildlogs.centos.org/c7.1511.00/kernel/20151119220809/3.10.0-327.el7.x86_64/kernel-devel-3.10.0-327.el7.x86_64.rpm
 
 yum install http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-3.10.0-327.28.3.el7.x86_64.rpm http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-common-x86_64-3.10.0-327.28.3.el7.x86_64.rpm
+ftp://ftp.pbone.net/mirror/ftp.scientificlinux.org/linux/scientific/7.2/x86_64/updates/security/kernel-devel-3.10.0-327.28.3.el7.x86_64.rpm
 ```
 
 ```
