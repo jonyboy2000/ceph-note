@@ -15,7 +15,7 @@ CEPH_NUM_OSD=1 CEPH_NUM_MON=1 CEPH_NUM_MGR=1  CEPH_NUM_MDS=0 CEPH_NUM_RGW=1 VSTA
 
 ## L rpm vstart 启动rpm安装的单机集群
 ```
-wget https://gist.githubusercontent.com/joke-lee/fc85c7eeff129dcb06baca4f2cdefd41/raw/0b4a4b2a453421a965d221acc6489eec330d2762/vstart-l-rpm.sh -O vstart.sh
+wget https://gist.githubusercontent.com/joke-lee/fc85c7eeff129dcb06baca4f2cdefd41/raw/996ea6b876892c7e15a30f46405d065f74cf1d3f/vstart-j-rpm.sh -O vstart.sh
 
 # yum install ceph-mon ceph-osd ceph-radosgw ceph-mgr
 #单机一个集群
@@ -32,7 +32,7 @@ CEPH_BUILD_ROOT=/usr CEPH_PORT=6890 CEPH_NUM_OSD=1 ./vstart.sh -n --mon_num 1 --
 
 
 ```
-wget https://gist.githubusercontent.com/joke-lee/fc85c7eeff129dcb06baca4f2cdefd41/raw/ac2693df6dfc13517e5afe373b49581d28c6c8d0/vstart-j-rpm.sh -O vstart.sh 
+wget https://gist.githubusercontent.com/joke-lee/fc85c7eeff129dcb06baca4f2cdefd41/raw/996ea6b876892c7e15a30f46405d065f74cf1d3f/vstart-j-rpm.sh -O vstart.sh 
 yum install ceph-mon ceph-osd ceph-radosgw
 mkdir /tmp/run/ceph1 && cd  /tmp/run/ceph1
 #上传vstart.sh stop.sh 脚本到/tmp/run/ceph1 /tmp/run/ceph2
