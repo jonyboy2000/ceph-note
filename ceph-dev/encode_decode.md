@@ -78,6 +78,43 @@ if (ret < 0) {
   std::cout << "Wrote new object 'hw' " << std::endl;
 }
 
+RGWBucketInfo src_bucket_info;
+RGWObjectCtx obj_ctx(store);
+rgw_obj obj;
+store->get_bucket_info(obj_ctx, "", "test1", src_bucket_info, NULL, NULL);
+map<string, bufferlist> xattrs;
+RGWMPObj mp;
+string upload_id = "2~FtLzzc9A4AzOMoRLp2KsWNQT7Ytlroz";
+mp.init("multi", upload_id);
+obj.init_ns(src_bucket_info.bucket, mp.get_meta(), "multipart");
+obj.set_in_extra_data(true);
+bufferlist bl;
+
+RGWRados::Object op_target(store, src_bucket_info, obj_ctx, obj);
+RGWRados::Object::Read read_op(&op_target);
+read_op.params.attrs = &xattrs;
+
+int ret = read_op.prepare();
+if (ret < 0) {
+  return;
+}
+
+ret = read_op.read(0, 4194304, bl);
+multipart_upload_info info;
+
+try {
+  auto biter = bl.cbegin();
+  decode(info, biter);
+  std::cout << "xxxxxxxxxxxxxx:   " << info.storage_class << std::endl;
+} catch (buffer::error& err) {
+}
+
+
+
+
+
+
+
 //RGWZoneParams zone("55a599e8-f2b0-41d6-a388-17a26ae16695", "default");
 //int ret = zone.init(g_ceph_context, store);
 //RGWZonePlacementInfo& info = zone.placement_pools["default-placement"];
