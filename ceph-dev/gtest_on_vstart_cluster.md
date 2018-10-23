@@ -1,4 +1,38 @@
 ```
+./do_autogen.sh -d1 -O0
+./src/make_version -c ./src/ceph_ver.h -g ./src/.git_version
+
+[root@ylydev3 ceph]# git diff do_autogen.sh
+diff --git a/do_autogen.sh b/do_autogen.sh
+index 9a4505b..4b79370 100755
+--- a/do_autogen.sh
++++ b/do_autogen.sh
+@@ -109,9 +109,9 @@ fi
+ 
+ # Warning about unused parameters just leads to a lot of pointless spew when
+ # using C++. It doesn't interact well with class inheritance.
+-CFLAGS="${CFLAGS} -Wno-unused-parameter"
++CFLAGS="${CFLAGS} -Wno-unused-parameter -Wno-error"
+ 
+-CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
++CXXFLAGS="${CXXFLAGS} ${CFLAGS} -Wno-error"
+ 
+ if [ "${verbose}" -ge 1 ]; then
+     echo "CFLAGS=${CFLAGS}"
+@@ -121,7 +121,7 @@ fi
+ export CFLAGS
+ export CXXFLAGS
+ 
+-./autogen.sh || die "autogen failed"
++proxychains4 ./autogen.sh || die "autogen failed"
+ 
+ ./configure \
+ --prefix=/usr --sbindir=/sbin --localstatedir=/var --sysconfdir=/etc \
+[root@ylydev3 ceph]# 
+```
+
+
+```
 make cython_rados monmaptool ceph-mon ceph-osd radosgw radosgw-admin ceph-authtool ceph-conf crushtool monmaptool rados ceph-mgr ceph-dencoder
 
 mkdir cluster1
