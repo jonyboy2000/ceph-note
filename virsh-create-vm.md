@@ -22,14 +22,19 @@ sysctl -p
 yum install qemu-kvm qemu-img virt-manager libvirt libvirt-python libvirt-client virt-install virt-viewer bridge-utils
 ```
 
+```
+sed -i 's/Defaults    requiretty/#Defaults    requiretty/g' /etc/sudoers
+echo "qemu ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/qemu
+chmod 0440 /etc/sudoers.d/qemu
+```
+
 # 修改qemu配置
 
 vi /etc/libvirt/qemu.conf
 
 ```
-user = "root"
-group = "root"
-dynamic_ownership = 0
+user = "qemu"
+group = "qemu"
 ```
 
 # 启动
@@ -42,33 +47,6 @@ systemctl enable libvirtd
 lsmod | grep kvm
 kvm_intel             162153  0
 kvm                   525409  1 kvm_intel
-```
-
-# 配置网络
-```
-cd /etc/sysconfig/network-scripts/
-
-vi ifcfg-br0
-TYPE=Bridge
-BOOTPROTO=dhcp
-DEVICE=br0
-ONBOOT=yes
-
-vi ifcfg-ens32   #NAT网卡,能连外网
-TYPE=Ethernet
-DEVICE=ens32
-BRIDGE=br0
-ONBOOT=yes
-
-
-2: ens32: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master br0 state UP qlen 1000
-    link/ether 00:0c:29:a2:ca:27 brd ff:ff:ff:ff:ff:ff
-13: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
-    link/ether 00:0c:29:a2:ca:27 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.100.183/24 brd 192.168.100.255 scope global dynamic br0
-       valid_lft 1101sec preferred_lft 1101sec
-    inet6 fe80::20c:29ff:fea2:ca27/64 scope link
-       valid_lft forever preferred_lft forever
 ```
 
 # 编辑配置文件 centos7.xml
@@ -103,11 +81,11 @@ ONBOOT=yes
          <model type="cirrus" />
          <alias name="video0" />
       </video>
-      <interface type="bridge">
-         <mac address="fa:16:3f:68:e3:32" />  #随便一个没使用的
-         <source bridge="br0" />
-         <model type="virtio" />
-         <alias name="net0" />
+      <interface type='network'>
+         <mac address='52:54:00:c7:18:b5'/>
+         <source network='default'/>
+         <model type='virtio'/>
+         <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
       </interface>
    </devices>
    <name>centos</name>
@@ -143,56 +121,9 @@ virsh list --all
 # 下载vnc client
 ```
 https://bintray.com/tigervnc/stable/tigervnc/1.7.0
-```
 
-# 查看vmvare 跑KVM的机器的路由
+vnc登录虚拟机后systemctl restart network
 ```
-route -n
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-0.0.0.0         192.168.100.2   0.0.0.0         UG    425    0        0 br0
-192.168.100.0   0.0.0.0         255.255.255.0   U     425    0        0 br0
-192.168.122.0   0.0.0.0         255.255.255.0   U     0      0        0 virbr0
-192.168.153.0   0.0.0.0         255.255.255.0   U     100    0        0 ens33
-```
-
-可以看出 192.168.100.2 为网关
-
-
-# vnc client连接上虚拟机配置网卡
-
-配置eth0
-```
-vi /etc/sysconfig/network-scripts/ifcfg-eth0
-TYPE=Ethernet
-BOOTPROTO=static
-IPADDR=192.168.100.200
-NETMASK=255.255.255.0
-GATEWAY=192.168.100.2  #网关
-PEERDNS=yes
-PEERROUTES=yes
-NAME=eth0
-UUID=df95b044-aaa6-4f57-9fb6-3f9ccd201be8
-DEVICE=eth0
-ONBOOT=yes
-```
-配置DNS
-```
-vi /etc/resolv.conf
-search localdomain
-nameserver 192.168.100.2
-```
-
-# 查看是否挂载到br0网桥下
-```
-brctl show
-bridge name	 bridge id	      	STP enabled	interfaces
-br0		 8000.000c29a2ca27	no		ens32        #bridge
-						        net0
-virbr0		 8000.525400a8ceff	yes		virbr0-nic   #NAT
-```
-本机ssh root@192.168.100.200 就可以了
-
 
 # 添加硬盘
 
