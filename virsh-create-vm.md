@@ -313,3 +313,47 @@ vi rbddisk.xml
 virsh attach-device centos rbddisk.xml
 ```
 
+nat
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<domain type="kvm">
+   <memory unit="GiB">8</memory>
+   <vcpu>4</vcpu>
+   <os>
+      <type arch="x86_64" machine="pc">hvm</type>
+      <boot dev="hd" />
+      <boot dev="cdrom" />
+   </os>
+   <features>
+      <acpi />
+   </features>
+   <devices>
+      <disk type="file" device="cdrom">
+         <driver name="qemu" type="raw" />
+         <source file="/tmp/CentOS-7-x86_64-Minimal-1511.iso" />
+         <target dev="hda" bus="ide" />
+      </disk>
+      <disk type="file" device="disk">
+         <driver name="qemu" type="raw" />
+         <source file="/var/lib/libvirt/images/this_is_os_disk.img" />
+         <target dev="vda" bus="virtio" />
+      </disk>
+      <graphics type="vnc" port="5900" autoport="yes" listen="0.0.0.0" keymap="en-us">
+         <listen type="address" address="0.0.0.0" />
+      </graphics>
+      <video>
+         <model type="cirrus" />
+         <alias name="video0" />
+      </video>
+      <interface type='network'>
+         <mac address='52:54:00:c7:18:b5'/>
+         <source network='default'/>
+         <model type='virtio'/>
+         <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      </interface>
+   </devices>
+   <name>centos</name>
+</domain>
+```
+
+
