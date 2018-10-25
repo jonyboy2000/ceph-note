@@ -1,6 +1,11 @@
 
 ```
-config = Config(connect_timeout=5, retries={'max_attempts': 0}, s3={'addressing_style': 'virtual')
+config = Config(connect_timeout=30000, read_timeout=30000, retries={'max_attempts': 0}, s3={'addressing_style': 'virtual')
+
+#config_dict = { 'signature_version' : 's3', 'connect_timeout': 30000, 'read_timeout': 30000}
+#config = boto3.session.Config(**config_dict)
+
+
 client = session.client('s3', endpoint_url=url, config=config)
 ```
 
