@@ -110,6 +110,7 @@ virsh list --all
  
 virsh start centos     #启动
 virsh shutdown centos  #关机
+virsh undefine centos  #删除
 Domain centos started
 
 virsh list --all
