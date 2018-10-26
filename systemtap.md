@@ -1,6 +1,5 @@
 
 ```
-yum install -y systemtap systemtap-runtime
 
 [root@localhost ~]# rpm -qa|grep kernel |sort
 kernel-3.10.0-327.el7.x86_64
@@ -11,24 +10,15 @@ kernel-devel-3.10.0-327.el7.x86_64
 kernel-headers-3.10.0-514.16.1.el7.x86_64
 kernel-tools-3.10.0-327.el7.x86_64
 kernel-tools-libs-3.10.0-327.el7.x86_64
-
-
-yum install http://debuginfo.centos.org/7/x86_64/kernel-debuginfo-3.10.0-327.el7.x86_64.rpm http://debuginfo.centos.org/7/x86_64/kernel-debuginfo-common-x86_64-3.10.0-327.el7.x86_64.rpm
-
-
-yum install http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-3.10.0-327.el7.x86_64.rpm http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-common-x86_64-3.10.0-327.el7.x86_64.rpm https://buildlogs.centos.org/c7.1511.00/kernel/20151119220809/3.10.0-327.el7.x86_64/kernel-devel-3.10.0-327.el7.x86_64.rpm
-
------------------------------------------
-[systemtap]
-name=systemtap
-baseurl=http://ftp.riken.jp/Linux/cern/centos/7.2/updates/x86_64/
-enabled=1
-gpgcheck=0
-
-yum install http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-3.10.0-327.28.3.el7.x86_64.rpm http://ftp.riken.jp/Linux/cern/centos/7.2/updates/Debug/x86_64/kernel-debuginfo-common-x86_64-3.10.0-327.28.3.el7.x86_64.rpm kernel-devel-3.10.0-327.28.3.el7.x86_64 kernel-debug-devel-3.10.0-862.14.4.el7.x86_64 kernel-headers-3.10.0-862.14.4.el7.x86_64 kernel-3.10.0-327.28.3.el7.x86_64
-
-
-
+[root@localhost ~]# uname -r
+3.10.0-327.el7.x86_64
+[root@localhost ~]# rpm -qa|grep systemtap
+systemtap-3.2-8.el7_5.x86_64
+systemtap-runtime-3.2-8.el7_5.x86_64
+systemtap-client-3.2-8.el7_5.x86_64
+systemtap-sdt-devel-3.1-5.el7_4.x86_64
+systemtap-devel-3.2-8.el7_5.x86_64
+[root@localhost ~]#
 
 stap -v -e 'probe vfs.read {printf("read performed\n"); exit()}'
 ```
