@@ -186,3 +186,32 @@ data = dump.dump_all(response)
 print(data.decode('utf-8'))
 
 ```
+
+生命周期
+```
+from boto3.session import Session
+import json
+import boto3
+access_key = "yly"
+secret_key = "yly"
+url = "http://127.0.0.1:7480"
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url )
+print s3_client.put_bucket_lifecycle_configuration(
+    Bucket='test6',
+    LifecycleConfiguration={
+        'Rules': [
+            {
+                'ID': '30-days-to-standard-ia',
+                'Prefix': '',
+                'Status': 'Enabled',
+                'Transitions': [
+                    {
+                        'Days': 30,
+                        'StorageClass': 'STANDARD_IA'
+                    }]
+            },
+        ]
+    }
+)
+```
