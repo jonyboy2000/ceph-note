@@ -1,3 +1,8 @@
+
+```
+seq 1 5  | xargs -I{} -P 5 s3cmd  put 20M s3://test6/20M_ST_{} --storage-class=STANDARD  --multipart-chunk-size-mb=25
+```
+
 ```
 TEST  (test1, run1) {
 bool is_truncated;
