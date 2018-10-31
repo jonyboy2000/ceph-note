@@ -2,7 +2,9 @@
 ```
 yum install https://buildlogs.centos.org/c7.1511.00/kernel/20151119220809/3.10.0-327.el7.x86_64/kernel-3.10.0-327.el7.x86_64.rpm https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/kernel-debug-devel-3.10.0-862.11.6.el7.x86_64.rpm http://debuginfo.centos.org/7/x86_64/kernel-debuginfo-3.10.0-327.el7.x86_64.rpm http://debuginfo.centos.org/7/x86_64/kernel-debuginfo-common-x86_64-3.10.0-327.el7.x86_64.rpm  https://buildlogs.centos.org/c7.1511.00/kernel/20151119220809/3.10.0-327.el7.x86_64/kernel-devel-3.10.0-327.el7.x86_64.rpm ftp://ftp.rediris.es/volumes/sites/centos.org/7.3.1611/updates/x86_64/Packages/kernel-headers-3.10.0-514.16.1.el7.x86_64.rpm https://buildlogs.centos.org/c7.1511.00/kernel/20151119220809/3.10.0-327.el7.x86_64/kernel-tools-3.10.0-327.el7.x86_64.rpm https://buildlogs.centos.org/c7.1511.00/kernel/20151119220809/3.10.0-327.el7.x86_64/kernel-tools-libs-3.10.0-327.el7.x86_64.rpm http://mirror.centos.org/centos/7/updates/x86_64/Packages/systemtap-3.2-8.el7_5.x86_64.rpm  https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/systemtap-runtime-3.2-8.el7_5.x86_64.rpm http://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/systemtap-client-3.2-8.el7_5.x86_64.rpm ftp://ftp.pbone.net/mirror/ftp.scientificlinux.org/linux/scientific/7.4/x86_64/updates/fastbugs/systemtap-sdt-devel-3.1-5.el7_4.x86_64.rpm http://mirror.centos.org/centos/7/updates/x86_64/Packages/systemtap-devel-3.2-8.el7_5.x86_64.rpm
 
-
+内核版本
+[root@localhost ~]# uname -r
+3.10.0-327.el7.x86_64
 
 [root@localhost ~]# rpm -qa|grep kernel |sort
 kernel-3.10.0-327.el7.x86_64
@@ -13,17 +15,49 @@ kernel-devel-3.10.0-327.el7.x86_64
 kernel-headers-3.10.0-514.16.1.el7.x86_64
 kernel-tools-3.10.0-327.el7.x86_64
 kernel-tools-libs-3.10.0-327.el7.x86_64
-[root@localhost ~]# uname -r
-3.10.0-327.el7.x86_64
+
 [root@localhost ~]# rpm -qa|grep systemtap
 systemtap-3.2-8.el7_5.x86_64
 systemtap-runtime-3.2-8.el7_5.x86_64
 systemtap-client-3.2-8.el7_5.x86_64
 systemtap-sdt-devel-3.1-5.el7_4.x86_64
 systemtap-devel-3.2-8.el7_5.x86_64
-[root@localhost ~]#
 
-stap -v -e 'probe vfs.read {printf("read performed\n"); exit()}'
+
+内核版本
+[root@lhdev1 ceph]# uname -r
+3.10.0-862.14.4.el7.x86_64
+
+[root@lhdev1 ceph]# rpm -qa|grep kernel |sort
+kernel-3.10.0-862.14.4.el7.x86_64
+kernel-debug-devel-3.10.0-862.14.4.el7.x86_64
+kernel-debuginfo-3.10.0-862.14.4.el7.x86_64
+kernel-debuginfo-common-x86_64-3.10.0-862.14.4.el7.x86_64
+kernel-devel-3.10.0-862.14.4.el7.x86_64
+kernel-headers-3.10.0-862.14.4.el7.x86_64
+kernel-tools-3.10.0-862.14.4.el7.x86_64
+kernel-tools-libs-3.10.0-862.14.4.el7.x86_64
+
+[root@lhdev1 ceph]# rpm -qa|grep systemtap
+systemtap-3.2-8.el7_5.x86_64
+systemtap-client-3.2-8.el7_5.x86_64
+systemtap-runtime-3.2-8.el7_5.x86_64
+systemtap-devel-3.2-8.el7_5.x86_64
+systemtap-sdt-devel-3.2-8.el7_5.x86_64
+
+测试systemtap是否安装正确
+[root@localhost ~]#stap -v -e 'probe vfs.read {printf("read performed\n"); exit()}'
+
+输出以下表示正常
+[root@lhdev1 ceph]# stap -v -e 'probe vfs.read {printf("read performed\n"); exit()}'
+Pass 1: parsed user script and 479 library scripts using 243448virt/45036res/3372shr/41980data kb, in 470usr/60sys/540real ms.
+Pass 2: analyzed script: 1 probe, 1 function, 7 embeds, 0 globals using 401972virt/199152res/4728shr/200504data kb, in 1690usr/720sys/2404real ms.
+Pass 3: using cached /root/.systemtap/cache/7a/stap_7a515b8102e014d6cd6df10f285d8e5e_2721.c
+Pass 4: using cached /root/.systemtap/cache/7a/stap_7a515b8102e014d6cd6df10f285d8e5e_2721.ko
+Pass 5: starting run.
+read performed
+Pass 5: run completed in 10usr/40sys/363real ms.
+[root@lhdev1 ceph]#
 ```
 
 
