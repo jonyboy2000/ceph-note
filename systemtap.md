@@ -28,6 +28,8 @@ systemtap-devel-3.2-8.el7_5.x86_64
 [root@lhdev1 ceph]# uname -r
 3.10.0-862.14.4.el7.x86_64
 
+proxychains4 yum install http://mirror.centos.org/centos/7/updates/x86_64/Packages/kernel-3.10.0-862.14.4.el7.x86_64.rpm  https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/kernel-debug-devel-3.10.0-862.14.4.el7.x86_64.rpm http://debuginfo.centos.org/7/x86_64/kernel-debuginfo-3.10.0-862.14.4.el7.x86_64.rpm http://debuginfo.centos.org/7/x86_64/kernel-debuginfo-common-x86_64-3.10.0-862.14.4.el7.x86_64.rpm https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/kernel-devel-3.10.0-862.14.4.el7.x86_64.rpm https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/kernel-headers-3.10.0-862.14.4.el7.x86_64.rpm https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/kernel-tools-3.10.0-862.14.4.el7.x86_64.rpm https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/kernel-tools-libs-3.10.0-862.14.4.el7.x86_64.rpm http://mirror.centos.org/centos/7/updates/x86_64/Packages/systemtap-3.2-8.el7_5.x86_64.rpm  https://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/systemtap-runtime-3.2-8.el7_5.x86_64.rpm http://rpmfind.net/linux/centos/7.5.1804/updates/x86_64/Packages/systemtap-client-3.2-8.el7_5.x86_64.rpm ftp://ftp.pbone.net/mirror/ftp.scientificlinux.org/linux/scientific/7.4/x86_64/updates/fastbugs/systemtap-sdt-devel-3.1-5.el7_4.x86_64.rpm http://mirror.centos.org/centos/7/updates/x86_64/Packages/systemtap-devel-3.2-8.el7_5.x86_64.rpm
+
 [root@lhdev1 ceph]# rpm -qa|grep kernel |sort
 kernel-3.10.0-862.14.4.el7.x86_64
 kernel-debug-devel-3.10.0-862.14.4.el7.x86_64
