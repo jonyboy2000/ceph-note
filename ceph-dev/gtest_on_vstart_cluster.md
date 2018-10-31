@@ -1,7 +1,5 @@
 ```
-./do_autogen.sh -d1 -O0
-./src/make_version -c ./src/ceph_ver.h -g ./src/.git_version
-
+modify do_autogen.sh
 [root@ylydev3 ceph]# git diff do_autogen.sh
 diff --git a/do_autogen.sh b/do_autogen.sh
 index 9a4505b..4b79370 100755
@@ -28,7 +26,10 @@ index 9a4505b..4b79370 100755
  
  ./configure \
  --prefix=/usr --sbindir=/sbin --localstatedir=/var --sysconfdir=/etc \
-[root@ylydev3 ceph]# 
+
+
+./do_autogen.sh -d1 -O0
+./src/make_version -c ./src/ceph_ver.h -g ./src/.git_version
 ```
 
 
