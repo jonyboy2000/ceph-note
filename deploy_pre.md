@@ -98,6 +98,12 @@ systemctl restart systemd-udevd.service
 parted -a optimal --script /dev/sdk mklabel gpt
 for sdd in `echo b c d e`;do parted -a optimal --script /dev/sd$sdd mklabel gpt ;done
 parted -a optimal --script /dev/sdb mklabel gpt
+
+wipefs -af /dev/sd?
+dd if=/dev/zero of=/dev/sd? bs=1G count=1
+# 设置gpt分区,不然prepare的时候报错
+parted /dev/sd? mklabel gpt
+
 ```
 ## 添加用户
 ```
