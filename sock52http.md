@@ -7,3 +7,13 @@ listen-address 127.0.0.1:8119
 
 privoxy --no-daemon /etc/privoxy/config
 ```
+
+
+cat ~/.gitconfig
+```
+[http]
+        proxy = socks5://127.0.0.1:1080
+[https]
+        proxy = socks5://127.0.0.1:1080
+
+```
