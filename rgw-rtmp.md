@@ -1,4 +1,86 @@
 ```
+S3_ADMIN_ACCESS_KEY=admin S3_ADMIN_SECRET_KEY=admin S3_ENDPOINT=127.0.0.1 BAD_UID=noexist HLS_UID=user1 HLS_DISPLAYNAME=user1 python rtmp_s3_api.py
+```
+
+```
+user root;
+master_process off;
+daemon off;
+error_log /tmp/nginx.log debug;
+events {
+    worker_connections 1024;
+}
+rtmp {
+    server {
+        listen 1935;
+        chunk_size 4000;
+        application hls {
+            s3_endpoint 127.0.0.1;
+            s3_host_in_signed_url 10.254.3.68;
+            s3_hls_access_key user1;
+            s3_hls_secret_key user1;
+            live on;
+            hls_nested on;
+            hls on;
+            hls_path /tmp/;
+            hls_fragment 2s;
+            hls_playlist_length 20s;
+            hls_fragment_naming system;
+            hls_cleanup on;
+            on_publish http://127.0.0.1:5000/auth;
+            on_publish_done http://127.0.0.1:5000/publish_done;
+        }
+    }
+}
+```
+
+```
+[root@ceph68 rtmp]# cat getrtmpsign.py
+import hmac
+from hashlib import sha1 as sha
+from base64 import encodestring
+secret_key = "user1"
+Expires = str(1541586993)
+Bucket = "test1"
+Channel = "channel001"
+h = hmac.new(str(secret_key), Expires + "\n" + "/%s/%s" % (Bucket, Channel), digestmod=sha)
+res = encodestring(h.digest()).strip()
+print res.replace('/','z')
+```
+
+```
+[root@ceph68 rtmp]# cat getrtmpsign.py
+import hmac
+from hashlib import sha1 as sha
+from base64 import encodestring
+secret_key = "user1"
+Expires = str(1541586993)
+Bucket = "test1"
+Channel = "channel001"
+h = hmac.new(str(secret_key), Expires + "\n" + "/%s/%s" % (Bucket, Channel), digestmod=sha)
+res = encodestring(h.digest()).strip()
+print res.replace('/','z')
+[root@ceph68 rtmp]# cat getrtmpwatch.py
+#!/usr/bin/env python
+import base64, hmac, os, sha, sys, time, urllib
+TWENTY_YEARS_IN_SECONDS = 60 * 60 * 24 * 365 * 20
+aws_access_key_id = "user1"
+aws_secret_access_key = "user1"
+resource = "/test1/channel001/index.m3u8"
+seconds_alive = TWENTY_YEARS_IN_SECONDS
+
+# Computations:
+expires = int(time.time()) + seconds_alive
+resource = urllib.quote(resource)
+raw_value = "GET\n\n\n{0}\n{1}".format(expires, resource)
+signature = base64.b64encode(hmac.new(aws_secret_access_key, raw_value, sha).digest())
+print "http://10.254.3.68{0}?AWSAccessKeyId={1}&Expires={2}&Signature={3}".format(
+    resource, urllib.quote(aws_access_key_id), expires, urllib.quote(signature))
+```
+
+
+
+```
 Tried configuring the server in RAID10 so that the reading speeds become better. But, on the day of rehearsal, there was a problem and the stream was not at all smooth. After a lot of head banging, I was on phone with a close friend of mine(Midhul Varma) discussing this issue and he spotted out something which I completely missed. The GitHub page of Nginx-RTMP module mentions about tmpfs. I quickly read about it and got to know that if I mount my /tmp/ directory on tmpfs, whatever that is written to the /tmp/* will be written directly to the primary memory (RAM). If RAM becomes full it will be written to SWAP, which was another 64GB. It sounded awesome. But, I didn’t get much time to test it and the next day was convocation.
 ```
 
