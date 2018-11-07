@@ -123,4 +123,26 @@ sed -i 's/Defaults    requiretty/#Defaults    requiretty/g' /etc/sudoers
 sudo systemctl reset-failed
 ```
 
+proxy
+
+```
+~/.pip/pip.conf
+
+[global]
+proxy = http://127.0.0.1:8119
+
+vi ~/.wgetrc
+use_proxy = on
+http_proxy =  http://127.0.0.1:8119
+https_proxy =  http://127.0.0.1:8119
+
+
+vi ~/.curlrc
+http_proxy=http://127.0.0.1:8119
+https_proxy=http://127.0.0.1:8119
+
+vi /etc/yum.conf
+proxy=http://127.0.0.1:8119
+```
+
 
