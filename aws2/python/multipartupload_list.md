@@ -1,3 +1,24 @@
+
+```
+import math
+from boto3.session import Session
+import boto3
+access_key = "yly"
+secret_key = "yly"
+url = "http://127.0.0.1:7480"
+session = Session(access_key, secret_key)
+config = boto3.session.Config(connect_timeout=30000, read_timeout=30000, retries={'max_attempts': 0})
+s3_client = session.client('s3', endpoint_url=url, config=config)
+src_bucket = "test1"
+
+mpu = s3_client.create_multipart_upload(Bucket=src_bucket, Key="256MB.bin.IA1", StorageClass='STANDARD_IA')
+part_info = {
+    'Parts': []
+}
+print mpu["UploadId"]
+# 2~W9_W0WclxF5MfhR6Tss6JzYIah1XSY3
+```
+
 ```
 import math
 from boto3.session import Session
@@ -40,5 +61,13 @@ s3_client.abort_multipart_upload(
     Bucket=dest_bucket,
     Key=dest_obj,
     UploadId=uploadid
+)
+
+
+response = s3_client.list_multipart_uploads(
+    Bucket=src_bucket,
+    Delimiter='',
+    MaxUploads=10,
+    Prefix=''
 )
 ```
