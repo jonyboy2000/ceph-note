@@ -34,4 +34,9 @@ https_proxy=http://127.0.0.1:8119
 
 /etc/yum.conf
 proxy=http://127.0.0.1:8119
+
+cmake
+http_proxy=http://127.0.0.1:8119 https_proxy=http://127.0.0.1:8119 make cython_rados monmaptool ceph-mon ceph-osd radosgw radosgw-admin ceph-authtool ceph-conf crushtool monmaptool rados ceph-mgr -j4
 ```
+
+
