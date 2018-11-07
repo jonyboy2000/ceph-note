@@ -9,31 +9,39 @@ privoxy --no-daemon /etc/privoxy/config
 ```
 
 
+
+
+
 proxy
 ```
- ~/.gitconfig
+
+cat > ~/.gitconfig <<EOF
 [http]
-        proxy = socks5://127.0.0.1:1080
+   proxy = socks5://127.0.0.1:1080
 [https]
-        proxy = socks5://127.0.0.1:1080
+   proxy = socks5://127.0.0.1:1080
+EOF
 
-~/.pip/pip.conf
-
+mkdir  ~/.pip/ && cat >>  ~/.pip/pip.conf <<EOF
 [global]
 proxy = http://127.0.0.1:8119
+EOF
 
-~/.wgetrc
-use_proxy = on
-http_proxy =  http://127.0.0.1:8119
-https_proxy =  http://127.0.0.1:8119
+cat >> /etc/wgetrc <<EOF
+http_proxy = http://127.0.0.1:8119
+https_proxy = http://127.0.0.1:8119
+EOF
 
-
-~/.curlrc
+cat > ~/.curlrc <<EOF
 http_proxy=http://127.0.0.1:8119
 https_proxy=http://127.0.0.1:8119
+proxy = http://127.0.0.1:8119
+EOF
 
-/etc/yum.conf
-proxy=http://127.0.0.1:8119
+cat >> /etc/yum.conf  <<EOF
+proxy = http://127.0.0.1:8119
+EOF
+
 
 cmake
 http_proxy=http://127.0.0.1:8119 https_proxy=http://127.0.0.1:8119 make cython_rados monmaptool ceph-mon ceph-osd radosgw radosgw-admin ceph-authtool ceph-conf crushtool monmaptool rados ceph-mgr -j4
