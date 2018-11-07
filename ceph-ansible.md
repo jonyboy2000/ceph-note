@@ -1,7 +1,12 @@
 
 ```
+安装ansible
+pip install ansible==2.3.1
+
+在ansible机器上执行，设置不校验ssh公钥
 export ANSIBLE_HOST_KEY_CHECKING=False
 
+执行下面更新所有机器的系统变量
 /etc/security/limits.conf 更新
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=nofile value=1000000" -u root --ask-pass
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=nofile value=1000000" -u root --ask-pass
@@ -15,57 +20,58 @@ ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_it
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=stack value=102400" -u root --ask-pass
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=msgqueue value=8192000" -u root --ask-pass
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=hard limit_item=msgqueue value=8192000" -u root --ask-pass
-   
-ansible -i inventory.yml rgws -m ini_file -a "path=/etc/ceph/ceph.conf section=rgw option=rgw_enable_apis value='s3, s3website, swift, swift_auth, admin' backup=yes"  -u root --ask-pass
 
+#所有节点安装 libselinux-python
 ansible -i inventory.yml all -m shell -a "yum install libselinux-python -y" -u root  --ask-pass
-ansible -i inventory.yml all -m copy -a "src=10.2.9-25.tar.gz dest=/tmp/" -u root  --ask-pass
-ansible -i inventory.yml all -m shell -a "tar xzvfm  /tmp/10.2.9-25.tar.gz -C /tmp/" -u root  --ask-pass
-ansible -i inventory.yml all -m shell -a "yum localinstall /tmp/x86_64/ceph-mon-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-osd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-radosgw-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-base-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-common-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-selinux-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libcephfs1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librados2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librbd1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librgw2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libradosstriper1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rbd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rados-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-cephfs-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/fcgi-2.4.0-25.el7.x86_64.rpm /tmp/x86_64/lttng-ust-2.4.1-4.el7.x86_64.rpm /tmp/x86_64/leveldb-1.12.0-11.el7.x86_64.rpm /tmp/x86_64/libbabeltrace-1.2.4-3.el7.x86_64.rpm /tmp/x86_64/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" -u root  --ask-pass
 
-i=10.2.9-25 dir=/tmp/x86_64  && cmd="yum localinstall $dir/ceph-mon-$i.el7.centos.x86_64.rpm  $dir/ceph-osd-$i.el7.centos.x86_64.rpm $dir/ceph-radosgw-$i.el7.centos.x86_64.rpm  $dir/ceph-base-$i.el7.centos.x86_64.rpm $dir/ceph-common-$i.el7.centos.x86_64.rpm  $dir/ceph-selinux-$i.el7.centos.x86_64.rpm  $dir/libcephfs1-$i.el7.centos.x86_64.rpm  $dir/librados2-$i.el7.centos.x86_64.rpm $dir/librbd1-$i.el7.centos.x86_64.rpm  $dir/librgw2-$i.el7.centos.x86_64.rpm $dir/libradosstriper1-$i.el7.centos.x86_64.rpm  $dir/python-rbd-$i.el7.centos.x86_64.rpm  $dir/python-rados-$i.el7.centos.x86_64.rpm  $dir/python-cephfs-$i.el7.centos.x86_64.rpm $dir/fcgi-2.4.0-25.el7.x86_64.rpm $dir/lttng-ust-2.4.1-4.el7.x86_64.rpm $dir/leveldb-1.12.0-11.el7.x86_64.rpm $dir/libbabeltrace-1.2.4-3.el7.x86_64.rpm $dir/userspace-rcu-0.7.16-1.el7.x86_64.rpm -y" && echo $cmd
+#安装ceph-mon ceph-osd ceph-radosgw ceph-mgr
+ansible -i inventory.yml all -m shell -a "yum install ceph-mon ceph-osd ceph-mgr ceph-radosgw http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/l/lttng-ust-2.4.1-4.el7.x86_64.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/l/leveldb-1.12.0-11.el7.x86_64.rpm  http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libbabeltrace-1.2.4-3.el7.x86_64.rpm https://rpmfind.net/linux/epel/7/x86_64/Packages/u/userspace-rcu-0.7.16-1.el7.x86_64.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/p/python-pecan-0.4.5-2.el7.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/p/python-simplegeneric-0.8-7.el7.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/p/python-singledispatch-3.4.0.2-2.el7.noarch.rpm -y" -u root  --ask-pass
 
-yum localinstall /tmp/x86_64/ceph-mon-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-osd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-radosgw-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-base-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-common-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/ceph-selinux-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libcephfs1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librados2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librbd1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/librgw2-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/libradosstriper1-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rbd-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-rados-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/python-cephfs-10.2.9-25.el7.centos.x86_64.rpm /tmp/x86_64/fcgi-2.4.0-25.el7.x86_64.rpm /tmp/x86_64/lttng-ust-2.4.1-4.el7.x86_64.rpm /tmp/x86_64/leveldb-1.12.0-11.el7.x86_64.rpm /tmp/x86_64/libbabeltrace-1.2.4-3.el7.x86_64.rpm /tmp/x86_64/userspace-rcu-0.7.16-1.el7.x86_64.rpm
 
-ref http://docs.ceph.com/ceph-ansible/stable-3.0/
-pip install ansible==2.3.1
+下载ceph-ansile剧本
+参考 http://docs.ceph.com/ceph-ansible/stable-3.0/
+
 git clone https://github.com/ceph/ceph-ansible.git
 git checkout -b stable-3.0 origin/stable-3.0
 
-grep "^[^#;]"  group_vars/all.yml
+编辑配置(grep "^[^#;]"  ceph-ansible/group_vars/all.yml)
+vi ceph-ansible/group_vars/all.yml
 ---
 dummy:
 ntp_service_enabled: false
 ceph_stable: true
 ceph_custom: true
-ceph_stable_release: jewel  #luminous
+ceph_stable_release: jewel           #如果L版本改为 luminous
 ceph_origin: distro
-public_network: "192.168.130.0/24"
-cluster_network: "192.168.130.0/24"
-monitor_interface: ens34
-journal_size: 5120 # OSD journal size in MB
+public_network: "192.168.130.0/24"   #按实际修改
+cluster_network: "192.168.130.0/24"  #按实际修改
+monitor_interface: ens34             #mon业务网网卡，按实际修改
+journal_size: 10240
 osd_mkfs_type: xfs
 osd_mkfs_options_xfs: -f -i size=2048 -b size=4096
 osd_mount_options_xfs: noatime,largeio,inode64,swalloc
-osd_objectstore: filestore   #bluestore
+osd_objectstore: filestore   #如果是bluestore 改为 bluestore
 devices:
   - '/dev/sdb'
+  - '/dev/sdc'
+  - '/dev/sdd'
+  
 osd_scenario: collocated
-radosgw_civetweb_port: 8080
-radosgw_civetweb_num_threads: 100
+radosgw_civetweb_port: 7480             #按实际修改
+radosgw_civetweb_num_threads: 500       #按实际修改
 radosgw_address: "0.0.0.0"
-email_address: yuliyang@cmss.chinamobile.com
+email_address: yuliyang@cmss.chinamobile.com  #按实际修改
 ceph_conf_overrides:
   global:
     osd_crush_chooseleaf_type : 0
-    osd_pool_default_size : 1
-    osd_pool_default_min_size : 1
+    osd_pool_default_size : 1     #副本为1，按实际修改
+    osd_pool_default_min_size : 1 #最小副本为1，按实际修改
     auth_supported : cephx
     auth_cluster_required : cephx
     auth_service_required : cephx
     auth_client_required : cephx
-    osd_pool_default_pg_num : 16
-    osd_pool_default_pgp_num : 16
+    osd_pool_default_pg_num : 16   #按实际修改
+    osd_pool_default_pgp_num : 16  #按实际修改
     debug_tp : 0
     debug_timer : 0
     debug_throttle : 0
@@ -115,8 +121,8 @@ ceph_conf_overrides:
     rgw_multipart_min_part_size : 4194304
     rgw_enable_apis: "s3, s3website, swift, swift_auth, admin"
   osd:
-    public_addr : "{{ ansible_ens32['ipv4']['address'] }}"
-    cluster_addr : "{{ ansible_ens32['ipv4']['address'] }}"
+    public_addr : "{{ ansible_ens32['ipv4']['address'] }}"   #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
+    cluster_addr : "{{ ansible_ens32['ipv4']['address'] }}"  #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     osd_client_message_size_cap : 1073741824
     osd_client_message_cap : 200
     osd_op_threads : 4
@@ -152,28 +158,20 @@ os_tuning_params:
   - { name: vm.min_free_kbytes, value: 4194303 }
   - { name: vm.extra_free_kbytes, value: 4194303 }
 ```
+
+编辑主机表
+
 inventory.yml
 
 ```
 mons:
   hosts:
     10.144.90.7:
-      monitor_interface: enp129s0f0
+      monitor_interface: enp129s0f0  #按实际修改
     10.144.90.8:
-      monitor_interface: enp129s0f0
+      monitor_interface: enp129s0f0  #按实际修改
     10.144.90.16:
-      monitor_interface: enp129s0f0.110@enp129s0f0
-```
-
-```
-mons:
-  hosts:
-    10.144.90.7:
-      monitor_interface: enp129s0f0
-    10.144.90.8:
-      monitor_interface: enp129s0f0
-    10.144.90.16:
-      monitor_interface: enp129s0f0.110@enp129s0f0
+      monitor_interface: enp129s0f0.110@enp129s0f0  #按实际修改
 osds:
   hosts:
     192.168.153.183:
@@ -181,16 +179,19 @@ osds:
       devices:
         - '/dev/sdb'
     192.168.153.184:
-      public_addr : 192.168.153.184
+      public_addr : 192.168.153.184 
       devices:
-        - '/dev/sdb'
+        - '/dev/sdb'   
         - '/dev/sdc'
+        - '/dev/sdd'
 rgws:
   hosts:
     192.168.153.183:
     192.168.153.184:
 
-
+mgrs:
+  hosts:
+    192.168.153.183:
 ```
 
 site.yml
@@ -246,7 +247,7 @@ site.yml
     - ceph-config
     - ceph-mon
 
-#comment if jewel deploy
+#注释掉，如果部署的是j版本，j版本没有mgr 
 - hosts: mgrs
   gather_facts: false
   become: True
@@ -255,6 +256,7 @@ site.yml
     - ceph-common
     - { role: ceph-config, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
     - { role: ceph-mgr, when: "ceph_release_num.{{ ceph_release }} >= ceph_release_num.luminous" }
+
 
 - hosts: osds
   gather_facts: false
@@ -274,10 +276,11 @@ site.yml
 
 ```
 
+部署
 ```
 ansible-playbook -i inventory.yml site.yml  -u root --ask-pass
 ```
-
+等待执行完成
 ```
 [root@localhost ~]# ceph -s
   cluster:
@@ -298,19 +301,19 @@ ansible-playbook -i inventory.yml site.yml  -u root --ask-pass
 
 ```
 
+卸载集群
 ```
 systemctl reset-failed
 #purge
 rpm -qa|grep 12.2.5- | awk '{system("yum remove " $1 " -y ")}' && rm -rf /etc/ceph /var/lib/ceph  /var/run/ceph
-#install
-i=10.2.9-25 &&  cmd="yum localinstall ceph-mon-$i.el7.centos.x86_64.rpm ceph-osd-$i.el7.centos.x86_64.rpm ceph-radosgw-$i.el7.centos.x86_64.rpm  ceph-base-$i.el7.centos.x86_64.rpm ceph-common-$i.el7.centos.x86_64.rpm  ceph-selinux-$i.el7.centos.x86_64.rpm  libcephfs1-$i.el7.centos.x86_64.rpm  librados2-$i.el7.centos.x86_64.rpm librbd1-$i.el7.centos.x86_64.rpm  librgw2-$i.el7.centos.x86_64.rpm  libradosstriper1-$i.el7.centos.x86_64.rpm  python-rbd-$i.el7.centos.x86_64.rpm  python-rados-$i.el7.centos.x86_64.rpm  python-cephfs-$i.el7.centos.x86_64.rpm fcgi-2.4.0-25.el7.x86_64.rpm lttng-ust-2.4.1-4.el7.x86_64.rpmleveldb-1.12.0-11.el7.x86_64.rpm libbabeltrace-1.2.4-3.el7.x86_64.rpm userspace-rcu-0.7.16-1.el7.x86_64.rpm" && eval $cmd
 ```
 
 
+多个rgw实例部署
 ## multi instance rgw
-rgw-standalone-multi.yml
 
-ansible-playbook -i inventory.yml rgw-standalone-multi.yml  -u root --ask-pass
+
+rgw-standalone-multi.yml
 ```
 ---
 - hosts: mons
@@ -390,5 +393,15 @@ ansible-playbook -i inventory.yml rgw-standalone-multi.yml  -u root --ask-pass
       - systemctl start ceph-radosgw@rgw.rgw1
       - systemctl start ceph-radosgw@rgw.rgw2
       - systemctl start ceph-radosgw@rgw.rgw3 
+```
+
+```
+ansible-playbook -i inventory.yml rgw-standalone-multi.yml  -u root --ask-pass
+```
+
+如果配置静态网站执行如下命令
+```
+ansible -i inventory.yml rgws -m ini_file -a "path=/etc/ceph/ceph.conf section=global option=rgw_enable_static_website value='true' backup=yes"  -u root --ask-pass
+ansible -i inventory.yml rgws -m ini_file -a "path=/etc/ceph/ceph.conf section=global option=rgw_dns_s3website_name  value='eos-website.ecloud.com' backup=yes"  -u root --ask-pass
 ```
 
