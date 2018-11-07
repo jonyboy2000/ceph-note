@@ -164,3 +164,40 @@ X-Amz-User-Agent:aws-sdk-js/2.100.0 callback
 # response = requests.put(url,headers= a.headers)
 # data = dump.dump_all(response)
 # print(data.decode('utf-8'))
+
+
+#!/usr/bin/env python
+import base64, hmac, os, sha, sys, time, urllib
+
+aws_access_key_id = "yly"
+aws_secret_access_key = "yly"
+raw_value = """PUT
+
+application/octet-stream
+
+x-amz-acl:private
+x-amz-copy-source:/test1/20M
+x-amz-date:Wed, 07 Nov 2018 02:05:23 GMT
+x-amz-meta-s3cmd-attrs:atime:1541406516/ctime:1541406486/gid:0/gname:root/md5:8f4e33f3dc3e414ff94e5fb6905cba8c/mode:33188/mtime:1541406486/uid:0/uname:root
+x-amz-metadata-directive:COPY
+x-amz-object-type:Normal
+x-amz-storage-class:STANDARD,STANDARD_IA
+/test1/20M"""
+signature = base64.b64encode(hmac.new(aws_secret_access_key, raw_value, sha).digest())
+print signature
+
+
+raw_value = """PUT
+
+application/octet-stream
+
+x-amz-acl:private
+x-amz-copy-source:/test1/20M
+x-amz-date:Wed, 07 Nov 2018 02:05:23 GMT
+x-amz-meta-s3cmd-attrs:atime:1541406516/ctime:1541406486/gid:0/gname:root/md5:8f4e33f3dc3e414ff94e5fb6905cba8c/mode:33188/mtime:1541406486/uid:0/uname:root
+x-amz-metadata-directive:COPY
+x-amz-object-type:Normal
+x-amz-storage-class:STANDARD_IA
+/test1/20M"""
+signature = base64.b64encode(hmac.new(aws_secret_access_key, raw_value, sha).digest())
+print signature
