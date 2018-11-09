@@ -297,3 +297,30 @@ process("/root/ceph/build/bin/radosgw").function("~RGWHandler_REST_Obj_S3@/root/
 process("/root/ceph/build/bin/radosgw").function("~RGWHandler_REST_S3@/root/ceph/src/rgw/rgw_rest_s3.h:510").call
 process("/root/ceph/build/bin/radosgw").function("~RGWHandler@/root/ceph/src/rgw/rgw_op.cc:6979").call
 ```
+
+
+参考https://medium.com/fcamels-notes/%E7%94%A8-systemtap-%E8%BF%BD%E8%B8%AA-user-space-%E7%A8%8B%E5%BC%8F%E5%9F%B7%E8%A1%8C%E7%9A%84%E6%B5%81%E7%A8%8B-2d0b116dcf20
+```
+probe begin {
+  printf("ready\n");
+}
+
+probe process("/root/CLionProjects/testmylib2/liblibmy.so").statement("*@library.cpp:*") {
+  printf("%s\n", pp());
+}
+```
+
+
+```
+probe begin {
+  printf("ready\n");
+}
+
+global indent = 4;
+probe process("/root/CLionProjects/testmylib2/liblibmy.so").function("*").call {
+  printf("%s -> %s: %s\n", thread_indent(indent), ppfunc(), $$parms);
+}
+probe process("/root/CLionProjects/testmylib2/liblibmy.so").function("*").return {
+  printf("%s <- %s\n", thread_indent(-indent), ppfunc());
+}
+```
