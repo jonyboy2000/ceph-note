@@ -38,6 +38,14 @@ rgw realm=default
 rgw_dns_name = zgp1z2.ecloud.today
 ```
 
+
+```
+seq 1 20  | xargs -I{} -P 10 radosgw-admin user create --uid=user{} --display-name=user{} --access-key=user{} --secret-key=user{} --rgw-zonegroup=zgp1 --rgw-zone=zgp1-z1 --rgw-realm=default -c ceph.conf
+
+
+
+```
+
 主备zonegroup切换
 
 ```
