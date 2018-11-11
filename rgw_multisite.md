@@ -22,7 +22,7 @@ rgw_dns_name = zgp1z1.ecloud.today
 集群2(master zonegroup slave zone)
 radosgw-admin realm pull --url=http://zgp1z1.ecloud.today  --access-key=admin --secret=admin
 radosgw-admin zone  create --rgw-zonegroup=zgp1  --rgw-zone=zgp1-z2 --rgw-realm=default --endpoints http://zgp1z2.ecloud.today --access-key admin --secret admin
-radosgw-admin period update --commit --url=http://zgp1z1.ecloud.today  --rgw-realm=default   --access-key=admin --secret=admin
+radosgw-admin period update --commit --url=http://zgp1z1.ecloud.today  --rgw-realm=default --rgw-zonegroup=zgp2 --rgw-zone=zgp2-z1   --access-key=admin --secret=admin
 radosgw-admin metadata sync init --rgw-realm=default --rgw-zonegroup=zgp1
 
 radosgw-admin metadata sync run --rgw-realm=default --rgw-zonegroup=zgp1
