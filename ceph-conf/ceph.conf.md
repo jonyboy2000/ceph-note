@@ -63,3 +63,11 @@ admin用户
 
 radosgw-admin user create --uid=admin --display-name=admin --access-key=admin --secret-key=admin --caps="users=*;buckets=*;metadata=*;usage=*;zone=*"
 ```
+
+
+```
+ceph-deploy mgr create `hostname -s`:x
+chown ceph:ceph -R /var/lib/ceph/mgr
+systemctl start ceph-mgr@x
+```
+
