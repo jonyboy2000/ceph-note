@@ -51,3 +51,41 @@ http://www.baidu.com.comm:9a2/aa
 http://127.0.0.1:918
 http://127.0.0.1/index.php   <=match
 ```
+
+
+```
+cmake_minimum_required(VERSION 3.12)
+project(untitled1)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(/home/onest/ceph/build/boost/include)
+link_directories (/home/onest/ceph/build/boost/lib)
+
+
+add_executable(untitled1 main.cpp)
+target_link_libraries(untitled1 boost_filesystem boost_system boost_context)
+
+
+#include <iostream>
+#include <boost/coroutine2/all.hpp>
+
+void foo(boost::coroutines2::coroutine<void>::push_type & sink){
+  std::cout << "a ";
+  sink();
+  std::cout << "b ";
+  sink();
+  std::cout << "c ";
+}
+
+int main(){
+  boost::coroutines2::coroutine<void>::pull_type source(foo);
+  std::cout << "1 ";
+  source();
+  std::cout << "2 ";
+  source();
+  std::cout << "3 ";
+  getchar();
+  return 0;
+}
+```
