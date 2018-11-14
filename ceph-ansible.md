@@ -161,6 +161,74 @@ os_tuning_params:
 
 编辑主机表
 
+```
+def ipRange(start_ip, end_ip):
+    start = list(map(int, start_ip.split(".")))
+    end = list(map(int, end_ip.split(".")))
+    temp = start
+    ip_range = []
+
+    ip_range.append(start_ip)
+    while temp != end:
+        start[3] += 1
+        for i in (3, 2, 1):
+            if temp[i] == 256:
+                temp[i] = 0
+                temp[i - 1] += 1
+        ip_range.append(".".join(map(str, temp)))
+
+    return ip_range
+
+mons = ipRange("172.16.126.51", "172.16.126.53")
+mons_public = ipRange('172.17.4.51', '172.17.4.53')
+
+osds = ipRange("172.16.126.51", "172.16.126.90")
+osds_public = ipRange('172.17.4.51', '172.17.4.90')
+
+rgws = ipRange("172.16.126.118", "172.16.126.122")
+rgws_public = ipRange('172.17.4.118', '172.17.4.122')
+
+mgrs = ipRange("172.16.126.51", "172.16.126.53")
+mgrs_public = ipRange('172.17.4.51', '172.17.4.53')
+
+resstr =''''''
+
+mons_section = '''mons:
+  hosts:
+    '''
+for mon in mons:
+    mons_section += '''%s:
+      monitor_interface: bond1
+    ''' % (mon,)
+
+osds_section = '''
+osds:
+  hosts:
+    '''
+for idx, osd in enumerate(osds):
+    osds_section += '''%s:
+      public_addr: %s
+    ''' % (osd, osds_public[idx])
+
+rgws_section = '''
+rgws:
+  hosts:
+    '''
+for idx, rgw in enumerate(rgws):
+    rgws_section += '''%s:
+    ''' % (rgw,)
+
+mgrs_section = '''
+mgrs:
+  hosts:
+    '''
+for idx, mgr in enumerate(mgrs):
+    mgrs_section += '''%s:
+    ''' % (mgr,)
+
+print resstr + mons_section + osds_section + rgws_section + mgrs_section
+```
+
 inventory.yml
 
 ```
