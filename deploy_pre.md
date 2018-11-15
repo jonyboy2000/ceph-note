@@ -72,6 +72,14 @@ sdt: 480.1 GB
 sdu: 480.1 GB
 sdv: 480.1 GB
 sdw: 480.1 GB
+
+
+sudo ssacli ctrl slot=0 show config detail | grep "Array:\|Logical Drive:\|Disk Name\|physicaldrive"
+sudo ssacli ctrl slot=0 array H delete forced
+sudo ssacli ctrl slot=0 pd all show
+sudo ssacli ctrl slot=0 create type=ld drives=2I:1:8 raid=0 forced
+sudo ssacli ctrl slot=0 pd all show
+sudo lsblk -f
 ```
 
 ```
