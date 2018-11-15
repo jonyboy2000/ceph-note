@@ -49,6 +49,32 @@ server 192.168.10.5 iburst minpoll 4 maxpoll 4
 
 ## 查看硬盘使用量
 ```
+sudo fdisk -l | grep "^Disk" | cut -f 1 -d ',' | cut -f 3- -d '/' |grep sd |grep -v sda |sort
+sdb: 4000.8 GB
+sdc: 4000.8 GB
+sdd: 4000.8 GB
+sde: 4000.8 GB
+sdf: 4000.8 GB
+sdg: 4000.8 GB
+sdh: 4000.8 GB
+sdi: 4000.8 GB
+sdj: 4000.8 GB
+sdk: 4000.8 GB
+sdl: 4000.8 GB
+sdm: 4000.8 GB
+sdn: 4000.8 GB
+sdo: 4000.8 GB
+sdp: 4000.8 GB
+sdq: 4000.8 GB
+sdr: 4000.8 GB
+sds: 4000.8 GB
+sdt: 480.1 GB
+sdu: 480.1 GB
+sdv: 480.1 GB
+sdw: 480.1 GB
+```
+
+```
 df -lP | awk '{total+=$3} END {printf "%d G\n", total/2^20 + 0.5}'
 for i in `seq 1 5`;do ssh ceph0$i df -lP | awk '{total+=$3} END {printf "%d G\n", total/2^20 + 0.5}';done
 ```
