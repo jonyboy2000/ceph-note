@@ -6,6 +6,19 @@ pip install ansible==2.3.1
 在ansible机器上执行，设置不校验ssh公钥
 export ANSIBLE_HOST_KEY_CHECKING=False
 
+
+设置主机名
+
+ansible -i sethost.yml all -m hostname -a "name={{onest_name}}" -u onest -b --ask-pass
+mons:
+  hosts:
+    172.16.126.51:
+      onest_name: "NFJD-PSC-P7F1-S-PM-OS04-ONEST-001"
+    172.16.126.52:
+      onest_name: "NFJD-PSC-P7F1-S-PM-OS04-ONEST-002"
+    172.16.126.53:
+      onest_name: "NFJD-PSC-P7F1-S-PM-OS04-ONEST-003"
+
 执行下面更新所有机器的系统变量
 /etc/security/limits.conf 更新
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=nofile value=1000000" -u root --ask-pass
