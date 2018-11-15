@@ -9,15 +9,15 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 
 设置主机名
 
-ansible -i sethost.yml all -m hostname -a "name={{onest_name}}" -u onest -b --ask-pass
+ansible -i sethost.yml all -m hostname -a "name={{onest_name}}" -u root --ask-pass
 mons:
   hosts:
-    172.16.126.51:
-      onest_name: "NFJD-PSC-P7F1-S-PM-OS04-ONEST-001"
-    172.16.126.52:
-      onest_name: "NFJD-PSC-P7F1-S-PM-OS04-ONEST-002"
-    172.16.126.53:
-      onest_name: "NFJD-PSC-P7F1-S-PM-OS04-ONEST-003"
+    192.168.1.1:
+      onest_name: "web1"
+    192.168.1.2:
+      onest_name: "web2"
+    192.168.1.3:
+      onest_name: "web3"
 
 执行下面更新所有机器的系统变量
 /etc/security/limits.conf 更新
