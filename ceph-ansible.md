@@ -121,7 +121,6 @@ ceph_conf_overrides:
     debug_buffer : 0
     debug_auth : 0
     debug_asok : 0
-  rgw:
     rgw_cache_enabled : True
     rgw_cache_lru_size : 100000
     rgw_thread_pool_size : 600
@@ -133,7 +132,6 @@ ceph_conf_overrides:
     rgw_user_quota_sync_wait_time : 1800
     rgw_multipart_min_part_size : 4194304
     rgw_enable_apis: "s3, s3website, swift, swift_auth, admin"
-  osd:
     public_addr : "{{ ansible_ens32['ipv4']['address'] }}"   #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     cluster_addr : "{{ ansible_ens32['ipv4']['address'] }}"  #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     osd_client_message_size_cap : 1073741824
@@ -153,7 +151,6 @@ ceph_conf_overrides:
     filestore_queue_max_ops : 1000
     filestore_queue_max_bytes : 1073741824
     osd_pool_erasure_code_stripe_width : 65535
-  mon:
     mon_osd_nearfull_ratio : 0.85
     mon_osd_full_ratio : 0.95
     mon_osd_down_out_interval : 3600
