@@ -287,5 +287,73 @@ nat
    <name>centos</name>
 </domain>
 ```
+kvm主机上安装
+```
+yum -y install spice-server spice-protocol spice-vdagent
+```
+
+kvm上的虚拟机安装
+```
+yum -y install xorg-x11-drv-qxl spice-vdagent
+systemctl start spice-vdagentd
+systemctl enable spice-vdagentd
+```
+
+window7安装
+https://releases.pagure.org/virt-viewer/virt-viewer-x64-7.0.msi 
+
+spice://10.254.3.76:5900
+
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<domain type="kvm">
+   <memory unit="GiB">8</memory>
+   <vcpu>8</vcpu>
+   <os>
+      <type arch="x86_64" machine="pc">hvm</type>
+      <boot dev="hd" />
+      <boot dev="cdrom" />
+   </os>
+   <features>
+      <acpi />
+   </features>
+   <devices>
+      <disk type="file" device="disk">
+         <driver name="qemu" type="raw" />
+         <source file="/var/lib/libvirt/images/this_is_os_disk.img" />
+         <target dev="vda" bus="virtio" />
+      </disk>
+      <disk type='file' device='disk'>
+         <driver name='qemu' type='raw'/>
+         <source file='/var/lib/libvirt/images/yehudasa.img'/>
+         <target dev='vdb' bus='virtio'/>
+      </disk>
+      <channel type='spicevmc'>
+        <target type='virtio' name='com.redhat.spice.0'/>
+        <alias name='channel0'/>
+        <address type='virtio-serial' controller='0' bus='0' port='1'/>
+      </channel>
+      <graphics type='spice' port='5900' autoport='no' listen='0.0.0.0'>
+        <listen type='address' address='0.0.0.0'/>
+      </graphics>
+      <sound model='ac97'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      </sound>
+      <video>
+        <model type='qxl' ram='65536' vram='32768' heads='1'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </video>
+      <interface type='network'>
+         <mac address='52:84:00:c7:18:b5'/>
+         <source network='default'/>
+         <model type='virtio'/>
+         <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      </interface>
+   </devices>
+   <name>ceph76_yly_vm1</name>
+</domain>
+```
+
 
 
