@@ -40,3 +40,54 @@ result = requests.get(
 )
 print result.json()
 ```
+
+```
+# import requests
+# from requests_toolbelt.utils import dump
+# uri = '/crush/rule'
+# uri = '/request?wait=1'
+# result = requests.post(
+#     'https://ceph-restful:8792'+uri,
+#     json={'prefix': 'osd df','output_method':'tree','format':'json'},
+# #    json={'prefix': 'osd pool get', 'pool': 'zgp2-z1.rgw.log', 'var':'crush_rule'},
+# #    json={'prefix': 'osd pool ls', 'detail': 'true'},
+#     auth=("admin", "6d5c0dff-f2d1-4a5d-b610-2ce1556e6703"),
+#     verify="/home/onest/ceph/build/s1.crt"
+# )
+#
+# res = result.json()
+# # data = dump.dump_all(result)
+# # print(data.decode('utf-8'))
+# # print res
+#
+# print res['finished'][0]['outb']
+
+
+
+import requests
+import json
+from requests_toolbelt.utils import dump
+uri = '/crush/rule'
+uri = '/request?wait=1'
+result = requests.post(
+    'https://ceph-restful:8792'+uri,
+    json={'prefix': 'osd df','output_method':'tree','format':'json'},
+#    json={'prefix': 'osd pool get', 'pool': 'zgp2-z1.rgw.log', 'var':'crush_rule'},
+#    json={'prefix': 'osd pool ls', 'detail': 'true'},
+    auth=("admin", "6d5c0dff-f2d1-4a5d-b610-2ce1556e6703"),
+    verify="/home/onest/ceph/build/s1.crt"
+)
+
+res = json.loads(result.json()['finished'][0]['outb'])
+# data = dump.dump_all(result)
+# print(data.decode('utf-8'))
+# print res
+# print res3
+
+
+for node in res['nodes']:
+    print node['type'], node['name'], node['kb']
+#     print i
+  # if i['name'] == 'orange' or i['name'] == 'apple':
+  #    print i['name'],i['kb']
+```
