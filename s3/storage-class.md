@@ -134,6 +134,10 @@ part_info['Parts'].append({
 
 s3_client.complete_multipart_upload(Bucket="onest-storage-class",Key="multi",UploadId=mpu["UploadId"], MultipartUpload=part_info)
 
+
+ceph-request get "/test1?uploads"
+ceph-request get "/test1/1?uploadId=2~gOylvwUOx6opbt4PJD1bpW8mpeF8K82"
+ceph-request delete "/test1/3?uploadId=2~erSbD6Qxu71w2Tj585To228iD1mxczX"
 ```
 
 ## post object
