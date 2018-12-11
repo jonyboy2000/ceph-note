@@ -218,4 +218,36 @@ print s3_client.put_bucket_lifecycle_configuration(
         ]
     }
 )
+
+from boto3.session import Session
+import json
+import boto3
+access_key = "user1"
+secret_key = "user1"
+url = "http://127.0.0.1:7480"
+session = Session(access_key, secret_key)
+s3_client = session.client('s3', endpoint_url=url )
+print s3_client.put_bucket_lifecycle_configuration(
+    Bucket='test1',
+    LifecycleConfiguration={
+        'Rules': [
+            {
+                'ID': '30-days-to-standard-ia',
+                'Prefix': '',
+                'Status': 'Enabled',
+                'Transitions': [
+                    {
+                        'Days': 30,
+                        'StorageClass': 'STANDARD_IA'
+                    }],
+                'NoncurrentVersionTransitions': [
+                    {
+                        'NoncurrentDays': 30,
+                        'StorageClass': 'STANDARD_IA'
+                    }],
+            },
+        ]
+    }
+)
+
 ```
