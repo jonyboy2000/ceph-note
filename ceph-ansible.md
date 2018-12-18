@@ -2,6 +2,7 @@
 ```
 安装ansible
 pip install ansible==2.3.1
+yum install sshpass
 
 在ansible机器上执行，设置不校验ssh公钥
 export ANSIBLE_HOST_KEY_CHECKING=False
