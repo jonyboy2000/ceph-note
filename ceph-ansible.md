@@ -2,6 +2,7 @@
 ```
 安装ansible
 pip install ansible==2.3.1
+//yum install https://cbs.centos.org/kojifiles/packages/ansible/2.3.1.0/1.el7/noarch/ansible-2.3.1.0-1.el7.noarch.rpm  https://cbs.centos.org/kojifiles/packages/ansible/2.3.1.0/1.el7/noarch/ansible-doc-2.3.1.0-1.el7.noarch.rpm  http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/p/python-keyczar-0.71c-2.el7.noarch.rpm
 yum install sshpass
 
 在ansible机器上执行，设置不校验ssh公钥
