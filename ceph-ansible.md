@@ -125,7 +125,7 @@ ceph_conf_overrides:
     debug_asok : 0
     rgw_cache_enabled : True
     rgw_cache_lru_size : 100000
-    rgw_thread_pool_size : 600
+    rgw_thread_pool_size : 1000
     rgw_num_rados_handles : 4
     rgw_override_bucket_index_max_shards : 64
     rgw_max_chunk_size : 4194304
@@ -133,7 +133,11 @@ ceph_conf_overrides:
     rgw_user_quota_sync_interval : 1800
     rgw_user_quota_sync_wait_time : 1800
     rgw_multipart_min_part_size : 4194304
-    rgw_enable_apis: "s3, s3website, swift, swift_auth, admin"
+    rgw_enable_apis : "s3, s3website, swift, swift_auth, admin"
+    rgw_bl_work_time : "00:00-24:00"
+    rgw_bl_deliver_interval : 3600
+    rgw_bl_ops_log_in_hour : true
+    rgw_bl_url : "http://127.0.0.1"
     public_addr : "{{ ansible_ens32['ipv4']['address'] }}"   #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     cluster_addr : "{{ ansible_ens32['ipv4']['address'] }}"  #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     osd_client_message_size_cap : 1073741824
