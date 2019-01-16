@@ -10,7 +10,7 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 
 
 设置主机名
-
+//sudo sed -i 's/^hostname.*/hostname NFJD-PSC-P7F1-S-PM-OS04-ONEST-042/g' /etc/sysconfig/network  解决重启后名字变回来
 ansible -i sethost.yml all -m hostname -a "name={{onest_name}}" -u root --ask-pass
 mons:
   hosts:
