@@ -21,6 +21,30 @@ mons:
     192.168.1.3:
       onest_name: "web3"
 
+inventory2.yml      
+rgws:
+  hosts:
+    172.16.126.116:
+      onest_name: NFJD-PSC-P7F1-S-PM-OS04-ONEST-042
+    172.16.126.117:
+      onest_name: NFJD-PSC-P7F1-S-PM-OS04-ONEST-043
+    172.16.126.118:
+      onest_name: NFJD-PSC-P7F1-S-PM-OS04-ONEST-044
+      
+cat sethost2.yml
+---
+- hosts: rgws
+  become: True
+  tasks:
+  - name: add myself to /etc/hosts
+    lineinfile:
+      dest: /etc/sysconfig/network
+      regexp: '^hostname[ \t].*'
+      line: 'hostname {{onest_name}}'
+      state: present
+
+ansible-playbook -i inventory2.yml sethost2.yml -u onest -b --ask-pass
+
 执行下面更新所有机器的系统变量
 /etc/security/limits.conf 更新
 ansible -i inventory.yml all -m pam_limits -a "domain=* limit_type=soft limit_item=nofile value=1000000" -u root --ask-pass
