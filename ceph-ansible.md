@@ -162,6 +162,10 @@ ceph_conf_overrides:
     rgw_bl_deliver_interval : 3600
     rgw_bl_ops_log_in_hour : true
     rgw_bl_url : "http://127.0.0.1"
+    rgw enable static website : true
+    rgw_dns_s3website_name : eos-website-guangzhou-1.cmecloud.cn
+    rgw_frontends = "civetweb port=80+443s ssl_protocol_version=3 ssl_certificate=/etc/ceph/eos-guangzhou-1.cmecloud.cn.pem"
+    rgw_dns_name : eos-guangzhou-1.cmecloud.cn
     public_addr : "{{ ansible_ens32['ipv4']['address'] }}"   #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     cluster_addr : "{{ ansible_ens32['ipv4']['address'] }}"  #按实际修改 如网卡为eth0 则改ansible_eth0['ipv4']['address']
     osd_client_message_size_cap : 1073741824
