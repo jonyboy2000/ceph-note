@@ -162,6 +162,16 @@ ceph_conf_overrides:
     rgw_bl_deliver_interval : 3600
     rgw_bl_ops_log_in_hour : true
     rgw_bl_url : "http://127.0.0.1"
+    rgw_dynamic_resharding : false
+    rgw_num_control_oids : 1 #按实际修改
+    rgw_data_log_num_shards : 1 #按实际修改
+    rgw_md_log_max_shards : 1 #按实际修改
+    rgw_objexp_hints_num_shards : 1 #按实际修改
+    rgw_gc_max_objs : 1 #按实际修改
+    rgw_usage_max_shards : 1 #按实际修改
+    rgw_usage_max_user_shards : 1 #按实际修改
+    rgw_enable_usage_log : true
+
     rgw enable static website : true
     rgw_dns_s3website_name : eos-website-guangzhou-1.cmecloud.cn
     rgw_frontends = "civetweb port=80+443s ssl_protocol_version=3 ssl_certificate=/etc/ceph/eos-guangzhou-1.cmecloud.cn.pem"
@@ -175,10 +185,10 @@ ceph_conf_overrides:
     osd max scrubs : 1
     osd_scrub_begin_hour : 1
     osd_scrub_end_hour : 5
-    osd scrub load threshold : 0.5
-    osd scrub min interval : 86400
-    osd scrub max interval : 604800
-    osd deep scrub interval : 604800
+    osd_scrub_load_threshold : 0.5
+    osd_scrub_min_interval : 86400
+    osd_scrub_max_interval : 604800
+    osd_deep_scrub_interval : 604800
     journal_max_write_entries : 1000
     journal_max_write_bytes : 1073741824
     filestore_op_threads : 4
