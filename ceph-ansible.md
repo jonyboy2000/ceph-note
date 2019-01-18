@@ -176,9 +176,9 @@ ceph_conf_overrides:
     osd_scrub_begin_hour : 1
     osd_scrub_end_hour : 5
     osd scrub load threshold : 0.5
-    osd scrub min interval : 60*60*24
-    osd scrub max interval : 60*60*24*7
-    osd deep scrub interval : 60*60*24*7
+    osd scrub min interval : 86400
+    osd scrub max interval : 604800
+    osd deep scrub interval : 604800
     journal_max_write_entries : 1000
     journal_max_write_bytes : 1073741824
     filestore_op_threads : 4
